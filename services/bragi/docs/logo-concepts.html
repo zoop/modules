@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Adjura — Logo Concepts v2</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --teal:#0E7C7B; --teal-bright:#2DD4BF; --navy:#0B1B2B; --ink:#0A0F1A;
+    --amber:#E08A00; --amber-bright:#FBBF24; --amber-text:#B45309;
+    --bg:#F6F8F9; --card:#fff; --line:#e4ebee; --slate:#5b6b74; --mute:#8a99a1; --text:#0F172A;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:"IBM Plex Sans",system-ui,sans-serif;background:var(--bg);color:var(--text);
+    line-height:1.5;-webkit-font-smoothing:antialiased;padding:34px 20px}
+  .wrap{max-width:1060px;margin:0 auto;display:flex;flex-direction:column;gap:22px}
+  .head{text-align:center;margin-bottom:4px}
+  .eyebrow{font-size:11px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--teal);margin-bottom:8px}
+  h1{font-family:"Space Grotesk",sans-serif;font-size:27px;font-weight:700;letter-spacing:-.01em}
+  .sub{color:var(--slate);font-size:14px;margin-top:8px;max-width:64ch;margin-left:auto;margin-right:auto}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(460px,1fr));gap:20px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:18px;overflow:hidden;
+    box-shadow:0 1px 2px rgba(11,27,43,.04),0 10px 26px rgba(11,27,43,.05)}
+  .stage{display:flex;align-items:center;gap:26px;padding:30px 30px 24px}
+  .tile-wrap{flex:none}
+  .lock{display:flex;flex-direction:column;gap:14px}
+  .wm{font-family:"Space Grotesk",sans-serif;font-weight:600;font-size:34px;letter-spacing:-.015em;color:var(--navy);line-height:1}
+  .wm .tld{color:var(--mute);font-weight:500}
+  .row{display:flex;align-items:center;gap:16px}
+  .vlabel{font-size:9.5px;color:var(--mute);text-transform:uppercase;letter-spacing:.07em;text-align:center;margin-top:5px}
+  .v{display:flex;flex-direction:column;align-items:center}
+  .onblack{background:var(--ink);border-radius:9px;padding:8px;display:grid;place-items:center}
+  .info{padding:16px 30px 22px;border-top:1px solid var(--line);background:#fbfdfd}
+  .cname{font-family:"Space Grotesk",sans-serif;font-weight:600;font-size:16px;color:var(--navy);display:flex;align-items:center;gap:10px}
+  .num{display:inline-grid;place-items:center;width:24px;height:24px;border-radius:8px;background:var(--teal);color:#fff;font-weight:700;font-size:12px;font-family:"Space Grotesk"}
+  .cidea{font-size:13px;color:var(--slate);margin-top:7px}
+  .foot{text-align:center;color:var(--mute);font-size:11.5px;padding:4px 0 8px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="head">
+    <div class="eyebrow">Adjura · logo concepts — round 2</div>
+    <h1>Bolder marks, real depth, more idea</h1>
+    <p class="sub">App-icon treatment (how it actually shows up in a browser tab, an app grid, a slide), full lockup, favicon and monochrome. Teal + amber on a navy canvas. Point at the one that's closest.</p>
+  </div>
+  <div class="grid">
+
+    <!-- ========== 1 · CONVERGE (app-icon, gradient) ========== -->
+    <div class="card">
+      <div class="stage">
+        <div class="tile-wrap">
+          <svg width="104" height="104" viewBox="0 0 104 104">
+            <defs>
+              <linearGradient id="g1" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0" stop-color="#12938F"/><stop offset="1" stop-color="#0A2233"/>
+              </linearGradient>
+            </defs>
+            <rect width="104" height="104" rx="26" fill="url(#g1)"/>
+            <path d="M26 34 C46 42 54 48 64 52" fill="none" stroke="#EAF7F5" stroke-width="5.5" stroke-linecap="round"/>
+            <path d="M26 70 C46 62 54 56 64 52" fill="none" stroke="#EAF7F5" stroke-width="5.5" stroke-linecap="round"/>
+            <circle cx="67" cy="52" r="8.5" fill="#FBBF24"/>
+          </svg>
+        </div>
+        <div class="lock">
+          <span class="wm">Adjura</span>
+          <div class="row">
+            <div class="v"><svg width="30" height="30" viewBox="0 0 104 104"><path d="M26 34 C46 42 54 48 64 52" fill="none" stroke="#0E7C7B" stroke-width="6" stroke-linecap="round"/><path d="M26 70 C46 62 54 56 64 52" fill="none" stroke="#0E7C7B" stroke-width="6" stroke-linecap="round"/><circle cx="67" cy="52" r="9" fill="#E08A00"/></svg><div class="vlabel">symbol</div></div>
+            <div class="v"><svg width="16" height="16" viewBox="0 0 104 104"><path d="M26 34 C46 42 54 48 64 52" fill="none" stroke="#0E7C7B" stroke-width="8" stroke-linecap="round"/><path d="M26 70 C46 62 54 56 64 52" fill="none" stroke="#0E7C7B" stroke-width="8" stroke-linecap="round"/><circle cx="67" cy="52" r="11" fill="#E08A00"/></svg><div class="vlabel">16px</div></div>
+            <div class="v"><div class="onblack"><svg width="26" height="26" viewBox="0 0 104 104"><path d="M26 34 C46 42 54 48 64 52" fill="none" stroke="#2DD4BF" stroke-width="6" stroke-linecap="round"/><path d="M26 70 C46 62 54 56 64 52" fill="none" stroke="#2DD4BF" stroke-width="6" stroke-linecap="round"/><circle cx="67" cy="52" r="9" fill="#FBBF24"/></svg></div><div class="vlabel">dark</div></div>
+          </div>
+        </div>
+      </div>
+      <div class="info">
+        <div class="cname"><span class="num">1</span>Converge</div>
+        <div class="cidea">Two signals — the photo and the paperwork — resolve into one verdict (the amber node). The product's core idea, as a confident app-icon. Most on-concept.</div>
+      </div>
+    </div>
+
+    <!-- ========== 2 · ASCEND (stacked modules → peak) ========== -->
+    <div class="card">
+      <div class="stage">
+        <div class="tile-wrap">
+          <svg width="104" height="104" viewBox="0 0 104 104">
+            <defs>
+              <linearGradient id="g2" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0" stop-color="#0E2A3A"/><stop offset="1" stop-color="#0A1016"/>
+              </linearGradient>
+            </defs>
+            <rect width="104" height="104" rx="26" fill="url(#g2)"/>
+            <path d="M30 52 L52 36 L74 52" fill="none" stroke="#2DD4BF" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M30 66 L52 50 L74 66" fill="none" stroke="#17817E" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M39 38 L52 28 L65 38" fill="none" stroke="#FBBF24" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <div class="lock">
+          <span class="wm">Adjura</span>
+          <div class="row">
+            <div class="v"><svg width="30" height="30" viewBox="0 0 104 104"><path d="M30 52 L52 36 L74 52" fill="none" stroke="#0E7C7B" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M30 66 L52 50 L74 66" fill="none" stroke="#0E7C7B" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M39 38 L52 28 L65 38" fill="none" stroke="#E08A00" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round"/></svg><div class="vlabel">symbol</div></div>
+            <div class="v"><svg width="16" height="16" viewBox="0 0 104 104"><path d="M28 54 L52 36 L76 54" fill="none" stroke="#0E7C7B" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/><path d="M38 34 L52 24 L66 34" fill="none" stroke="#E08A00" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/></svg><div class="vlabel">16px</div></div>
+            <div class="v"><div class="onblack"><svg width="26" height="26" viewBox="0 0 104 104"><path d="M30 52 L52 36 L74 52" fill="none" stroke="#2DD4BF" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M30 66 L52 50 L74 66" fill="none" stroke="#17817E" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M39 38 L52 28 L65 38" fill="none" stroke="#FBBF24" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="vlabel">dark</div></div>
+          </div>
+        </div>
+      </div>
+      <div class="info">
+        <div class="cname"><span class="num">2</span>Ascend</div>
+        <div class="cidea">Stacked chevrons = the modules, resolving upward to an amber peak = the decision. Ties the "Modules" platform and the "Adjura" verdict into one upward motion. Reads as an implied “A”.</div>
+      </div>
+    </div>
+
+    <!-- ========== 3 · BALANCE A (bold monogram) ========== -->
+    <div class="card">
+      <div class="stage">
+        <div class="tile-wrap">
+          <svg width="104" height="104" viewBox="0 0 104 104">
+            <defs>
+              <linearGradient id="g3" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0" stop-color="#12938F"/><stop offset="1" stop-color="#0A2233"/>
+              </linearGradient>
+            </defs>
+            <rect width="104" height="104" rx="26" fill="url(#g3)"/>
+            <path d="M52 24 L72 78 L62.5 78 L58 65 L46 65 L41.5 78 L32 78 Z M49 56 L55 56 L52 47 Z"
+                  fill="#EAF7F5" fill-rule="evenodd"/>
+            <rect x="44" y="59.5" width="16" height="5.5" rx="2.75" fill="#FBBF24"/>
+          </svg>
+        </div>
+        <div class="lock">
+          <span class="wm">Adjura</span>
+          <div class="row">
+            <div class="v"><svg width="30" height="30" viewBox="0 0 104 104"><path d="M52 24 L72 78 L62.5 78 L58 65 L46 65 L41.5 78 L32 78 Z M49 56 L55 56 L52 47 Z" fill="#0E7C7B" fill-rule="evenodd"/><rect x="44" y="59.5" width="16" height="5.5" rx="2.75" fill="#E08A00"/></svg><div class="vlabel">symbol</div></div>
+            <div class="v"><svg width="16" height="16" viewBox="0 0 104 104"><path d="M52 22 L74 80 L63 80 L58.5 66 L45.5 66 L41 80 L30 80 Z M48.5 56 L55.5 56 L52 46 Z" fill="#0E7C7B" fill-rule="evenodd"/><rect x="43" y="59" width="18" height="7" rx="3.5" fill="#E08A00"/></svg><div class="vlabel">16px</div></div>
+            <div class="v"><div class="onblack"><svg width="26" height="26" viewBox="0 0 104 104"><path d="M52 24 L72 78 L62.5 78 L58 65 L46 65 L41.5 78 L32 78 Z M49 56 L55 56 L52 47 Z" fill="#2DD4BF" fill-rule="evenodd"/><rect x="44" y="59.5" width="16" height="5.5" rx="2.75" fill="#FBBF24"/></svg></div><div class="vlabel">dark</div></div>
+          </div>
+        </div>
+      </div>
+      <div class="info">
+        <div class="cname"><span class="num">3</span>Balance “A”</div>
+        <div class="cidea">A bold, solid “A” monogram with an amber balance beam for a crossbar — adjudication, fair judgment, the initial. Strong brand-letter recall; owns the first letter.</div>
+      </div>
+    </div>
+
+    <!-- ========== 4 · FOCUS (aperture tile) ========== -->
+    <div class="card">
+      <div class="stage">
+        <div class="tile-wrap">
+          <svg width="104" height="104" viewBox="0 0 104 104">
+            <defs>
+              <linearGradient id="g4" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0" stop-color="#0E2A3A"/><stop offset="1" stop-color="#0A1016"/>
+              </linearGradient>
+            </defs>
+            <rect width="104" height="104" rx="26" fill="url(#g4)"/>
+            <path d="M34 44 V36 a4 4 0 0 1 4-4 H46" fill="none" stroke="#2DD4BF" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M58 32 H66 a4 4 0 0 1 4 4 V44" fill="none" stroke="#2DD4BF" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M70 60 V68 a4 4 0 0 1 -4 4 H58" fill="none" stroke="#2DD4BF" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M46 72 H38 a4 4 0 0 1 -4 -4 V60" fill="none" stroke="#2DD4BF" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="52" cy="52" r="8" fill="#FBBF24"/>
+          </svg>
+        </div>
+        <div class="lock">
+          <span class="wm">Adjura</span>
+          <div class="row">
+            <div class="v"><svg width="30" height="30" viewBox="0 0 104 104"><path d="M34 44 V36 a4 4 0 0 1 4-4 H46" fill="none" stroke="#0E7C7B" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M58 32 H66 a4 4 0 0 1 4 4 V44" fill="none" stroke="#0E7C7B" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M70 60 V68 a4 4 0 0 1 -4 4 H58" fill="none" stroke="#0E7C7B" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M46 72 H38 a4 4 0 0 1 -4 -4 V60" fill="none" stroke="#0E7C7B" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="52" cy="52" r="8" fill="#E08A00"/></svg><div class="vlabel">symbol</div></div>
+            <div class="v"><svg width="16" height="16" viewBox="0 0 104 104"><path d="M34 44 V36 a4 4 0 0 1 4-4 H46" fill="none" stroke="#0E7C7B" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/><path d="M58 32 H66 a4 4 0 0 1 4 4 V44" fill="none" stroke="#0E7C7B" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/><path d="M70 60 V68 a4 4 0 0 1 -4 4 H58" fill="none" stroke="#0E7C7B" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/><path d="M46 72 H38 a4 4 0 0 1 -4 -4 V60" fill="none" stroke="#0E7C7B" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/><circle cx="52" cy="52" r="9.5" fill="#E08A00"/></svg><div class="vlabel">16px</div></div>
+            <div class="v"><div class="onblack"><svg width="26" height="26" viewBox="0 0 104 104"><path d="M34 44 V36 a4 4 0 0 1 4-4 H46" fill="none" stroke="#2DD4BF" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M58 32 H66 a4 4 0 0 1 4 4 V44" fill="none" stroke="#2DD4BF" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M70 60 V68 a4 4 0 0 1 -4 4 H58" fill="none" stroke="#2DD4BF" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M46 72 H38 a4 4 0 0 1 -4 -4 V60" fill="none" stroke="#2DD4BF" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="52" cy="52" r="8" fill="#FBBF24"/></svg></div><div class="vlabel">dark</div></div>
+          </div>
+        </div>
+      </div>
+      <div class="info">
+        <div class="cname"><span class="num">4</span>Focus</div>
+        <div class="cidea">A focus frame locking onto an amber point — scrutiny, detection, “we find what to check.” Refined tile version of the reticle; crisp at any size.</div>
+      </div>
+    </div>
+
+  </div>
+  <div class="foot">Adjura (market brand) · logo concepts round 2 — for selection. Final mark gets built as production SVG + favicon once chosen.</div>
+</div>
+</body>
+</html>
