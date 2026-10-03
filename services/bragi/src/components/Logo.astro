@@ -1,0 +1,35 @@
+---
+interface Props {
+  class?: string;
+  wordmark?: boolean;
+  size?: number;
+}
+const { class: cls = "", wordmark = true, size = 28 } = Astro.props;
+---
+
+<a href="/" class={`inline-flex items-center gap-2.5 ${cls}`} aria-label="Modules — home">
+  <svg width={size} height={size} viewBox="0 0 104 104" aria-hidden="true" class="shrink-0">
+    <path
+      d="M28 64 L52 52 L76 64"
+      fill="none"
+      stroke="var(--color-primary)"
+      stroke-width="7"
+      stroke-linecap="round"
+      stroke-linejoin="round"></path>
+    <path
+      d="M34 54 L52 42 L70 54"
+      fill="none"
+      stroke="var(--color-primary)"
+      stroke-width="7"
+      stroke-linecap="round"
+      stroke-linejoin="round"></path>
+    <path
+      d="M40 44 L52 32 L64 44"
+      fill="none"
+      stroke="var(--color-brand)"
+      stroke-width="7"
+      stroke-linecap="round"
+      stroke-linejoin="round"></path>
+  </svg>
+  {wordmark && <span class="font-display text-[1.15rem] font-semibold tracking-tight text-ink">Modules</span>}
+</a>

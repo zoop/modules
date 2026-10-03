@@ -49,3 +49,6 @@ graphify-out/
 
 # Playwright MCP session artifacts (page snapshots, console logs)
 .playwright-mcp/
+
+# Playwright MCP screenshots/scratch
+.playwright-mcp/

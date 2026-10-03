@@ -1,0 +1,195 @@
+{
+  "meta": {
+    "brand": "Modules",
+    "title": "Modules — Claims intelligence for insurers",
+    "description": "Send vehicle photos, video and claim documents. Get back a damage report, a fraud score and the red flags behind it — each with a reason. Your team decides."
+  },
+  "nav": {
+    "links": [
+      { "label": "Platform", "href": "#platform" },
+      { "label": "How it works", "href": "#how" },
+      { "label": "Developers", "href": "#developers" },
+      { "label": "Pricing", "href": "#pricing" }
+    ],
+    "secondary": { "label": "Sign in", "href": "#" },
+    "cta": { "label": "Request a demo", "href": "#demo" }
+  },
+  "hero": {
+    "eyebrow": "Claims intelligence · motor & health insurers",
+    "title": "Read the photos. Read the paperwork. Know what to check.",
+    "subtitle": "Send vehicle photos, video and claim documents, in any combination. Get back a damage report, a fraud score and the red flags behind it — each with a reason. Your team makes the call.",
+    "ctaPrimary": { "label": "Request a demo", "href": "#demo" },
+    "ctaSecondary": { "label": "See the API", "href": "#developers" },
+    "chips": [
+      "Damage from photos & video",
+      "Anomalies in claim documents",
+      "PDF & JSON output"
+    ],
+    "card": {
+      "reg": "MH 12 AB 1234",
+      "claim": "Claim CLM-2026-90377 · sample",
+      "scoreLabel": "Fraud score",
+      "scoreBand": "High · refer",
+      "score": "78",
+      "rows": [
+        { "tag": "HIGH", "kind": "flag", "text": "Policy lapsed before date of loss" },
+        { "tag": "HIGH", "kind": "flag", "text": "Estimate total differs from its line items" },
+        { "tag": "DAMAGE", "kind": "damage", "text": "Front bumper: scratch, moderate" },
+        { "tag": "PASS", "kind": "pass", "text": "Plate and chassis match Vahan" }
+      ]
+    }
+  },
+  "context": {
+    "heading": "The leak is where software can help",
+    "lead": "Indian insurers lose roughly a tenth of premium to fraud — and most of it rides on documents.",
+    "stats": [
+      { "value": "~₹2.26L cr", "label": "combined motor + health gross premium, FY25" },
+      { "value": "~10%", "label": "of premium lost to fraud each year" },
+      { "value": "~70%", "label": "of that fraud rides on document falsification" },
+      { "value": "days → minutes", "label": "physical survey vs. guided digital inspection" }
+    ],
+    "note": "Market context, not product metrics. Sources: IRDAI 2024-25, Insurance Institute of India, Deloitte India Insurance Fraud Survey 2023. Ranges are industry estimates."
+  },
+  "platform": {
+    "eyebrow": "One platform, composable",
+    "heading": "Six modules. One engine. Every line.",
+    "lead": "Each capability a claim needs, built once and reused across insurance lines — motor today, health next. Buy one module, a bundled engine, or the whole stack.",
+    "modules": [
+      { "name": "Capture", "desc": "Collect documents and images from the customer across channels — a guided link, SMS, WhatsApp, email, or your own systems by API." },
+      { "name": "Document Intelligence", "desc": "Extract the useful information from any claim document — policies, estimates, invoices, RCs, FIRs." },
+      { "name": "Verification", "desc": "Prove documents are real and consistent — tampering checks and cross-source matching against Vahan and registries." },
+      { "name": "Image Intelligence", "desc": "Read the photos. Damaged parts and severity for motor; medical images and bills for health." },
+      { "name": "Fraud", "desc": "One risk score over the documents and images — with the reason behind every flag." },
+      { "name": "Agentic Settlement", "desc": "The agent that orchestrates the stack to run the claim end to end. Straight-through for the clean, investigator-ready for the rest." }
+    ],
+    "footnote": "Build a capability once, reuse it down every line. “Agentic Settlement” is on the roadmap."
+  },
+  "how": {
+    "eyebrow": "How it works",
+    "heading": "One request in, one report out",
+    "steps": [
+      { "step": "1", "title": "Send what you have", "desc": "Email, SMS or WhatsApp a capture link to the customer. Or upload files from the dashboard, or send them by API." },
+      { "step": "2", "title": "We check it", "desc": "The engine finds damaged parts, reads the plate and chassis, checks them against Vahan, reads every document and runs fraud rules across it all." },
+      { "step": "3", "title": "Your team decides", "desc": "A PDF report and a JSON response land in your dashboard and your systems. Flagged files go to your investigators with reasons attached." }
+    ]
+  },
+  "send": {
+    "eyebrow": "What you send",
+    "heading": "Send photos, documents, or both",
+    "lead": "The report adapts to what you send. You never pay for a section you did not need.",
+    "modes": [
+      { "name": "Documents only", "returns": "Score, flags and the extracted fields behind them." },
+      { "name": "Photos or video only", "returns": "Damage map, parts table, Vahan result and evidence." },
+      { "name": "Both", "returns": "The full report — damage and documents on one page, with the flags that explain the score.", "featured": true }
+    ]
+  },
+  "capture": {
+    "eyebrow": "Guided capture",
+    "heading": "Photos and paperwork, from the customer or the garage",
+    "lead": "The insurer sends a capture link to whoever has the evidence — the customer or the garage. They submit vehicle photos and a short video, plus the claim documents, from a phone. No app to install, and quality is checked on both.",
+    "points": [
+      "Link sent by SMS, WhatsApp or email to the customer or the garage, valid for a limited time.",
+      "Step-by-step vehicle photos and a short walkaround video, each angle guided by an outline.",
+      "Snap or upload the documents too — RC, policy, estimate, invoice — in the same flow.",
+      "Instant checks on both: dark, blurry or partial shots and unreadable pages are caught before submit.",
+      "Consent is shown first and recorded with the case. Hindi and English.",
+      "Staff can skip the link and upload from the dashboard or API."
+    ],
+    "demoAngle": { "label": "Angle 3 of 8", "name": "Left side", "hint": "Good shot. Hold steady." }
+  },
+  "developers": {
+    "eyebrow": "For developers",
+    "heading": "A REST API and webhooks",
+    "lead": "Create a case, attach files, and receive the result as JSON. You get a webhook when the report is ready. Every report also comes as a PDF.",
+    "points": [
+      "Send any mix of images, video and documents — PDF, JPG or PNG.",
+      "The response only contains the sections that match what you sent.",
+      "Sandbox keys for testing before you go live."
+    ],
+    "endpoints": [
+      { "method": "POST", "path": "/v1/cases", "purpose": "Create a case for a claim or inspection" },
+      { "method": "POST", "path": "/v1/cases/{id}/files", "purpose": "Add photos, video or documents" },
+      { "method": "POST", "path": "/v1/cases/{id}/capture-link", "purpose": "Send the guided tour link" },
+      { "method": "GET", "path": "/v1/cases/{id}", "purpose": "Fetch the JSON result" },
+      { "method": "GET", "path": "/v1/cases/{id}/report.pdf", "purpose": "Fetch the PDF report" }
+    ],
+    "request": {
+      "title": "POST /v1/cases · sample",
+      "body": "{\n  \"claim_id\": \"CLM-2026-90377\",\n  \"vehicle_reg\": \"MH12AB1234\",\n  \"files\": [\n    { \"type\": \"image\",    \"url\": \"https://…/front.jpg\" },\n    { \"type\": \"document\", \"kind\": \"garage_estimate\", \"url\": \"https://…/estimate.pdf\" }\n  ],\n  \"webhook_url\": \"https://insurer.example/hooks/modules\"\n}"
+    },
+    "response": {
+      "title": "Response · sample",
+      "body": "{\n  \"case_id\": \"case_7Q2K\",\n  \"status\": \"completed\",\n  \"fraud\": { \"score\": 78, \"band\": \"high\", \"flags\": 4 },\n  \"damage\": { \"parts\": [ { \"part\": \"front_bumper\", \"type\": \"scratch\", \"severity\": \"moderate\" } ] },\n  \"vahan\": { \"plate_match\": true, \"chassis_match\": true },\n  \"report_pdf\": \"https://…/case_7Q2K.pdf\"\n}"
+    }
+  },
+  "audience": {
+    "eyebrow": "For insurers",
+    "heading": "Built for the people who handle the claim",
+    "roles": [
+      { "role": "Claims desk", "title": "Faster first look", "desc": "Small own-damage claims arrive with damaged parts and severity already listed, so the desk starts from a report instead of a pile of photos." },
+      { "role": "Investigation team", "title": "Flags with reasons", "desc": "Each flag shows what was compared and why it looks wrong, so investigators start from evidence." },
+      { "role": "Underwriting", "title": "Break-in inspections", "desc": "Inspect a lapsed or used-car policy from the customer’s phone, with the plate and chassis checked against Vahan." }
+    ]
+  },
+  "principle": {
+    "text": "The engine never approves or rejects a claim. It tells your team where to look.",
+    "sub": "Every flag carries its reason, and the human decides. Explainable by design."
+  },
+  "pricing": {
+    "eyebrow": "Pricing",
+    "heading": "Start self-serve. Grow to the whole claim.",
+    "lead": "Same engine, two ways to buy. Transparent usage pricing on the self-serve tier — not demo-gated like the rest of the category.",
+    "tiers": [
+      {
+        "name": "Modules",
+        "tag": "Self-serve",
+        "for": "Digital & claims teams, TPAs, surveyors, developers.",
+        "points": [
+          "Sign up and get sandbox keys",
+          "Module APIs + a working dashboard",
+          "Capture links, PDF & JSON reports",
+          "Usage pricing — per case, inspection or document",
+          "Free trial to start"
+        ],
+        "cta": { "label": "Request access", "href": "#demo" }
+      },
+      {
+        "name": "Modules Enterprise",
+        "tag": "For carriers",
+        "featured": true,
+        "for": "Large insurers running claims at scale.",
+        "points": [
+          "Everything in self-serve, plus:",
+          "Integration to your claim systems, SSO & roles",
+          "White-label, data residency & custom rules",
+          "Dedicated onboarding, SLAs and support",
+          "Design-partner pilots"
+        ],
+        "cta": { "label": "Talk to us", "href": "#demo" }
+      }
+    ]
+  },
+  "cta": {
+    "eyebrow": "Get started",
+    "heading": "See it on your own claim files",
+    "lead": "Tell us who you are and what you handle. We’ll set up a sandbox and walk through a report together.",
+    "fields": [
+      { "name": "name", "label": "Full name", "type": "text" },
+      { "name": "email", "label": "Work email", "type": "email" },
+      { "name": "company", "label": "Company", "type": "text" }
+    ],
+    "select": { "label": "Your team", "options": ["Claims", "Special investigation", "Underwriting", "Product or digital"] },
+    "button": "Request a demo",
+    "note": "Design mock — this form is not connected."
+  },
+  "footer": {
+    "tagline": "Claims intelligence for insurers. Read the photos, read the paperwork, know what to check.",
+    "columns": [
+      { "title": "Product", "links": [ { "label": "Platform", "href": "#platform" }, { "label": "How it works", "href": "#how" }, { "label": "Pricing", "href": "#pricing" } ] },
+      { "title": "Developers", "links": [ { "label": "API overview", "href": "#developers" }, { "label": "Sandbox", "href": "#demo" } ] },
+      { "title": "Company", "links": [ { "label": "Request a demo", "href": "#demo" }, { "label": "Privacy", "href": "#" }, { "label": "Terms", "href": "#" } ] }
+    ],
+    "note": "“Modules” is a working name. Product, pricing and legal pages to be added. Sample data throughout.",
+    "copyright": "© 2026 Modules. All rights reserved."
+  }
+}

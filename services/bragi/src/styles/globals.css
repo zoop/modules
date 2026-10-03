@@ -1,21 +1,38 @@
 @import "tailwindcss";
+@import "@modules/brand/tokens.css";
+@import "tw-animate-css";
 
-/* IAR Services brand palette (see claims/webapp BRAND_DESIGN_SYSTEM.md).
-   Navy = authority/trust · Teal = technology · Amber = action/CTA. */
-@theme {
-  --color-navy-950: #0a1628;
-  --color-navy-900: #0f2140;
-  --color-navy-800: #162d54;
-  --color-navy-700: #1e3a5f;
-  --color-navy-600: #2b4f7e;
-  --color-navy-500: #3d6b9e;
-
-  --color-teal-700: #0e7c6b;
-  --color-teal-600: #0d9488;
-  --color-teal-500: #14b8a6;
-  --color-teal-400: #2dd4bf;
-
-  --color-amber-600: #d97706;
-  --color-amber-500: #f59e0b;
-  --color-amber-400: #fbbf24;
+/* bragi page base — colours come from the shared, theme-flipping tokens. */
+html {
+  scroll-behavior: smooth;
 }
+body {
+  font-family: var(--font-sans);
+  background: var(--color-canvas);
+  color: var(--color-ink);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+h1,
+h2,
+h3 {
+  font-family: var(--font-display);
+  letter-spacing: -0.015em;
+}
+
+/* Hero backdrop — adapts to light/dark via semantic tokens + colour-mix glows. */
+.hero-bg {
+  background:
+    radial-gradient(
+      58% 46% at 10% -5%,
+      color-mix(in oklab, var(--color-primary) 16%, transparent),
+      transparent 60%
+    ),
+    radial-gradient(
+      46% 46% at 95% 5%,
+      color-mix(in oklab, var(--color-violet-600) 13%, transparent),
+      transparent 60%
+    ),
+    var(--color-canvas);
+}
+

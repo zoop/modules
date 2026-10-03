@@ -1,51 +1,342 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
+import Nav from "../components/Nav.astro";
+import { Button, buttonVariants } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Separator } from "@/components/ui/separator";
+import SendTabs from "@/components/SendTabs.tsx";
+import DeveloperTabs from "@/components/DeveloperTabs.tsx";
+import MotionFooter from "@/components/ui/motion-footer.tsx";
+import { Check } from "lucide-react";
+import en from "@/content/en-US.json";
+
+const { hero, context, platform, how, send, capture, developers, audience, principle, pricing, cta } = en;
+
+const tagClass: Record<string, string> = {
+  flag: "bg-[color-mix(in_oklab,var(--color-risk-high)_16%,transparent)] text-risk-high",
+  damage: "bg-[color-mix(in_oklab,var(--color-primary)_16%,transparent)] text-primary",
+  pass: "bg-[color-mix(in_oklab,var(--color-risk-clear)_16%,transparent)] text-primary",
+};
 ---
 
 <BaseLayout>
-  <header class="border-b border-navy-100">
-    <nav class="mx-auto flex max-w-6xl items-center justify-between px-6 py-5">
-      <a href="/" class="flex items-center gap-3">
-        <img src="/logo/iar_full_logo_blue.svg" alt="IAR Modules" class="h-8 w-auto" />
-      </a>
-      <a
-        href="https://github.com/iar-motor-claims/modules"
-        class="text-sm font-medium text-navy-600 hover:text-navy-900"
-      >
-        GitHub
-      </a>
-    </nav>
-  </header>
+  <Nav />
 
-  <main class="mx-auto max-w-6xl px-6">
-    <section class="py-24 text-center">
-      <h1 class="text-5xl font-bold tracking-tight text-navy-950 sm:text-6xl">
-        Composable modules for AI &amp; business
-      </h1>
-      <p class="mx-auto mt-6 max-w-2xl text-lg text-navy-600">
-        Buy what you need. Each capability ships as an independent, deployable
-        module you can license on its own or bundle together.
-      </p>
-      <div class="mt-10 flex items-center justify-center gap-4">
-        <a
-          href="#modules"
-          class="rounded-lg bg-amber-500 px-6 py-3 font-semibold text-navy-950 transition hover:bg-amber-600"
-        >
-          Explore modules
-        </a>
-        <a
-          href="https://github.com/iar-motor-claims/modules"
-          class="rounded-lg border border-navy-200 px-6 py-3 font-semibold text-navy-700 transition hover:border-navy-400"
-        >
-          View on GitHub
-        </a>
+  <main>
+    <!-- ================= HERO ================= -->
+    <section class="hero-bg">
+      <div class="mx-auto grid max-w-6xl items-center gap-14 px-6 py-20 lg:grid-cols-[1.05fr_0.95fr] lg:py-28">
+        <div>
+          <Badge variant="outline" className="gap-2 rounded-full bg-surface px-3 py-1 text-muted">
+            <span class="h-1.5 w-1.5 rounded-full bg-primary"></span>
+            {hero.eyebrow}
+          </Badge>
+          <h1 class="mt-6 text-4xl font-bold leading-[1.08] text-ink sm:text-5xl lg:text-[3.4rem]">
+            {hero.title}
+          </h1>
+          <p class="mt-6 max-w-xl text-lg leading-relaxed text-muted">{hero.subtitle}</p>
+          <div class="mt-9 flex flex-wrap items-center gap-3">
+            <a href={hero.ctaPrimary.href} class={buttonVariants({ variant: "accent", size: "lg" })}>{hero.ctaPrimary.label}</a>
+            <a href={hero.ctaSecondary.href} class={buttonVariants({ variant: "outline", size: "lg" })}>{hero.ctaSecondary.label}</a>
+          </div>
+          <ul class="mt-9 flex flex-wrap gap-x-6 gap-y-2 text-sm text-muted">
+            {hero.chips.map((c) => (
+              <li class="flex items-center gap-2">
+                <Check className="h-4 w-4 text-primary" />
+                {c}
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        <!-- sample report card -->
+        <div class="relative">
+          <Card className="bg-surface-2 p-6 shadow-xl shadow-navy-900/5">
+            <div class="flex items-center justify-between">
+              <span class="font-data text-sm font-medium text-ink">{hero.card.reg}</span>
+              <span class="font-data text-xs text-muted">{hero.card.claim}</span>
+            </div>
+            <div class="flex items-end justify-between rounded-xl border border-hair bg-canvas px-5 py-4">
+              <div>
+                <p class="text-xs font-medium uppercase tracking-wider text-muted">{hero.card.scoreLabel}</p>
+                <p class="mt-1 text-sm font-semibold text-risk-high">{hero.card.scoreBand}</p>
+              </div>
+              <p class="font-data text-5xl font-medium leading-none text-risk-high">{hero.card.score}</p>
+            </div>
+            <ul class="space-y-2.5">
+              {hero.card.rows.map((r) => (
+                <li class="flex items-center gap-3 rounded-lg border border-hair bg-canvas px-3.5 py-2.5">
+                  <span class={`shrink-0 rounded px-1.5 py-0.5 text-[10px] font-bold tracking-wide ${tagClass[r.kind]}`}>{r.tag}</span>
+                  <span class="text-sm text-ink">{r.text}</span>
+                </li>
+              ))}
+            </ul>
+          </Card>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= CONTEXT STATS ================= -->
+    <section class="border-y border-hair bg-surface">
+      <div class="mx-auto max-w-6xl px-6 py-14">
+        <div class="max-w-2xl">
+          <h2 class="text-2xl font-bold text-ink">{context.heading}</h2>
+          <p class="mt-2 text-muted">{context.lead}</p>
+        </div>
+        <dl class="mt-10 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+          {context.stats.map((s) => (
+            <div class="border-l-2 border-primary pl-4">
+              <dt class="font-data text-2xl font-medium text-ink">{s.value}</dt>
+              <dd class="mt-1 text-sm text-muted">{s.label}</dd>
+            </div>
+          ))}
+        </dl>
+        <p class="mt-8 text-xs text-muted/80">{context.note}</p>
+      </div>
+    </section>
+
+    <!-- ================= PLATFORM ================= -->
+    <section id="platform" class="scroll-mt-20 bg-canvas">
+      <div class="mx-auto max-w-6xl px-6 py-20">
+        <div class="max-w-2xl">
+          <p class="text-xs font-semibold uppercase tracking-widest text-primary">{platform.eyebrow}</p>
+          <h2 class="mt-3 text-3xl font-bold text-ink sm:text-4xl">{platform.heading}</h2>
+          <p class="mt-4 text-lg text-muted">{platform.lead}</p>
+        </div>
+        <div class="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {platform.modules.map((m, i) => (
+            <Card className="gap-0 py-6 transition-colors hover:border-primary/50">
+              <CardHeader>
+                <div class="flex items-center gap-3">
+                  <span class="grid h-8 w-8 place-items-center rounded-lg bg-primary/15 font-data text-sm font-semibold text-primary">{i + 1}</span>
+                  <CardTitle className="text-lg">{m.name}</CardTitle>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <p class="mt-3 text-sm leading-relaxed text-muted">{m.desc}</p>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+        <p class="mt-6 text-sm text-muted">{platform.footnote}</p>
+      </div>
+    </section>
+
+    <!-- ================= HOW IT WORKS ================= -->
+    <section id="how" class="scroll-mt-20 border-y border-hair bg-surface">
+      <div class="mx-auto max-w-6xl px-6 py-20">
+        <p class="text-xs font-semibold uppercase tracking-widest text-primary">{how.eyebrow}</p>
+        <h2 class="mt-3 text-3xl font-bold text-ink sm:text-4xl">{how.heading}</h2>
+        <div class="mt-12 grid gap-6 md:grid-cols-3">
+          {how.steps.map((s) => (
+            <Card className="bg-surface-2 py-7">
+              <CardContent>
+                <span class="font-data text-sm font-semibold text-primary">{s.step}</span>
+                <h3 class="mt-3 font-display text-xl font-semibold text-ink">{s.title}</h3>
+                <p class="mt-3 text-sm leading-relaxed text-muted">{s.desc}</p>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= WHAT YOU SEND ================= -->
+    <section class="bg-canvas">
+      <div class="mx-auto max-w-6xl px-6 py-20">
+        <div class="max-w-2xl">
+          <p class="text-xs font-semibold uppercase tracking-widest text-primary">{send.eyebrow}</p>
+          <h2 class="mt-3 text-3xl font-bold text-ink sm:text-4xl">{send.heading}</h2>
+          <p class="mt-4 text-lg text-muted">{send.lead}</p>
+        </div>
+        <SendTabs client:visible modes={send.modes} />
+      </div>
+    </section>
+
+    <!-- ================= CAPTURE ================= -->
+    <section class="border-y border-hair bg-surface">
+      <div class="mx-auto grid max-w-6xl items-center gap-14 px-6 py-20 lg:grid-cols-2">
+        <div>
+          <p class="text-xs font-semibold uppercase tracking-widest text-primary">{capture.eyebrow}</p>
+          <h2 class="mt-3 text-3xl font-bold text-ink sm:text-4xl">{capture.heading}</h2>
+          <p class="mt-4 text-lg text-muted">{capture.lead}</p>
+          <ul class="mt-8 space-y-3">
+            {capture.points.map((p) => (
+              <li class="flex gap-3 text-sm text-ink">
+                <Check className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+                <span>{p}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+        <!-- phone mock -->
+        <div class="flex justify-center">
+          <div class="w-64 rounded-[2rem] border border-hair bg-navy-950 p-3 shadow-2xl">
+            <div class="overflow-hidden rounded-[1.5rem] bg-aurora bg-grid">
+              <div class="flex items-center justify-between px-4 pt-4 text-[11px] text-teal-300">
+                <span>{capture.demoAngle.label}</span>
+                <span class="rounded-full border border-teal-400/40 px-2 py-0.5 text-teal-300">EN · हिं</span>
+              </div>
+              <div class="flex h-56 items-center justify-center px-4">
+                <div class="flex h-36 w-full items-center justify-center rounded-xl border-2 border-dashed border-teal-400/50">
+                  <span class="font-display text-lg font-semibold text-white/90">{capture.demoAngle.name}</span>
+                </div>
+              </div>
+              <div class="px-4 pb-5">
+                <p class="text-center text-xs text-teal-300">{capture.demoAngle.hint}</p>
+                <div class="mt-3 flex justify-center">
+                  <span class="h-12 w-12 rounded-full border-4 border-white/90"></span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= DEVELOPERS ================= -->
+    <section id="developers" class="scroll-mt-20 bg-canvas">
+      <div class="mx-auto max-w-6xl px-6 py-20">
+        <div class="grid gap-12 lg:grid-cols-2">
+          <div>
+            <p class="text-xs font-semibold uppercase tracking-widest text-primary">{developers.eyebrow}</p>
+            <h2 class="mt-3 text-3xl font-bold text-ink sm:text-4xl">{developers.heading}</h2>
+            <p class="mt-4 text-lg text-muted">{developers.lead}</p>
+            <ul class="mt-8 space-y-3">
+              {developers.points.map((p) => (
+                <li class="flex gap-3 text-sm text-ink">
+                  <Check className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+                  <span>{p}</span>
+                </li>
+              ))}
+            </ul>
+            <Card className="mt-8 gap-0 overflow-hidden py-0">
+              <table class="w-full text-left text-sm">
+                <tbody class="divide-y divide-hair">
+                  {developers.endpoints.map((e) => (
+                    <tr class="bg-surface">
+                      <td class="whitespace-nowrap px-4 py-2.5 font-data text-xs font-semibold text-primary">{e.method}</td>
+                      <td class="whitespace-nowrap px-2 py-2.5 font-data text-xs text-ink">{e.path}</td>
+                      <td class="px-4 py-2.5 text-xs text-muted">{e.purpose}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </Card>
+          </div>
+
+          <!-- code panels in Tabs -->
+          <div>
+            <DeveloperTabs client:visible request={developers.request} response={developers.response} />
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= AUDIENCE ================= -->
+    <section class="border-y border-hair bg-surface">
+      <div class="mx-auto max-w-6xl px-6 py-20">
+        <p class="text-xs font-semibold uppercase tracking-widest text-primary">{audience.eyebrow}</p>
+        <h2 class="mt-3 text-3xl font-bold text-ink sm:text-4xl">{audience.heading}</h2>
+        <div class="mt-12 grid gap-6 md:grid-cols-3">
+          {audience.roles.map((r) => (
+            <Card className="bg-surface-2 py-7">
+              <CardContent>
+                <p class="font-data text-xs font-semibold uppercase tracking-wider text-primary">{r.role}</p>
+                <h3 class="mt-3 font-display text-xl font-semibold text-ink">{r.title}</h3>
+                <p class="mt-3 text-sm leading-relaxed text-muted">{r.desc}</p>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= PRINCIPLE ================= -->
+    <section class="bg-canvas">
+      <div class="mx-auto max-w-5xl px-6 py-20 text-center">
+        <div class="rounded-2xl border border-hair bg-primary/[0.06] p-12">
+          <p class="mx-auto max-w-3xl font-display text-2xl font-semibold leading-snug text-ink sm:text-3xl">{principle.text}</p>
+          <p class="mt-4 text-muted">{principle.sub}</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= PRICING ================= -->
+    <section id="pricing" class="scroll-mt-20 border-y border-hair bg-surface">
+      <div class="mx-auto max-w-6xl px-6 py-20">
+        <div class="max-w-2xl">
+          <p class="text-xs font-semibold uppercase tracking-widest text-primary">{pricing.eyebrow}</p>
+          <h2 class="mt-3 text-3xl font-bold text-ink sm:text-4xl">{pricing.heading}</h2>
+          <p class="mt-4 text-lg text-muted">{pricing.lead}</p>
+        </div>
+        <div class="mt-12 grid gap-6 md:grid-cols-2">
+          {pricing.tiers.map((t) => (
+            <Card className={`relative bg-surface-2 py-8 ${t.featured ? "border-primary/50 shadow-lg" : ""}`}>
+              {t.featured && (
+                <Badge variant="accent" className="absolute -top-3 right-6 rounded-full px-3 py-1 text-[11px] font-bold">Most complete</Badge>
+              )}
+              <CardHeader>
+                <div class="flex items-baseline justify-between">
+                  <CardTitle className="text-xl font-bold">{t.name}</CardTitle>
+                  <Badge variant="outline" className="rounded-full text-muted">{t.tag}</Badge>
+                </div>
+                <CardDescription className="mt-2">{t.for}</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <ul class="space-y-3">
+                  {t.points.map((p) => (
+                    <li class="flex gap-2.5 text-sm text-ink">
+                      <Check className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+                      <span>{p}</span>
+                    </li>
+                  ))}
+                </ul>
+                <a href={t.cta.href} class={buttonVariants({ variant: t.featured ? "accent" : "outline", size: "lg", className: "mt-8 w-full" })}>{t.cta.label}</a>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= CTA / DEMO ================= -->
+    <section id="demo" class="scroll-mt-20 hero-bg">
+      <div class="mx-auto max-w-5xl px-6 py-20">
+        <div class="grid items-center gap-12 lg:grid-cols-2">
+          <div>
+            <p class="text-xs font-semibold uppercase tracking-widest text-primary">{cta.eyebrow}</p>
+            <h2 class="mt-3 text-3xl font-bold text-ink sm:text-4xl">{cta.heading}</h2>
+            <p class="mt-4 text-lg text-muted">{cta.lead}</p>
+          </div>
+          <Card className="bg-surface-2 py-7 shadow-xl shadow-navy-900/5">
+            <CardContent>
+              <form class="space-y-4" onsubmit="return false">
+                {cta.fields.map((f) => (
+                  <div class="space-y-1.5">
+                    <Label htmlFor={f.name}>{f.label}</Label>
+                    <Input type={f.type} name={f.name} id={f.name} />
+                  </div>
+                ))}
+                <div class="space-y-1.5">
+                  <Label htmlFor="team">{cta.select.label}</Label>
+                  <select id="team" class="border-input bg-background flex h-9 w-full rounded-md border px-3 py-1 text-sm text-ink outline-none transition-[color,box-shadow] focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]">
+                    {cta.select.options.map((o) => <option>{o}</option>)}
+                  </select>
+                </div>
+                <Separator className="my-2" />
+                <Button type="submit" variant="accent" size="lg" className="w-full">{cta.button}</Button>
+                <p class="text-center text-xs text-muted">{cta.note}</p>
+              </form>
+            </CardContent>
+          </Card>
+        </div>
       </div>
     </section>
   </main>
 
-  <footer class="border-t border-navy-100">
-    <div class="mx-auto max-w-6xl px-6 py-8 text-sm text-navy-500">
-      © 2025 IAR Services. All rights reserved.
-    </div>
-  </footer>
+  <MotionFooter client:visible />
 </BaseLayout>
