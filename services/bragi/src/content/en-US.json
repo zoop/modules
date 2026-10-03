@@ -8,7 +8,7 @@
     "links": [
       { "label": "Platform", "href": "#platform" },
       { "label": "How it works", "href": "#how" },
-      { "label": "Developers", "href": "#developers" },
+      { "label": "Why Modules", "href": "#why" },
       { "label": "Pricing", "href": "#pricing" }
     ],
     "secondary": { "label": "Sign in", "href": "#" },
@@ -38,6 +38,49 @@
         { "tag": "PASS", "kind": "pass", "text": "Plate and chassis match Vahan" }
       ]
     }
+  },
+  "credibility": {
+    "line": "Built with design-partner insurers",
+    "points": [
+      "India-native — Hindi & English",
+      "Vahan-connected",
+      "Explainable by design",
+      "Motor today, health next"
+    ]
+  },
+  "outcomes": {
+    "eyebrow": "Why it matters",
+    "heading": "Stop the leak you can’t see on paper.",
+    "lead": "Indian insurers lose roughly a tenth of premium to fraud — and most of it rides on documents. Modules turns photos and paperwork into a report your team can act on, in minutes.",
+    "cards": [
+      { "stat": "~₹2.26L cr", "label": "Combined motor + health gross premium, FY25", "benefit": "The market where every point of leakage is worth recovering." },
+      { "stat": "~10%", "label": "Of premium lost to fraud each year", "benefit": "Catch more of it earlier — before the payout, not after." },
+      { "stat": "~70%", "label": "Of that fraud rides on document falsification", "benefit": "Exactly what the engine reads — estimates, policies, RCs, invoices." },
+      { "stat": "days → minutes", "label": "Physical survey vs. guided digital inspection", "benefit": "Start every claim from a report, not a pile of photos." }
+    ],
+    "note": "Market context, not product metrics. Sources: IRDAI 2024-25, Insurance Institute of India, Deloitte India Insurance Fraud Survey 2023. Ranges are industry estimates."
+  },
+  "benefits": {
+    "eyebrow": "What your team gets",
+    "heading": "Four outcomes, from one report.",
+    "lead": "Not another tool to log into. A clear read on every claim — damage, documents and the reasons behind the score.",
+    "items": [
+      { "title": "A faster first look", "desc": "Small own-damage claims arrive with damaged parts and severity already listed. The desk starts from a report, not a folder of photos." },
+      { "title": "Fewer leaked rupees", "desc": "Tampering and cross-document mismatches are caught before the payout — where the money actually leaks." },
+      { "title": "Investigators start from evidence", "desc": "Every flag shows what was compared and the exact figures behind it, so your SIU opens the file already knowing where to look." },
+      { "title": "Clean claims settle sooner", "desc": "Straight-through for the clean ones, investigator-ready for the rest — so good customers aren’t held up by the bad." }
+    ]
+  },
+  "compare": {
+    "eyebrow": "Versus the status quo",
+    "heading": "The old way leaks. This doesn’t.",
+    "rows": [
+      { "aspect": "First look", "old": "A folder of photos and PDFs, read by hand", "new": "A damage report and fraud score, ready on arrival" },
+      { "aspect": "Document checks", "old": "Eyeballed, one file at a time", "new": "Cross-checked across every document, automatically" },
+      { "aspect": "Why it was flagged", "old": "A gut call, hard to defend", "new": "Every flag carries the figures behind it" },
+      { "aspect": "Vehicle identity", "old": "Trusted from the form", "new": "Plate & chassis matched against Vahan" },
+      { "aspect": "Turnaround", "old": "Days, with a physical survey", "new": "Minutes, from the customer’s phone" }
+    ]
   },
   "context": {
     "heading": "The leak is where software can help",
