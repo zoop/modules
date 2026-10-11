@@ -41,7 +41,8 @@
     "ponytail@ponytail": true,
     "superpowers@claude-plugins-official": true,
     "mattpocock-skills@claude-plugins-official": true,
-    "i-have-adhd@i-have-adhd": true
+    "i-have-adhd@i-have-adhd": true,
+    "impeccable@impeccable": true
   },
   "extraKnownMarketplaces": {
     "ponytail": {
@@ -54,6 +55,12 @@
       "source": {
         "source": "github",
         "repo": "ayghri/i-have-adhd"
+      }
+    },
+    "impeccable": {
+      "source": {
+        "source": "github",
+        "repo": "pbakaus/impeccable"
       }
     }
   }
