@@ -1,0 +1,224 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Mimir — five planes, one map</title>
+<style>
+  :root{
+    --bg:#f6f5f1; --panel:#fff; --ink:#191919; --muted:#70706a; --line:#e4e1d8;
+    --platform:#1f6feb; --platform-soft:#e9f0fe; --pack:#b4530a; --pack-soft:#fcefe2;
+    --cross:#5a4fcf; --cross-soft:#ecebfb; --shared:#0b7a6b; --shared-soft:#e2f4f0;
+    --shadow:0 1px 3px rgba(0,0,0,.07);
+  }
+  @media(prefers-color-scheme:dark){:root{
+    --bg:#0e1014; --panel:#161922; --ink:#e8eaef; --muted:#97a0ae; --line:#272c38;
+    --platform:#6aa2ff; --platform-soft:#182238; --pack:#f0a062; --pack-soft:#2c2013;
+    --cross:#a79cff; --cross-soft:#1f1c33; --shared:#49c7b4; --shared-soft:#122725;
+    --shadow:0 1px 3px rgba(0,0,0,.4);}}
+  [data-t="light"]{--bg:#f6f5f1;--panel:#fff;--ink:#191919;--muted:#70706a;--line:#e4e1d8;--platform:#1f6feb;--platform-soft:#e9f0fe;--pack:#b4530a;--pack-soft:#fcefe2;--cross:#5a4fcf;--cross-soft:#ecebfb;--shared:#0b7a6b;--shared-soft:#e2f4f0;--shadow:0 1px 3px rgba(0,0,0,.07)}
+  [data-t="dark"]{--bg:#0e1014;--panel:#161922;--ink:#e8eaef;--muted:#97a0ae;--line:#272c38;--platform:#6aa2ff;--platform-soft:#182238;--pack:#f0a062;--pack-soft:#2c2013;--cross:#a79cff;--cross-soft:#1f1c33;--shared:#49c7b4;--shared-soft:#122725;--shadow:0 1px 3px rgba(0,0,0,.4)}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.55 ui-sans-serif,-apple-system,"Segoe UI",Inter,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+  .page{max-width:1100px;margin:0 auto;padding:40px 24px 80px}
+  header{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap;margin-bottom:4px}
+  h1{font-size:28px;letter-spacing:-.02em;margin:0}
+  h1 b{color:var(--platform)}
+  .sub{color:var(--muted);margin:6px 0 0;font-size:15px}
+  .theme{border:1px solid var(--line);background:var(--panel);color:var(--muted);border-radius:8px;padding:7px 12px;font-size:13px;cursor:pointer}
+  .legend{display:flex;gap:16px;flex-wrap:wrap;margin:22px 0 6px;font-size:12.5px;color:var(--muted)}
+  .legend span{display:inline-flex;align-items:center;gap:7px}
+  .sw{width:12px;height:12px;border-radius:4px;display:inline-block}
+  .sw.p{background:var(--platform)}.sw.k{background:var(--pack)}.sw.c{background:var(--cross)}.sw.s{background:var(--shared)}
+  /* plane map */
+  .map{margin:18px 0 8px}
+  .band{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px 16px;box-shadow:var(--shadow);display:grid;grid-template-columns:200px 1fr;gap:16px;align-items:center}
+  .blabel{padding:10px 12px;border-radius:10px}
+  .blabel .bn{font-weight:700;font-size:15px;display:block}
+  .blabel .bd{color:var(--muted);font-size:12.5px;margin-top:2px;display:block}
+  .b-edge .bn,.b-case .bn,.b-engine .bn,.b-orch .bn{color:var(--platform)}
+  .b-edge,.b-case,.b-engine,.b-orch{background:var(--platform-soft)}
+  .b-cross{background:var(--cross-soft)} .b-cross .bn{color:var(--cross)}
+  .comps{display:flex;gap:8px;flex-wrap:wrap}
+  .comp{background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:5px 12px;font-size:13px;cursor:help}
+  .comp.add{border-style:dashed;color:var(--muted)}
+  .comp b{color:var(--platform);font-weight:600}
+  .conn{display:flex;align-items:center;justify-content:center;gap:10px;color:var(--muted);font-size:12px;padding:7px 0}
+  .conn::before,.conn::after{content:"";height:1px;width:48px;background:var(--line)}
+  .engine-row .comp b{color:var(--platform)}
+  .shared{margin:10px 0 0;background:var(--shared-soft);border:1px solid var(--line);border-radius:14px;padding:12px 16px}
+  .shared .bn{font-weight:700;color:var(--shared);font-size:14px}
+  .shared .sd{color:var(--muted);font-size:12.5px;margin:2px 0 8px}
+  .crossnote{text-align:center;color:var(--muted);font-size:12px;margin:8px 0 0}
+  /* consumption */
+  .sec{margin-top:40px}
+  .sec h2{font-size:20px;margin:0 0 4px}
+  .sec p.lead{color:var(--muted);margin:0 0 16px;font-size:14px}
+  .formula{display:inline-block;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:8px 14px;font-size:14px;box-shadow:var(--shadow);margin-bottom:18px}
+  .formula b{color:var(--platform)} .formula .k{color:var(--pack)} .formula .c{color:var(--cross)}
+  .client{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px 16px;margin-bottom:10px;box-shadow:var(--shadow)}
+  .client .ctitle{font-weight:700;font-size:14.5px;margin-bottom:2px}
+  .client .cdesc{color:var(--muted);font-size:12.5px;margin-bottom:9px}
+  .modrow{display:flex;gap:6px;flex-wrap:wrap}
+  .mod{border:1px solid var(--line);border-radius:8px;padding:4px 10px;font-size:12.5px;color:var(--muted);background:var(--bg)}
+  .mod.on{background:var(--platform);color:#fff;border-color:var(--platform);font-weight:600}
+  .mode{font-size:11.5px;color:var(--muted);margin-top:8px}
+  .mode .sync{color:var(--platform)} .mode .async{color:var(--cross)}
+  .foot{margin-top:30px;color:var(--muted);font-size:12.5px;text-align:center}
+  @media(max-width:760px){.band{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="page">
+  <a class="docs-home" id="docsHome" href="index.html" style="display:inline-block;margin-bottom:10px;color:var(--muted);text-decoration:none;font-size:13px">← Mimir docs</a>
+  <header>
+    <div>
+      <h1><b>Mimir</b> — five planes, one map</h1>
+      <p class="sub">The service / component architecture: how the planes connect, and how a client can take one module or a group. All domain-agnostic.</p>
+    </div>
+    <button class="theme" id="theme">◐ Theme</button>
+  </header>
+
+  <div class="legend">
+    <span><i class="sw p"></i> Platform planes (built once)</span>
+    <span><i class="sw s"></i> Shared engine services</span>
+    <span><i class="sw c"></i> Cross-cutting (spans all)</span>
+    <span style="color:var(--muted)">· dashed = added by the back-test · hover a component for its definition</span>
+  </div>
+
+  <div class="map">
+    <div class="band b-edge">
+      <div class="blabel"><span class="bn">1 · Edge / Delivery</span><span class="bd">How any product reaches the world.</span></div>
+      <div class="comps">
+        <span class="comp" title="No-install, time-boxed capture links by SMS/WhatsApp/email">Capture-Link</span>
+        <span class="comp" title="REST + webhooks; per-tenant auth, rate limits, routing">API Gateway</span>
+        <span class="comp" title="Signed, retried, replayable outbound events on every state change">Webhook Delivery</span>
+        <span class="comp" title="Backend-for-frontend for the enterprise console">Dashboard BFF</span>
+        <span class="comp" title="Presigned uploads, malware scan, format/size validation">File Ingest</span>
+        <span class="comp add" title="Real-time quality gating, deskew/denoise, re-shoot guidance">Capture-Quality</span>
+      </div>
+    </div>
+    <div class="conn">evidence in · a link, an upload, or an API call</div>
+
+    <div class="band b-case">
+      <div class="blabel"><span class="bn">2 · Case</span><span class="bd">The system of record.</span></div>
+      <div class="comps">
+        <span class="comp" title="Event-sourced unit of work — the log IS the audit trail">Case Service</span>
+        <span class="comp" title="Content-addressed raw artifacts; retention + residency per pack/tenant">Evidence Store</span>
+        <span class="comp" title="Typed outputs every stage writes and downstream stages read — the load-bearing contract">Signal Model</span>
+        <span class="comp add" title="Cross-case entity resolution & link fraud (privacy-preserving)">Entity / Link Graph</span>
+      </div>
+    </div>
+    <div class="conn">raw evidence → each stage writes typed <b style="color:var(--platform)">Signals</b> onto the case</div>
+
+    <div class="band b-engine">
+      <div class="blabel"><span class="bn">3 · Intelligence Engine</span><span class="bd">The capability services — the modules.</span></div>
+      <div class="comps engine-row">
+        <span class="comp" title="Collect evidence, no install, quality-gated">Capture</span>
+        <span class="comp" title="Documents → structured fields (schema-driven)">Extract</span>
+        <span class="comp" title="Images/video → domain features; or diff two sessions">Vision</span>
+        <span class="comp" title="Prove authenticity/consistency vs pluggable sources of truth">Verify</span>
+        <span class="comp" title="Risk score over the whole signal set, with reasons">Detect</span>
+        <span class="comp add" title="Features + reference data → itemised cost">Estimate</span>
+        <span class="comp" title="Thresholds: auto-clear vs route to human; hard legal caps">Decide</span>
+      </div>
+    </div>
+    <div class="conn">Signals → a decision · the Orchestration layer decides the order</div>
+
+    <div class="band b-orch">
+      <div class="blabel"><span class="bn">4 · Orchestration</span><span class="bd">Runs the steps over a case.</span></div>
+      <div class="comps">
+        <span class="comp" title="Durable, deterministic pack-defined DAG; stages optional; human-in-the-loop pauses">Workflow Engine (DAG)</span>
+        <span class="comp add" title="An LLM reasons over the case and calls services as tools; guardrailed, traced">Agent Runtime</span>
+      </div>
+    </div>
+
+    <div class="shared">
+      <span class="bn">Shared engine services</span>
+      <div class="sd">Drawn on by the Engine &amp; Orchestration — not a stage in the flow.</div>
+      <div class="comps">
+        <span class="comp add" title="Provider-agnostic LLM/vision access; routing, fallback, versioning; compliance-aware">Model Gateway</span>
+        <span class="comp add" title="Versioned catalogs / price-lists / rate-cards; powers Estimate">Reference Data</span>
+        <span class="comp" title="Versioned per-pack config: schemas, rules, bindings, policy, entitlements">Pack Registry</span>
+      </div>
+    </div>
+
+    <div class="conn">— all of the above run inside —</div>
+
+    <div class="band b-cross">
+      <div class="blabel"><span class="bn">5 · Cross-cutting</span><span class="bd">Always on, spans every plane.</span></div>
+      <div class="comps">
+        <span class="comp" title="Multi-tenant isolation, per-tenant residency">Identity / Tenancy</span>
+        <span class="comp" title="Which capability services a tenant may call">Entitlements</span>
+        <span class="comp" title="Immutable, per-decision, exportable">Audit Log</span>
+        <span class="comp" title="Usage meters per case / document / inspection">Metering</span>
+        <span class="comp" title="Humans resolve routed cases; corrections become labels">Review + Feedback</span>
+        <span class="comp" title="Versioned models + eval sets → published accuracy">Eval / Model Registry</span>
+        <span class="comp add" title="Policy-as-config per pack, enforced at runtime — a USP">Compliance</span>
+      </div>
+    </div>
+    <div class="crossnote">Entitlements is the switch that lets a client light up one module or many ↓</div>
+  </div>
+
+  <div class="sec">
+    <h2>How clients consume it — one module, or a group</h2>
+    <p class="lead">A product is assembled, not forked. Entitlements decide which capability services a client can call; the pack decides how they behave for the domain. Same engine underneath every row.</p>
+    <div class="formula"><b>Product</b> = <span class="k">Pack</span> (domain config) + <b>Entitlements</b> (which modules) + <span class="c">Surface</span> (branding &amp; UI)</div>
+
+    <div class="client">
+      <div class="ctitle">A · Verification only</div>
+      <div class="cdesc">Used-car ownership / RC check. A single module, called directly.</div>
+      <div class="modrow">
+        <span class="mod">Capture</span><span class="mod">Extract</span><span class="mod">Vision</span>
+        <span class="mod on">Verify</span><span class="mod">Detect</span><span class="mod">Estimate</span><span class="mod">Decide</span>
+      </div>
+      <div class="mode">Typically <span class="sync">sync</span> — one lookup, answer inline.</div>
+    </div>
+
+    <div class="client">
+      <div class="ctitle">B · Document extraction SaaS</div>
+      <div class="cdesc">Developers send documents, get structured JSON back. A small group.</div>
+      <div class="modrow">
+        <span class="mod on">Capture</span><span class="mod on">Extract</span><span class="mod">Vision</span>
+        <span class="mod">Verify</span><span class="mod">Detect</span><span class="mod">Estimate</span><span class="mod">Decide</span>
+      </div>
+      <div class="mode"><span class="sync">sync</span> for a single doc · <span class="async">async</span> for batches.</div>
+    </div>
+
+    <div class="client">
+      <div class="ctitle">C · Repair estimate from photos</div>
+      <div class="cdesc">Capture → damage → cost. A composed group, no fraud/decision needed.</div>
+      <div class="modrow">
+        <span class="mod on">Capture</span><span class="mod">Extract</span><span class="mod on">Vision</span>
+        <span class="mod">Verify</span><span class="mod">Detect</span><span class="mod on">Estimate</span><span class="mod">Decide</span>
+      </div>
+      <div class="mode"><span class="async">async</span> — a short pipeline per case.</div>
+    </div>
+
+    <div class="client">
+      <div class="ctitle">D · Whole claim (insurer)</div>
+      <div class="cdesc">The full stack — every module, fused checks, auto-clear vs route-to-human.</div>
+      <div class="modrow">
+        <span class="mod on">Capture</span><span class="mod on">Extract</span><span class="mod on">Vision</span>
+        <span class="mod on">Verify</span><span class="mod on">Detect</span><span class="mod on">Estimate</span><span class="mod on">Decide</span>
+      </div>
+      <div class="mode"><span class="async">async</span> with human-in-the-loop · priority-classed.</div>
+    </div>
+  </div>
+
+  <p class="foot">Mimir · the Modules intelligence engine — service/component architecture. The middle planes never change between clients A–D; only the pack and the lit modules do.</p>
+</div>
+<script>
+  document.getElementById('theme').addEventListener('click',()=>{
+    const d=document.documentElement,c=d.getAttribute('data-t');
+    d.setAttribute('data-t',c==='dark'?'light':c==='light'?'dark':(matchMedia('(prefers-color-scheme: dark)').matches?'light':'dark'));
+  });
+  const inFrame=window.self!==window.top;
+  if(inFrame){const tb=document.getElementById('theme');if(tb)tb.style.display='none';document.body.style.background='transparent';const dh=document.getElementById('docsHome');if(dh)dh.style.display='none';}
+  window.addEventListener('message',e=>{if(e.data&&e.data.type==='theme')document.documentElement.setAttribute('data-t',e.data.value);});
+  function postSize(){if(inFrame){try{parent.postMessage({type:'size',height:document.body.scrollHeight},'*');}catch(_){}}}
+  window.addEventListener('load',postSize);
+  if(window.ResizeObserver)new ResizeObserver(postSize).observe(document.body);
+</script>
+</body>
+</html>

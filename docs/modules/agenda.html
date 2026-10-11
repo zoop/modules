@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Mimir — review agenda</title>
+<style>
+  :root{
+    --bg:#f6f5f1; --panel:#fff; --ink:#191919; --muted:#70706a; --line:#e4e1d8;
+    --platform:#1f6feb; --platform-soft:#e9f0fe; --pack:#b4530a; --pack-soft:#fcefe2;
+    --cross:#5a4fcf; --cross-soft:#ecebfb; --shadow:0 1px 3px rgba(0,0,0,.07);
+  }
+  @media(prefers-color-scheme:dark){:root{
+    --bg:#0e1014; --panel:#161922; --ink:#e8eaef; --muted:#97a0ae; --line:#272c38;
+    --platform:#6aa2ff; --platform-soft:#182238; --pack:#f0a062; --pack-soft:#2c2013;
+    --cross:#a79cff; --cross-soft:#1f1c33; --shadow:0 1px 3px rgba(0,0,0,.4);}}
+  [data-t="light"]{--bg:#f6f5f1;--panel:#fff;--ink:#191919;--muted:#70706a;--line:#e4e1d8;--platform:#1f6feb;--platform-soft:#e9f0fe;--pack:#b4530a;--pack-soft:#fcefe2;--cross:#5a4fcf;--cross-soft:#ecebfb;--shadow:0 1px 3px rgba(0,0,0,.07)}
+  [data-t="dark"]{--bg:#0e1014;--panel:#161922;--ink:#e8eaef;--muted:#97a0ae;--line:#272c38;--platform:#6aa2ff;--platform-soft:#182238;--pack:#f0a062;--pack-soft:#2c2013;--cross:#a79cff;--cross-soft:#1f1c33;--shadow:0 1px 3px rgba(0,0,0,.4)}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.55 ui-sans-serif,-apple-system,"Segoe UI",Inter,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+  .page{max-width:1000px;margin:0 auto;padding:40px 24px 80px}
+  header{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap;margin-bottom:4px}
+  h1{font-size:28px;letter-spacing:-.02em;margin:0}
+  h1 b{color:var(--platform)}
+  .sub{color:var(--muted);margin:6px 0 0;font-size:15px}
+  .theme{border:1px solid var(--line);background:var(--panel);color:var(--muted);border-radius:8px;padding:7px 12px;font-size:13px;cursor:pointer}
+  .meta{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin:20px 0}
+  .meta .m{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px 13px;box-shadow:var(--shadow)}
+  .meta .k{font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);margin:0 0 3px}
+  .meta .v{font-size:13.5px}
+  .decision{background:var(--platform-soft);border:1px solid var(--line);border-radius:12px;padding:14px 18px;margin:8px 0 24px}
+  .decision b{color:var(--platform)}
+  h2{font-size:18px;margin:26px 0 10px}
+  table{border-collapse:collapse;width:100%;font-size:14px;box-shadow:var(--shadow);background:var(--panel);border-radius:10px;overflow:hidden}
+  th,td{border:1px solid var(--line);padding:9px 12px;text-align:left;vertical-align:top}
+  th{background:var(--platform-soft);font-weight:600}
+  td.t{white-space:nowrap;color:var(--muted);font-variant-numeric:tabular-nums}
+  td.n{width:28px;text-align:center;font-weight:700;color:var(--platform)}
+  .cols{display:grid;grid-template-columns:1fr 1fr;gap:22px;margin-top:8px}
+  @media(max-width:720px){.cols{grid-template-columns:1fr}}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px;box-shadow:var(--shadow)}
+  .card.warm{background:var(--pack-soft)} .card.warm h3{color:var(--pack)}
+  .card h3{margin:0 0 8px;font-size:15px}
+  ul{margin:0;padding-left:18px} li{margin:4px 0}
+  .caveat{margin-top:24px;background:var(--pack-soft);border:1px solid var(--line);border-radius:12px;padding:12px 16px;font-size:13px}
+  .caveat b{color:var(--pack)}
+  .pre{margin-top:18px;font-size:13.5px}
+  .pre a{color:var(--platform)}
+  .foot{margin-top:26px;color:var(--muted);font-size:12.5px;text-align:center}
+</style>
+</head>
+<body>
+<div class="page">
+  <a class="docs-home" id="docsHome" href="index.html" style="display:inline-block;margin-bottom:10px;color:var(--muted);text-decoration:none;font-size:13px">← Mimir docs</a>
+  <header>
+    <div>
+      <h1><b>Mimir</b> — architecture &amp; product review</h1>
+      <p class="sub">What we're thinking, and what we want to decide together.</p>
+    </div>
+    <button class="theme" id="theme">◐ Theme</button>
+  </header>
+
+  <div class="meta">
+    <div class="m"><p class="k">Format</p><p class="v">Leadership review · ~60 min + discussion</p></div>
+    <div class="m"><p class="k">In the room</p><p class="v">CTO · Chief Strategy Officer · VP Engineering · Architect · ML team · PM</p></div>
+    <div class="m"><p class="k">Goal</p><p class="v">Align on the platform shape and get a go/no-go on Phase 1</p></div>
+    <div class="m"><p class="k">Pre-read</p><p class="v">The docs hub + the back-test, ideally before the room</p></div>
+  </div>
+
+  <div class="decision">
+    <b>The decision we're here to make:</b> do we commit to building <b>Phase 1</b> — one real product, end to end, on the Mimir engine — with the pack boundary as the explicit success test? Plus: resourcing for Phase 1, and a greenlight for a first design-partner pilot.
+  </div>
+
+  <h2>Running order</h2>
+  <table>
+    <thead><tr><th class="n">#</th><th>Topic</th><th>What we cover</th><th class="t">Time</th></tr></thead>
+    <tbody>
+      <tr><td class="n">1</td><td>Why we're here</td><td>The problem shape, and the decision on the table</td><td class="t">5 min</td></tr>
+      <tr><td class="n">2</td><td>The thesis</td><td>One engine, domain knowledge as packs; the two planes; the component map</td><td class="t">8 min</td></tr>
+      <tr><td class="n">3</td><td>One case, end to end</td><td>The 8-step example, then "swap the pack" → a different product, same engine</td><td class="t">8 min</td></tr>
+      <tr><td class="n">4</td><td>How we pressure-tested it</td><td>The back-test: 13 products on paper → 18 requirements; what it forced us to add</td><td class="t">8 min</td></tr>
+      <tr><td class="n">5</td><td>Execution, models &amp; compliance</td><td>Sync/async + priority; Model Gateway; compliance as a USP (and its real build items)</td><td class="t">8 min</td></tr>
+      <tr><td class="n">6</td><td>Build phases &amp; buy-vs-build</td><td>Phase 1→3; what we integrate (commodities) vs what we own (the moat)</td><td class="t">7 min</td></tr>
+      <tr><td class="n">7</td><td>Risks &amp; open questions</td><td>The honest thin-ice list — where we are not yet proven</td><td class="t">8 min</td></tr>
+      <tr><td class="n">8</td><td>The ask</td><td>What we need from each role to start Phase 1</td><td class="t">6 min</td></tr>
+      <tr><td class="n">9</td><td>Discussion &amp; next steps</td><td>Decision, owners, follow-ups</td><td class="t">open</td></tr>
+    </tbody>
+  </table>
+
+  <h2>What we want your read on</h2>
+  <div class="cols">
+    <div class="card">
+      <h3>Open questions for the room</h3>
+      <ul>
+        <li>Do we agree the <b>buy-vs-build</b> line — integrate OCR / vision / LLM / workflow / model-gateway; build the Signal model, fused Detect, pack &amp; compliance layer?</li>
+        <li>Which domain is <b>pack #2</b> (health · lending · KYC)? It's how we prove "domain-agnostic."</li>
+        <li>Risk appetite for the <b>Agent Runtime</b> and the <b>cross-tenant link graph</b> (both Phase 3)?</li>
+        <li>Compliance priorities — which regimes / certifications matter first?</li>
+      </ul>
+    </div>
+    <div class="card warm">
+      <h3>Not deciding today</h3>
+      <ul>
+        <li>The final product / market name (separate track).</li>
+        <li>Pricing &amp; packaging.</li>
+        <li>The cross-tenant link-graph design — Phase 3, needs legal review.</li>
+        <li>Any published-accuracy number — nothing is measured yet.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="caveat">
+    <b>Honesty note for the room:</b> every figure on the slides is <b>illustrative</b>; the 13 products are a design exercise, not shipped software. No named customers, sample data throughout. "Agentic" and the link graph are roadmap, not built. "Domain-agnostic" is design intent until pack #2 ships with zero engine change.
+  </div>
+
+  <p class="pre">Pre-reads: <a href="index.html">the docs hub</a> · <a href="backtest.html">the back-test (one page)</a> · <a href="components.html">the architecture map</a> · <a href="presentation.html">the deck</a></p>
+
+  <p class="foot">Mimir · the Modules intelligence engine — review agenda (draft).</p>
+</div>
+<script>
+  document.getElementById('theme').addEventListener('click',()=>{
+    const d=document.documentElement,c=d.getAttribute('data-t');
+    d.setAttribute('data-t',c==='dark'?'light':c==='light'?'dark':(matchMedia('(prefers-color-scheme: dark)').matches?'light':'dark'));
+  });
+  const inFrame=window.self!==window.top;
+  if(inFrame){const tb=document.getElementById('theme');if(tb)tb.style.display='none';document.body.style.background='transparent';const dh=document.getElementById('docsHome');if(dh)dh.style.display='none';}
+  window.addEventListener('message',e=>{if(e.data&&e.data.type==='theme')document.documentElement.setAttribute('data-t',e.data.value);});
+  function postSize(){if(inFrame){try{parent.postMessage({type:'size',height:document.body.scrollHeight},'*');}catch(_){}}}
+  window.addEventListener('load',postSize);
+  if(window.ResizeObserver)new ResizeObserver(postSize).observe(document.body);
+</script>
+</body>
+</html>

@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Mimir — one case, end to end</title>
+<style>
+  :root{
+    --bg:#f6f5f1; --panel:#fff; --ink:#191919; --muted:#70706a; --line:#e4e1d8;
+    --platform:#1f6feb; --platform-soft:#e9f0fe;
+    --pack:#b4530a; --pack-soft:#fcefe2;
+    --cross:#5a4fcf; --cross-soft:#ecebfb;
+    --good:#1f9254; --bad:#c23b3b; --shadow:0 1px 3px rgba(0,0,0,.07);
+  }
+  @media(prefers-color-scheme:dark){:root{
+    --bg:#0e1014; --panel:#161922; --ink:#e8eaef; --muted:#97a0ae; --line:#272c38;
+    --platform:#6aa2ff; --platform-soft:#182238;
+    --pack:#f0a062; --pack-soft:#2c2013;
+    --cross:#a79cff; --cross-soft:#1f1c33;
+    --good:#4cc281; --bad:#e86a6a; --shadow:0 1px 3px rgba(0,0,0,.4);}}
+  [data-t="light"]{--bg:#f6f5f1;--panel:#fff;--ink:#191919;--muted:#70706a;--line:#e4e1d8;--platform:#1f6feb;--platform-soft:#e9f0fe;--pack:#b4530a;--pack-soft:#fcefe2;--cross:#5a4fcf;--cross-soft:#ecebfb;--good:#1f9254;--bad:#c23b3b;--shadow:0 1px 3px rgba(0,0,0,.07)}
+  [data-t="dark"]{--bg:#0e1014;--panel:#161922;--ink:#e8eaef;--muted:#97a0ae;--line:#272c38;--platform:#6aa2ff;--platform-soft:#182238;--pack:#f0a062;--pack-soft:#2c2013;--cross:#a79cff;--cross-soft:#1f1c33;--good:#4cc281;--bad:#e86a6a;--shadow:0 1px 3px rgba(0,0,0,.4)}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font:15px/1.55 ui-sans-serif,-apple-system,"Segoe UI",Inter,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+  .page{max-width:1120px;margin:0 auto;padding:40px 24px 80px}
+  header{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap;margin-bottom:6px}
+  h1{font-size:28px;letter-spacing:-.02em;margin:0}
+  h1 b{color:var(--platform)}
+  .sub{color:var(--muted);margin:6px 0 0;font-size:15px}
+  .theme{border:1px solid var(--line);background:var(--panel);color:var(--muted);border-radius:8px;
+    padding:7px 12px;font-size:13px;cursor:pointer}
+  .legend{display:flex;gap:18px;flex-wrap:wrap;margin:22px 0 10px;font-size:13px;color:var(--muted)}
+  .legend span{display:inline-flex;align-items:center;gap:7px}
+  .sw{width:13px;height:13px;border-radius:4px;display:inline-block}
+  .sw.p{background:var(--platform)} .sw.k{background:var(--pack)} .sw.c{background:var(--cross)}
+  .scene{background:var(--platform-soft);border:1px solid var(--line);border-radius:14px;
+    padding:14px 18px;margin:14px 0 26px;font-size:14.5px}
+  .scene b{color:var(--platform)}
+  .colhead{display:grid;grid-template-columns:40px 1fr 1fr 1fr;gap:14px;padding:0 6px 8px;
+    font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:600}
+  .flow{position:relative}
+  .flow::before{content:"";position:absolute;left:25px;top:14px;bottom:14px;width:2px;background:var(--line)}
+  .step{display:grid;grid-template-columns:40px 1fr 1fr 1fr;gap:14px;align-items:stretch;margin:0 0 14px;position:relative}
+  .num{width:36px;height:36px;border-radius:50%;background:var(--platform);color:#fff;font-weight:700;
+    display:flex;align-items:center;justify-content:center;z-index:1;box-shadow:var(--shadow);font-size:15px}
+  .cell{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:11px 14px;box-shadow:var(--shadow)}
+  .cell .k{font-size:11px;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);margin:0 0 3px;font-weight:600}
+  .cell.pk{background:var(--pack-soft)}
+  .cell.pk .k{color:var(--pack)}
+  .comp{font-weight:600;color:var(--platform)}
+  .ex .st{font-weight:700;font-size:15px;display:block;margin-bottom:2px}
+  .tag{display:inline-block;font-size:11px;padding:1px 7px;border-radius:999px;margin:4px 4px 0 0;
+    border:1px solid var(--line);color:var(--muted)}
+  .tag.async{color:var(--cross);border-color:var(--cross)}
+  .tag.sync{color:var(--platform);border-color:var(--platform)}
+  .tag.human{color:var(--pack);border-color:var(--pack)}
+  .tag.flag{color:var(--bad);border-color:var(--bad)}
+  .cross{margin:26px 0 0;background:var(--cross-soft);border:1px solid var(--line);border-radius:14px;padding:16px 18px}
+  .cross h3{margin:0 0 8px;font-size:15px;color:var(--cross)}
+  .chips{display:flex;gap:8px;flex-wrap:wrap}
+  .chip{background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:5px 12px;font-size:13px}
+  .swap{margin-top:30px;border-top:1px dashed var(--line);padding-top:22px}
+  .swap h3{margin:0 0 4px;font-size:16px}
+  .swap p{margin:0 0 14px;color:var(--muted);font-size:14px}
+  .packs{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+  .pcard{background:var(--pack-soft);border:1px solid var(--line);border-radius:12px;padding:12px 14px;box-shadow:var(--shadow)}
+  .pcard b{display:block;margin-bottom:4px;color:var(--pack)}
+  .pcard small{color:var(--muted)}
+  .foot{margin-top:28px;color:var(--muted);font-size:12.5px;text-align:center}
+  @media(max-width:820px){
+    .colhead{display:none}
+    .step{grid-template-columns:40px 1fr}
+    .flow::before{display:none}
+    .cell{grid-column:2}
+  }
+</style>
+</head>
+<body>
+<div class="page">
+  <a class="docs-home" id="docsHome" href="index.html" style="display:inline-block;margin-bottom:10px;color:var(--muted);text-decoration:none;font-size:13px">← Mimir docs</a>
+  <header>
+    <div>
+      <h1><b>Mimir</b> — one case, end to end</h1>
+      <p class="sub">Read each row left→right: <b>what happens</b> · <b>the component that does it</b> (built once) · <b>what the pack supplies</b> (per domain).</p>
+    </div>
+    <button class="theme" id="theme">◐ Theme</button>
+  </header>
+
+  <div class="legend">
+    <span><i class="sw p"></i> Platform — built once, domain-agnostic</span>
+    <span><i class="sw k"></i> Pack — per-domain configuration</span>
+    <span><i class="sw c"></i> Cross-cutting — always on</span>
+  </div>
+
+  <div class="scene">
+    <b>The example:</b> Priya dents her car and files a motor insurance claim. The insurer runs it through a product built on Mimir (pack = <i>Motor</i>). Watch one case flow through the engine — the middle column never changes between products; only the right column does.
+  </div>
+
+  <div class="colhead"><div></div><div>What happens (the story)</div><div>Mimir component</div><div>Pack supplies</div></div>
+
+  <div class="flow">
+
+    <div class="step">
+      <div class="num">1</div>
+      <div class="cell ex"><span class="st">Collect the evidence</span>Insurer texts Priya a link. From her phone she shoots the car and uploads her RC + repair estimate. Blurry shots are rejected on the spot.<span class="tag sync">quality check: sync</span></div>
+      <div class="cell mi"><p class="k">Does it</p><span class="comp">Capture-Link + Capture-Quality</span><br/>No-install link (SMS/WhatsApp/email), guided shots, re-shoot prompts, consent recorded.</div>
+      <div class="cell pk"><p class="k">Pack</p>Which angles & documents to ask for · consent copy · language (Hindi/English).</div>
+    </div>
+
+    <div class="step">
+      <div class="num">2</div>
+      <div class="cell ex"><span class="st">Open the case</span>A case is created: consent stored, data pinned to India, everything from here is logged.<span class="tag async">async from here</span></div>
+      <div class="cell mi"><p class="k">Does it</p><span class="comp">Case Service</span><br/>Event-sourced unit of work — the log <i>is</i> the audit trail.</div>
+      <div class="cell pk"><p class="k">Pack</p>Residency = India · retention window.</div>
+    </div>
+
+    <div class="step">
+      <div class="num">3</div>
+      <div class="cell ex"><span class="st">Understand it</span>The documents become fields (policy no., dates, amounts). The photos become findings: <i>front bumper — dented — moderate</i>.</div>
+      <div class="cell mi"><p class="k">Does it</p><span class="comp">Extract + Vision</span><br/>Raw → typed <b>signals</b> on the case. Both run via the Model Gateway.</div>
+      <div class="cell pk"><p class="k">Pack</p>Document schemas · the motor feature set (parts, damage, severity) · model choice.</div>
+    </div>
+
+    <div class="step">
+      <div class="num">4</div>
+      <div class="cell ex"><span class="st">Check it's real</span>Plate & chassis in the photo are matched against Vahan; owner against the RC/PAN.</div>
+      <div class="cell mi"><p class="k">Does it</p><span class="comp">Verify</span><br/>Cross-checks against pluggable sources of truth; async, cached, fails soft.</div>
+      <div class="cell pk"><p class="k">Pack</p>Which registries count: RC/Vahan, DL, PAN, GST.</div>
+    </div>
+
+    <div class="step">
+      <div class="num">5</div>
+      <div class="cell ex"><span class="st">Cost it</span>The dented bumper maps to parts + labour → an itemised repair estimate.</div>
+      <div class="cell mi"><p class="k">Does it</p><span class="comp">Estimate + Reference Data</span><br/>Feature signals × priced catalogs → costed line items.</div>
+      <div class="cell pk"><p class="k">Pack</p>Parts catalog · labour rates (licensed, versioned).</div>
+    </div>
+
+    <div class="step">
+      <div class="num">6</div>
+      <div class="cell ex"><span class="st">Score the risk</span>Fused view: the estimate claims parts with no visible damage, and the policy lapsed before the loss. Risk = <b>78, high</b>.<span class="tag flag">fused check = the moat</span></div>
+      <div class="cell mi"><p class="k">Does it</p><span class="comp">Detect</span><br/>Reads the <i>whole</i> signal set — images, documents, records — and flags with the exact figures behind each.</div>
+      <div class="cell pk"><p class="k">Pack</p>Risk rules & weights (IRDAI-mapped).</div>
+    </div>
+
+    <div class="step">
+      <div class="num">7</div>
+      <div class="cell ex"><span class="st">Decide</span>Clean claims auto-clear. Priya's scores high, so it routes to an investigator — with the reasons attached. Never auto-cleared above the legal cap.<span class="tag human">human owns the call</span></div>
+      <div class="cell mi"><p class="k">Does it</p><span class="comp">Decide (Flow)</span><br/>Thresholds + hard limits. Pauses durably for human review.</div>
+      <div class="cell pk"><p class="k">Pack</p>Thresholds · routing · legal auto-approve cap.</div>
+    </div>
+
+    <div class="step">
+      <div class="num">8</div>
+      <div class="cell ex"><span class="st">Deliver &amp; learn</span>Insurer gets a JSON result, a PDF report and a webhook. The investigator's verdict is recorded — and trains the engine.</div>
+      <div class="cell mi"><p class="k">Does it</p><span class="comp">Webhook/Reports + Review &amp; Feedback</span><br/>JSON + branded PDF + audit entry; corrections become labels.</div>
+      <div class="cell pk"><p class="k">Pack</p>Report template · branding.</div>
+    </div>
+
+  </div>
+
+  <div class="cross">
+    <h3>Always on, underneath every step</h3>
+    <div class="chips">
+      <span class="chip"><b>Orchestration</b> — runs the steps (fixed DAG or an AI agent)</span>
+      <span class="chip"><b>Model Gateway</b> — all models, compliance-aware routing</span>
+      <span class="chip"><b>Compliance</b> — residency · consent · retention · audit <i>(a USP)</i></span>
+      <span class="chip"><b>Entitlements &amp; Metering</b> — who can use what · usage billing</span>
+    </div>
+  </div>
+
+  <div class="swap">
+    <h3>Same engine — swap the pack, get a different product</h3>
+    <p>Steps 1–8 and the whole middle column stay identical. Point it at a new domain by changing only the right column.</p>
+    <div class="packs">
+      <div class="pcard"><b>Lending — collateral check</b><small>Vision grades the vehicle · Verify checks loan-on-RC · Estimate values it. Pack: bureau sources, valuation tables.</small></div>
+      <div class="pcard"><b>KYC / onboarding</b><small>Extract reads IDs · Verify matches registries · Detect spots forgery. Pack: ID schemas, forgery rules. No Vision, no Estimate.</small></div>
+      <div class="pcard"><b>Health claim checks</b><small>Extract reads bills · Detect spots up-coding. Pack: procedure price lists, health-data compliance regime.</small></div>
+      <div class="pcard"><b>Fleet — before/after</b><small>Same capture, new question: "what changed on return?" Pack: condition schema, compare mode on.</small></div>
+    </div>
+  </div>
+
+  <p class="foot">Mimir · the Modules intelligence engine — platform architecture at a glance. Full detail in the docs set (README → 01–06).</p>
+</div>
+<script>
+  document.getElementById('theme').addEventListener('click',()=>{
+    const d=document.documentElement, c=d.getAttribute('data-t');
+    d.setAttribute('data-t', c==='dark'?'light':c==='light'?'dark':(matchMedia('(prefers-color-scheme: dark)').matches?'light':'dark'));
+  });
+
+  // Embedded mode: when shown inside the docs hub (index.html) via <iframe>,
+  // let the parent own the theme and auto-size the frame to our content.
+  const inFrame = window.self !== window.top;
+  if(inFrame){
+    const tb=document.getElementById('theme'); if(tb) tb.style.display='none';
+    document.body.style.background='transparent';
+    const page=document.querySelector('.page'); if(page) page.style.padding='8px 20px 24px';
+    const dh=document.getElementById('docsHome'); if(dh) dh.style.display='none';
+  }
+  window.addEventListener('message',e=>{
+    if(e.data && e.data.type==='theme'){ document.documentElement.setAttribute('data-t', e.data.value); }
+  });
+  function postSize(){ if(inFrame){ try{ parent.postMessage({type:'size',height:document.body.scrollHeight},'*'); }catch(_){} } }
+  window.addEventListener('load',postSize);
+  if(window.ResizeObserver) new ResizeObserver(postSize).observe(document.body);
+</script>
+</body>
+</html>

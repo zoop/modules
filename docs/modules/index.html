@@ -7,55 +7,57 @@
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 <style>
   :root{
-    --bg:#f7f6f3; --panel:#ffffff; --ink:#1a1a1a; --muted:#6b6b6b; --line:#e6e3dc;
-    --accent:#1f6feb; --accent-soft:#e8f0fe; --code:#f0eee8; --shadow:0 1px 2px rgba(0,0,0,.05);
+    --bg:#f6f5f1; --panel:#fff; --ink:#191919; --muted:#70706a; --line:#e4e1d8;
+    --accent:#1f6feb; --accent-soft:#e9f0fe; --code:#f0eee8; --shadow:0 1px 2px rgba(0,0,0,.05);
+    --platform:#1f6feb; --pack:#b4530a; --cross:#5a4fcf;
   }
   @media (prefers-color-scheme: dark){
-    :root{ --bg:#0f1115; --panel:#161922; --ink:#e7e9ee; --muted:#9aa3b2; --line:#262b36;
-      --accent:#6aa2ff; --accent-soft:#1b2436; --code:#1b1f2a; --shadow:0 1px 2px rgba(0,0,0,.4);}
+    :root{ --bg:#0e1014; --panel:#161922; --ink:#e8eaef; --muted:#97a0ae; --line:#272c38;
+      --accent:#6aa2ff; --accent-soft:#182238; --code:#1b1f2a; --shadow:0 1px 2px rgba(0,0,0,.4);
+      --platform:#6aa2ff; --pack:#f0a062; --cross:#a79cff;}
   }
-  [data-theme="light"]{ --bg:#f7f6f3; --panel:#fff; --ink:#1a1a1a; --muted:#6b6b6b; --line:#e6e3dc;
-    --accent:#1f6feb; --accent-soft:#e8f0fe; --code:#f0eee8; --shadow:0 1px 2px rgba(0,0,0,.05);}
-  [data-theme="dark"]{ --bg:#0f1115; --panel:#161922; --ink:#e7e9ee; --muted:#9aa3b2; --line:#262b36;
-    --accent:#6aa2ff; --accent-soft:#1b2436; --code:#1b1f2a; --shadow:0 1px 2px rgba(0,0,0,.4);}
+  [data-theme="light"]{--bg:#f6f5f1;--panel:#fff;--ink:#191919;--muted:#70706a;--line:#e4e1d8;--accent:#1f6feb;--accent-soft:#e9f0fe;--code:#f0eee8;--shadow:0 1px 2px rgba(0,0,0,.05);--platform:#1f6feb;--pack:#b4530a;--cross:#5a4fcf}
+  [data-theme="dark"]{--bg:#0e1014;--panel:#161922;--ink:#e8eaef;--muted:#97a0ae;--line:#272c38;--accent:#6aa2ff;--accent-soft:#182238;--code:#1b1f2a;--shadow:0 1px 2px rgba(0,0,0,.4);--platform:#6aa2ff;--pack:#f0a062;--cross:#a79cff}
   *{box-sizing:border-box}
   html,body{margin:0;background:var(--bg);color:var(--ink);
-    font:16px/1.65 ui-sans-serif,-apple-system,"Segoe UI",Inter,system-ui,sans-serif;
-    -webkit-font-smoothing:antialiased}
+    font:16px/1.65 ui-sans-serif,-apple-system,"Segoe UI",Inter,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
   .wrap{display:grid;grid-template-columns:280px 1fr;min-height:100vh}
-  aside{position:sticky;top:0;height:100vh;overflow:auto;border-right:1px solid var(--line);
-    background:var(--panel);padding:28px 20px}
+  aside{position:sticky;top:0;height:100vh;overflow:auto;border-right:1px solid var(--line);background:var(--panel);padding:28px 20px}
   .brand{font-weight:700;font-size:20px;letter-spacing:-.02em;margin:0 0 2px}
   .brand .dot{color:var(--accent)}
   .tag{color:var(--muted);font-size:12.5px;margin:0 0 22px}
+  .navgroup{font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin:16px 0 4px;padding:0 12px}
   nav{display:flex;flex-direction:column;gap:2px}
   nav a{color:var(--ink);text-decoration:none;padding:8px 12px;border-radius:8px;font-size:14.5px}
   nav a:hover{background:var(--accent-soft)}
   nav a.active{background:var(--accent-soft);color:var(--accent);font-weight:600}
-  .theme{margin-top:24px;border:1px solid var(--line);background:transparent;color:var(--muted);
-    border-radius:8px;padding:7px 12px;font-size:13px;cursor:pointer;width:100%}
-  main{padding:56px 7vw;max-width:980px}
+  .aside-foot{margin-top:16px;border-top:1px solid var(--line);padding-top:14px;display:flex;flex-direction:column;gap:9px}
+  .aside-foot a{color:var(--muted);font-size:13px;text-decoration:none}
+  .aside-foot a:hover{color:var(--accent)}
+  .theme{margin-top:16px;border:1px solid var(--line);background:transparent;color:var(--muted);border-radius:8px;padding:7px 12px;font-size:13px;cursor:pointer;width:100%}
+  main{padding:56px 7vw;max-width:1040px}
   section{display:none;animation:f .18s ease}
   section.on{display:block}
   @keyframes f{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
   h1{font-size:30px;letter-spacing:-.02em;margin:.2em 0 .5em}
   h2{font-size:22px;letter-spacing:-.01em;margin:1.7em 0 .5em;padding-top:.3em;border-top:1px solid var(--line)}
   h3{font-size:17px;margin:1.4em 0 .4em}
-  p,li{color:var(--ink)}
   a{color:var(--accent)}
-  blockquote{margin:1em 0;padding:.6em 1em;border-left:3px solid var(--accent);
-    background:var(--accent-soft);border-radius:0 8px 8px 0;color:var(--ink)}
+  blockquote{margin:1em 0;padding:.6em 1em;border-left:3px solid var(--accent);background:var(--accent-soft);border-radius:0 8px 8px 0}
   blockquote p{margin:.3em 0}
-  code{background:var(--code);padding:.12em .4em;border-radius:5px;font-size:.88em;
-    font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
-  pre{background:var(--code);padding:16px;border-radius:12px;overflow:auto;border:1px solid var(--line);
-    box-shadow:var(--shadow)}
+  code{background:var(--code);padding:.12em .4em;border-radius:5px;font-size:.88em;font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+  pre{background:var(--code);padding:16px;border-radius:12px;overflow:auto;border:1px solid var(--line);box-shadow:var(--shadow)}
   pre code{background:none;padding:0;font-size:12.5px;line-height:1.5}
   table{border-collapse:collapse;width:100%;margin:1.2em 0;font-size:14px;display:block;overflow:auto}
   th,td{border:1px solid var(--line);padding:9px 12px;text-align:left;vertical-align:top}
   th{background:var(--accent-soft);font-weight:600}
   tr:nth-child(even) td{background:color-mix(in srgb,var(--panel) 60%,var(--bg))}
   hr{border:none;border-top:1px solid var(--line);margin:2em 0}
+  .maphead{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap}
+  .maphead h1{margin:.2em 0}
+  .openfull{font-size:13.5px;white-space:nowrap}
+  .lead{color:var(--muted);margin:0 0 18px;font-size:15px}
+  iframe.embed{width:100%;border:1px solid var(--line);border-radius:14px;background:var(--panel);min-height:640px;box-shadow:var(--shadow)}
   @media(max-width:860px){.wrap{grid-template-columns:1fr}aside{position:static;height:auto}main{padding:32px 20px}}
 </style>
 </head>
@@ -64,16 +66,31 @@
   <aside>
     <p class="brand">Mimir<span class="dot">.</span></p>
     <p class="tag">the Modules intelligence engine · architecture docs</p>
-    <nav id="nav"><a href="#s0" data-target="s0">Overview</a>
+    <nav id="nav"><a href="#agenda" data-target="agenda">Meeting agenda</a>
+<a href="#s0" data-target="s0">Overview</a>
+<a href="#map" data-target="map">At a glance · example</a>
+<a href="#arch" data-target="arch">Architecture map</a>
+<a href="#bt" data-target="bt">Back-test (one page)</a>
 <a href="#s1" data-target="s1">Platform Goal</a>
 <a href="#s2" data-target="s2">Component Architecture</a>
 <a href="#s3" data-target="s3">Products & Back-Test</a>
 <a href="#s4" data-target="s4">Domains</a>
 <a href="#s5" data-target="s5">Detailed Architecture</a>
 <a href="#s6" data-target="s6">Build Phases</a></nav>
+    <div class="aside-foot">
+      <a href="diagram.html" target="_blank" rel="noopener">↗ Example diagram (full screen)</a>
+      <a href="components.html" target="_blank" rel="noopener">↗ Architecture map (full screen)</a>
+      <a href="backtest.html" target="_blank" rel="noopener">↗ Back-test matrix (full screen)</a>
+      <a href="presentation.html" target="_blank" rel="noopener">▸ Open the presentation deck</a>
+    </div>
     <button class="theme" id="theme">◐ Toggle theme</button>
   </aside>
-  <main id="main"><section id="s0"><script type="text/markdown"># Mimir — the Modules intelligence engine
+  <main id="main"><section id="agenda">
+  <div class="maphead"><h1>Meeting agenda</h1><a class="openfull" href="agenda.html" target="_blank" rel="noopener">Open full view ↗</a></div>
+  <p class="lead">What we’re thinking and what we want to decide together — the running order for the review. Dig into any layer using the sidebar.</p>
+  <iframe class="embed" src="agenda.html" title="Meeting agenda"></iframe>
+</section>
+<section id="s0"><script type="text/markdown"># Mimir — the Modules intelligence engine
 
 > **Codename:** **Mimir** (Norse: keeper of the well of wisdom — the counsel you consult before
 > you decide; the human still decides). The engineering platform. Slots beside `bragi` under the
@@ -115,6 +132,21 @@ pack, **zero engine change**.
 | **Signal** | A typed output any stage writes to the case; downstream stages read the whole set. |
 | **Pack vs product** | A pack is the config; a product is a pack made sellable (entitlements, pricing, surface). |
 </script></section>
+<section id="map">
+  <div class="maphead"><h1>At a glance — one case, end to end</h1><a class="openfull" href="diagram.html" target="_blank" rel="noopener">Open full view ↗</a></div>
+  <p class="lead">Follow a single motor-claim case through Mimir. The <b>middle (platform) column never changes</b> between products — only the pack does. Dig into any layer using the sidebar.</p>
+  <iframe class="embed" src="diagram.html" title="At a glance — one case, end to end"></iframe>
+</section>
+<section id="arch">
+  <div class="maphead"><h1>Five planes, one map</h1><a class="openfull" href="components.html" target="_blank" rel="noopener">Open full view ↗</a></div>
+  <p class="lead">The service / component architecture: how the planes connect, and how a client can take one module or a group. Dig into any layer using the sidebar.</p>
+  <iframe class="embed" src="components.html" title="Five planes, one map"></iframe>
+</section>
+<section id="bt">
+  <div class="maphead"><h1>The back-test, on one page</h1><a class="openfull" href="backtest.html" target="_blank" rel="noopener">Open full view ↗</a></div>
+  <p class="lead">13 sample products × 18 requirements. Every product forces at least one — the engine + packs split held for all. Dig into any layer using the sidebar.</p>
+  <iframe class="embed" src="backtest.html" title="The back-test, on one page"></iframe>
+</section>
 <section id="s1"><script type="text/markdown"># 1 · Platform Goal
 
 > Engine codename: **Mimir**. "Modules" is the provisional product/market name.
@@ -271,11 +303,11 @@ product USP.** Detail in [`05-detailed-architecture.md`](./05-detailed-architect
 > and find what it needs that the architecture **doesn't have yet** — then add that component.
 > The architecture in [`02-component-architecture.md`](./02-component-architecture.md) is the
 > *result* of this exercise. **The idea does not fail** — the engine + packs split holds for every
-> product below — but the back-test forced sixteen requirements.
+> product below — but the back-test forced eighteen requirements.
 
 ## Sample products
 
-The seven you named, plus five I've added to widen the back-test (non-vehicle, agentic, media,
+The seven you named, plus six I've added to widen the back-test (non-vehicle, agentic, media,
 cross-case). Each is a product a PM could assemble from the platform.
 
 | # | Product | Capabilities used | Domain |
@@ -313,9 +345,9 @@ cross-case). Each is a product a PM could assemble from the platform.
 | P13 Health claims | Health-data sensitivity, DPDP, residency, consent, purpose limits — *different per domain* | **Compliance plane** → **R18** (supersedes R8); compliance-aware model routing |
 | A customer waiting at a link vs. a bulk batch job | Not all async work is equal; single-shot calls need a sync path | **Sync + async with priority classes** → **R17** |
 
-## The sixteen requirements
+## The eighteen requirements
 
-Carried from the first back-test (R1–R8) and added by these products (R9–R16).
+Carried from the first back-test (R1–R8) and added by these products (R9–R18).
 
 | # | Requirement | Forced by |
 |---|---|---|
@@ -616,26 +648,34 @@ Compliance plane ─ enforced across every phase, deepening v1 → v3
 </div>
 <script>
   marked.setOptions({gfm:true, breaks:false});
-  document.querySelectorAll('section').forEach(s=>{
-    const raw=s.querySelector('script').textContent;
-    const div=document.createElement('div'); div.innerHTML=marked.parse(raw);
-    s.innerHTML=''; s.appendChild(div);
+  document.querySelectorAll('section > script[type="text/markdown"]').forEach(sc=>{
+    const div=document.createElement('div'); div.innerHTML=marked.parse(sc.textContent);
+    sc.parentElement.innerHTML=''; sc.parentElement.appendChild(div);
   });
   const navs=[...document.querySelectorAll('#nav a')];
   const secs=[...document.querySelectorAll('section')];
+  const frames=[...document.querySelectorAll('iframe.embed')];
+  function curTheme(){ return document.documentElement.getAttribute('data-theme')
+      || (matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'); }
+  function pushTheme(target){
+    const list = target ? [target] : frames;
+    list.forEach(fr=>{ try{ fr.contentWindow && fr.contentWindow.postMessage({type:'theme',value:curTheme()},'*'); }catch(e){} });
+  }
+  frames.forEach(f=>f.addEventListener('load',()=>pushTheme(f)));
+  window.addEventListener('message',e=>{
+    if(e.data&&e.data.type==='size'){ const f=frames.find(fr=>fr.contentWindow===e.source); if(f) f.style.height=(e.data.height+28)+'px'; }
+  });
   function show(id){
     secs.forEach(s=>s.classList.toggle('on', s.id===id));
     navs.forEach(a=>a.classList.toggle('active', a.dataset.target===id));
     history.replaceState(null,'','#'+id); window.scrollTo({top:0});
+    const sec=document.getElementById(id); const fr=sec&&sec.querySelector('iframe.embed'); if(fr) pushTheme(fr);
   }
   navs.forEach(a=>a.addEventListener('click',e=>{e.preventDefault();show(a.dataset.target)}));
-  show((location.hash||'#s0').slice(1) || 's0');
-  const t=document.getElementById('theme');
-  t.addEventListener('click',()=>{
-    const cur=document.documentElement.getAttribute('data-theme');
-    const next = cur==='dark' ? 'light' : cur==='light' ? 'dark'
-      : (matchMedia('(prefers-color-scheme: dark)').matches ? 'light':'dark');
-    document.documentElement.setAttribute('data-theme',next);
+  show((location.hash||'#agenda').slice(1) || 'agenda');
+  document.getElementById('theme').addEventListener('click',()=>{
+    document.documentElement.setAttribute('data-theme', curTheme()==='dark'?'light':'dark');
+    pushTheme();
   });
 </script>
 </body>

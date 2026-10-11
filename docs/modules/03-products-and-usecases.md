@@ -4,11 +4,11 @@
 > and find what it needs that the architecture **doesn't have yet** — then add that component.
 > The architecture in [`02-component-architecture.md`](./02-component-architecture.md) is the
 > *result* of this exercise. **The idea does not fail** — the engine + packs split holds for every
-> product below — but the back-test forced sixteen requirements.
+> product below — but the back-test forced eighteen requirements.
 
 ## Sample products
 
-The seven you named, plus five I've added to widen the back-test (non-vehicle, agentic, media,
+The seven you named, plus six I've added to widen the back-test (non-vehicle, agentic, media,
 cross-case). Each is a product a PM could assemble from the platform.
 
 | # | Product | Capabilities used | Domain |
@@ -46,9 +46,9 @@ cross-case). Each is a product a PM could assemble from the platform.
 | P13 Health claims | Health-data sensitivity, DPDP, residency, consent, purpose limits — *different per domain* | **Compliance plane** → **R18** (supersedes R8); compliance-aware model routing |
 | A customer waiting at a link vs. a bulk batch job | Not all async work is equal; single-shot calls need a sync path | **Sync + async with priority classes** → **R17** |
 
-## The sixteen requirements
+## The eighteen requirements
 
-Carried from the first back-test (R1–R8) and added by these products (R9–R16).
+Carried from the first back-test (R1–R8) and added by these products (R9–R18).
 
 | # | Requirement | Forced by |
 |---|---|---|
