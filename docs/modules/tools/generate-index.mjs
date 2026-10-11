@@ -155,8 +155,9 @@ const html = `<!doctype html>
 <script>
   marked.setOptions({gfm:true, breaks:false});
   document.querySelectorAll('section > script[type="text/markdown"]').forEach(sc=>{
+    const parent=sc.parentElement;
     const div=document.createElement('div'); div.innerHTML=marked.parse(sc.textContent);
-    sc.parentElement.innerHTML=''; sc.parentElement.appendChild(div);
+    parent.innerHTML=''; parent.appendChild(div);
   });
   const navs=[...document.querySelectorAll('#nav a')];
   const secs=[...document.querySelectorAll('section')];
