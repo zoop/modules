@@ -16,17 +16,31 @@ products (vehicle inspection, document extraction, a fraud engine, an agentic as
 authoring a pack and choosing entitlements — not by changing the platform. New category = a new
 pack, **zero engine change**.
 
-## How to read these docs (in order)
+## Start here
 
-1. [`01-platform-goal.md`](./01-platform-goal.md) — the engineering goal and what "done" means.
-2. [`02-component-architecture.md`](./02-component-architecture.md) — the component architecture:
+**Open [`index.html`](./index.html)** — the hub. Everything below is reachable from its sidebar.
+
+## Folder map
+
+| Path | What it is |
+|---|---|
+| `index.html` | **The hub** — agenda, visual pages, module chapters and specs, one connected site |
+| `spec/01…06-*.md` | The written specs: goal → component architecture → products & back-test → domains → detailed architecture → build phases |
+| `pages/` | The standalone pages: `agenda`, `diagram` (one case end-to-end), `components` (five planes), `backtest` (13×18 matrix), `presentation` (16-slide deck), `speaker-crib`, and the seven `module-*` chapters |
+| `meeting/meeting-qa.md` | Adversarial meeting-prep brief: thin ice, per-role Q&A |
+| `tools/generate-*.mjs` | Generators — `index.html` and the module pages are **generated**; edit the generator (or the `spec/*.md`), then `node tools/generate-index.mjs && node tools/generate-module-pages.mjs` |
+
+## Reading order for the specs
+
+1. [`spec/01-platform-goal.md`](./spec/01-platform-goal.md) — the engineering goal and what "done" means.
+2. [`spec/02-component-architecture.md`](./spec/02-component-architecture.md) — the component architecture:
    the planes, every component, one diagram.
-3. [`03-products-and-usecases.md`](./03-products-and-usecases.md) — sample products and use cases,
+3. [`spec/03-products-and-usecases.md`](./spec/03-products-and-usecases.md) — sample products and use cases,
    each **back-tested** against the architecture; the gaps this surfaced and the components added.
-4. [`04-domains.md`](./04-domains.md) — the domains we can serve and how each becomes a pack.
-5. [`05-detailed-architecture.md`](./05-detailed-architecture.md) — the deep dive: capability
+4. [`spec/04-domains.md`](./spec/04-domains.md) — the domains we can serve and how each becomes a pack.
+5. [`spec/05-detailed-architecture.md`](./spec/05-detailed-architecture.md) — the deep dive: capability
    services, the signal model, orchestration modes, data flow, contracts.
-6. [`06-build-phases.md`](./06-build-phases.md) — how we build it, in phases.
+6. [`spec/06-build-phases.md`](./spec/06-build-phases.md) — how we build it, in phases.
 
 ## Glossary (read first — the names collide otherwise)
 

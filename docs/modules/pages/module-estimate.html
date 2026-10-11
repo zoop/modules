@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Mimir — Estimate</title>
+<style>
+  :root{
+    --bg:#f6f5f1; --panel:#fff; --ink:#191919; --muted:#70706a; --line:#e4e1d8;
+    --platform:#1f6feb; --platform-soft:#e9f0fe; --pack:#b4530a; --pack-soft:#fcefe2;
+    --cross:#5a4fcf; --cross-soft:#ecebfb; --shadow:0 1px 3px rgba(0,0,0,.07);
+  }
+  @media(prefers-color-scheme:dark){:root{
+    --bg:#0e1014; --panel:#161922; --ink:#e8eaef; --muted:#97a0ae; --line:#272c38;
+    --platform:#6aa2ff; --platform-soft:#182238; --pack:#f0a062; --pack-soft:#2c2013;
+    --cross:#a79cff; --cross-soft:#1f1c33; --shadow:0 1px 3px rgba(0,0,0,.4);}}
+  [data-t="light"]{--bg:#f6f5f1;--panel:#fff;--ink:#191919;--muted:#70706a;--line:#e4e1d8;--platform:#1f6feb;--platform-soft:#e9f0fe;--pack:#b4530a;--pack-soft:#fcefe2;--cross:#5a4fcf;--cross-soft:#ecebfb;--shadow:0 1px 3px rgba(0,0,0,.07)}
+  [data-t="dark"]{--bg:#0e1014;--panel:#161922;--ink:#e8eaef;--muted:#97a0ae;--line:#272c38;--platform:#6aa2ff;--platform-soft:#182238;--pack:#f0a062;--pack-soft:#2c2013;--cross:#a79cff;--cross-soft:#1f1c33;--shadow:0 1px 3px rgba(0,0,0,.4)}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font:15.5px/1.6 ui-sans-serif,-apple-system,"Segoe UI",Inter,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+  .page{max-width:880px;margin:0 auto;padding:40px 24px 80px}
+  .topnav{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;font-size:13px}
+  .topnav a{color:var(--muted);text-decoration:none}
+  .topnav a:hover{color:var(--platform)}
+  .theme{border:1px solid var(--line);background:var(--panel);color:var(--muted);border-radius:8px;padding:6px 11px;font-size:13px;cursor:pointer}
+  .tagline{font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--pack);font-weight:700;margin:14px 0 6px}
+  h1{font-size:34px;letter-spacing:-.02em;margin:0 0 4px}
+  h1 b{color:var(--platform)}
+  .promise{font-size:18px;color:var(--muted);margin:0 0 22px;line-height:1.45}
+  .story{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px 22px;box-shadow:var(--shadow);font-size:15.5px;line-height:1.65;margin-bottom:30px}
+  .story::before{content:"The story so far";display:block;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--platform);font-weight:700;margin-bottom:8px}
+  h2{font-size:19px;margin:30px 0 12px;letter-spacing:-.01em}
+  .build{display:flex;flex-direction:column;gap:10px}
+  .b{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:13px 17px;box-shadow:var(--shadow)}
+  .b h3{margin:0 0 4px;font-size:15px;color:var(--platform)}
+  .b p{margin:0;color:var(--ink);font-size:14px;line-height:1.55}
+  .meta{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:8px}
+  @media(max-width:700px){.meta{grid-template-columns:1fr}}
+  .mcard{border:1px solid var(--line);border-radius:12px;padding:13px 16px;font-size:13.5px;line-height:1.55}
+  .mcard.contract{background:var(--platform-soft)}
+  .mcard.packs{background:var(--pack-soft)}
+  .mcard .k{font-size:11px;letter-spacing:.07em;text-transform:uppercase;font-weight:700;margin:0 0 6px}
+  .mcard.contract .k{color:var(--platform)} .mcard.packs .k{color:var(--pack)}
+  .engsec{margin-top:30px;border:1px solid var(--line);border-radius:14px;padding:16px 20px;background:var(--panel);box-shadow:var(--shadow)}
+  .engsec h2{margin:0 0 10px;font-size:17px}
+  .engsec h2 span{font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);font-weight:600;margin-left:8px}
+  .engsec ul{margin:0;padding-left:20px}
+  .engsec li{margin:7px 0;font-size:14px;line-height:1.55}
+  .open{background:var(--cross-soft);border:1px solid var(--line);border-radius:14px;padding:16px 20px;margin-top:30px}
+  .open h2{margin:0 0 10px;color:var(--cross);font-size:17px}
+  .open ol{margin:0;padding-left:20px}
+  .open li{margin:7px 0;font-size:14.5px}
+  .chapnav{display:flex;justify-content:space-between;gap:12px;margin-top:36px}
+  .chapnav a{flex:1;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px 16px;text-decoration:none;color:var(--ink);box-shadow:var(--shadow);font-size:14px}
+  .chapnav a:hover{border-color:var(--platform)}
+  .chapnav .dir{display:block;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:3px}
+  .chapnav .next{text-align:right}
+  .foot{margin-top:26px;color:var(--muted);font-size:12.5px;text-align:center}
+  code{background:var(--platform-soft);padding:.1em .4em;border-radius:5px;font-size:.9em;font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="topnav">
+    <a id="docsHome" href="../index.html">← Mimir docs</a>
+    <button class="theme" id="theme">◐ Theme</button>
+  </div>
+  <p class="tagline">Module 06 · what it should cost</p>
+  <h1><b>Estimate</b></h1>
+  <p class="promise">From detected features to a priced, reproducible line-item estimate.</p>
+
+  <div class="story">The garage wants ₹43,000. Vision found a moderately dented bumper and a scratched fender. What should the repair actually cost? Estimate maps features to parts and labour against licensed, versioned price data — so when the insurer disputes an inflated invoice, the counter-estimate is reproducible down to the catalog version it was priced with.</div>
+
+  <h2>What we're going to build</h2>
+  <div class="build">
+    <div class="b"><h3>Feature → line-item mapping</h3><p>Pack config maps Vision’s features (part × damage × severity) to repair operations and parts. The mapping is data, reviewable by a domain expert, not buried in code.</p></div>
+    <div class="b"><h3>The Reference-Data plane</h3><p>Parts catalogs, labour rates, procedure prices — licensed, versioned, regional. Distinct from identity sources: Verify asks "is this real?", Estimate asks "what is this worth?"</p></div>
+    <div class="b"><h3>Repair-vs-replace logic</h3><p>Threshold rules (pack-supplied) decide repair vs replace per part — a severity-and-economics call, surfaced with its reasoning like every other signal.</p></div>
+    <div class="b"><h3>Reproducibility</h3><p>Every estimate pins the reference-data version it priced against. Re-run the case next quarter and you can explain every rupee of difference.</p></div>
+    <div class="b"><h3>Inflation checks feed Detect</h3><p>The gap between our estimate and the garage’s invoice is itself a signal — Detect turns it into the "invoice inflation" flag with the figures attached.</p></div>
+  </div>
+
+  <div class="meta">
+    <div class="mcard contract"><p class="k">The contract (platform — never changes)</p>In: feature signals + a reference-data binding. Out: costed line items + repair/replace calls, versioned. Sold per estimate.</div>
+    <div class="mcard packs"><p class="k">What the pack supplies (per domain)</p>Reference-data binding (catalog, rates, region) · mapping tables · repair-vs-replace thresholds.</div>
+  </div>
+
+  <div class="engsec">
+    <h2>For engineers &amp; architects<span>implementation notes</span></h2>
+    <ul>
+      <li>Reference data is immutable-versioned (catalog@version, rates@version); an estimate signal pins both, so re-pricing is a pure, reproducible function.</li>
+      <li>Mapping tables (feature → operations/parts) live in the Pack Registry as reviewable data — a domain expert can diff two mapping versions like code review.</li>
+      <li>Unmapped features produce an <code>unpriced_item</code> line with a nearest-match suggestion, never a silent drop — the total always discloses its coverage.</li>
+      <li>Failure modes: licensed-data outage falls back to the last cached version (flagged stale); currency/regional mismatches fail loudly at pack-validation time, not at runtime.</li>
+    </ul>
+  </div>
+
+  <div class="open">
+    <h2>Open questions — for the room</h2>
+    <ol>
+      <li>Which parts/labour data do we license first, and what does it cost per lookup?</li>
+      <li>Regional variance: city-level labour rates in v1, or state-level and refine later?</li>
+      <li>How do we handle parts not in the catalog — nearest match, manual, or skip with a note?</li>
+      <li>Is Estimate in Phase 1 for the motor product, or Phase 2 as currently planned?</li>
+    </ol>
+  </div>
+
+  <div class="chapnav">
+    <a href="module-detect.html"><span class="dir">← Previous</span>Detect</a>
+    <a class="next" href="module-decide.html"><span class="dir">Next →</span>Decide</a>
+  </div>
+
+  <p class="foot">Mimir · the Modules intelligence engine — module 06 of 07 · <a href="../index.html" style="color:var(--platform)">all docs</a></p>
+</div>
+<script>
+  document.getElementById('theme').addEventListener('click',()=>{
+    const d=document.documentElement,c=d.getAttribute('data-t');
+    d.setAttribute('data-t',c==='dark'?'light':c==='light'?'dark':(matchMedia('(prefers-color-scheme: dark)').matches?'light':'dark'));
+  });
+  const inFrame=window.self!==window.top;
+  if(inFrame){const tb=document.getElementById('theme');if(tb)tb.style.display='none';document.body.style.background='transparent';const dh=document.getElementById('docsHome');if(dh)dh.style.display='none';}
+  window.addEventListener('message',e=>{if(e.data&&e.data.type==='theme')document.documentElement.setAttribute('data-t',e.data.value);});
+  function postSize(){if(inFrame){try{parent.postMessage({type:'size',height:document.body.scrollHeight},'*');}catch(_){}}}
+  window.addEventListener('load',postSize);
+  if(window.ResizeObserver)new ResizeObserver(postSize).observe(document.body);
+</script>
+</body>
+</html>

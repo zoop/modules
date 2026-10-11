@@ -66,11 +66,22 @@
   <aside>
     <p class="brand">Mimir<span class="dot">.</span></p>
     <p class="tag">the Modules intelligence engine · architecture docs</p>
-    <nav id="nav"><a href="#agenda" data-target="agenda">Meeting agenda</a>
+    <nav id="nav"><p class="navgroup">Start here</p>
+<a href="#agenda" data-target="agenda">Meeting agenda</a>
 <a href="#s0" data-target="s0">Overview</a>
+<p class="navgroup">See it</p>
 <a href="#map" data-target="map">At a glance · example</a>
 <a href="#arch" data-target="arch">Architecture map</a>
 <a href="#bt" data-target="bt">Back-test (one page)</a>
+<p class="navgroup">The modules</p>
+<a href="#mod-capture" data-target="mod-capture">Capture</a>
+<a href="#mod-extract" data-target="mod-extract">Extract</a>
+<a href="#mod-vision" data-target="mod-vision">Vision</a>
+<a href="#mod-verify" data-target="mod-verify">Verify</a>
+<a href="#mod-detect" data-target="mod-detect">Detect</a>
+<a href="#mod-estimate" data-target="mod-estimate">Estimate</a>
+<a href="#mod-decide" data-target="mod-decide">Decide</a>
+<p class="navgroup">The docs</p>
 <a href="#s1" data-target="s1">Platform Goal</a>
 <a href="#s2" data-target="s2">Component Architecture</a>
 <a href="#s3" data-target="s3">Products & Back-Test</a>
@@ -78,17 +89,16 @@
 <a href="#s5" data-target="s5">Detailed Architecture</a>
 <a href="#s6" data-target="s6">Build Phases</a></nav>
     <div class="aside-foot">
-      <a href="diagram.html" target="_blank" rel="noopener">↗ Example diagram (full screen)</a>
-      <a href="components.html" target="_blank" rel="noopener">↗ Architecture map (full screen)</a>
-      <a href="backtest.html" target="_blank" rel="noopener">↗ Back-test matrix (full screen)</a>
-      <a href="presentation.html" target="_blank" rel="noopener">▸ Open the presentation deck</a>
+      <p class="navgroup" style="margin:0 0 4px;padding:0 12px">Present</p>
+      <a href="pages/presentation.html" target="_blank" rel="noopener">▸ The deck (16 slides)</a>
+      <a href="pages/speaker-crib.html" target="_blank" rel="noopener">▸ Speaker crib</a>
     </div>
     <button class="theme" id="theme">◐ Toggle theme</button>
   </aside>
   <main id="main"><section id="agenda">
-  <div class="maphead"><h1>Meeting agenda</h1><a class="openfull" href="agenda.html" target="_blank" rel="noopener">Open full view ↗</a></div>
+  <div class="maphead"><h1>Meeting agenda</h1><a class="openfull" href="pages/agenda.html" target="_blank" rel="noopener">Open full view ↗</a></div>
   <p class="lead">What we’re thinking and what we want to decide together — the running order for the review. Dig into any layer using the sidebar.</p>
-  <iframe class="embed" src="agenda.html" title="Meeting agenda"></iframe>
+  <iframe class="embed" src="pages/agenda.html" title="Meeting agenda"></iframe>
 </section>
 <section id="s0"><script type="text/markdown"># Mimir — the Modules intelligence engine
 
@@ -108,17 +118,31 @@ products (vehicle inspection, document extraction, a fraud engine, an agentic as
 authoring a pack and choosing entitlements — not by changing the platform. New category = a new
 pack, **zero engine change**.
 
-## How to read these docs (in order)
+## Start here
 
-1. [`01-platform-goal.md`](./01-platform-goal.md) — the engineering goal and what "done" means.
-2. [`02-component-architecture.md`](./02-component-architecture.md) — the component architecture:
+**Open [`index.html`](./index.html)** — the hub. Everything below is reachable from its sidebar.
+
+## Folder map
+
+| Path | What it is |
+|---|---|
+| `index.html` | **The hub** — agenda, visual pages, module chapters and specs, one connected site |
+| `spec/01…06-*.md` | The written specs: goal → component architecture → products & back-test → domains → detailed architecture → build phases |
+| `pages/` | The standalone pages: `agenda`, `diagram` (one case end-to-end), `components` (five planes), `backtest` (13×18 matrix), `presentation` (16-slide deck), `speaker-crib`, and the seven `module-*` chapters |
+| `meeting/meeting-qa.md` | Adversarial meeting-prep brief: thin ice, per-role Q&A |
+| `tools/generate-*.mjs` | Generators — `index.html` and the module pages are **generated**; edit the generator (or the `spec/*.md`), then `node tools/generate-index.mjs && node tools/generate-module-pages.mjs` |
+
+## Reading order for the specs
+
+1. [`spec/01-platform-goal.md`](./spec/01-platform-goal.md) — the engineering goal and what "done" means.
+2. [`spec/02-component-architecture.md`](./spec/02-component-architecture.md) — the component architecture:
    the planes, every component, one diagram.
-3. [`03-products-and-usecases.md`](./03-products-and-usecases.md) — sample products and use cases,
+3. [`spec/03-products-and-usecases.md`](./spec/03-products-and-usecases.md) — sample products and use cases,
    each **back-tested** against the architecture; the gaps this surfaced and the components added.
-4. [`04-domains.md`](./04-domains.md) — the domains we can serve and how each becomes a pack.
-5. [`05-detailed-architecture.md`](./05-detailed-architecture.md) — the deep dive: capability
+4. [`spec/04-domains.md`](./spec/04-domains.md) — the domains we can serve and how each becomes a pack.
+5. [`spec/05-detailed-architecture.md`](./spec/05-detailed-architecture.md) — the deep dive: capability
    services, the signal model, orchestration modes, data flow, contracts.
-6. [`06-build-phases.md`](./06-build-phases.md) — how we build it, in phases.
+6. [`spec/06-build-phases.md`](./spec/06-build-phases.md) — how we build it, in phases.
 
 ## Glossary (read first — the names collide otherwise)
 
@@ -133,19 +157,54 @@ pack, **zero engine change**.
 | **Pack vs product** | A pack is the config; a product is a pack made sellable (entitlements, pricing, surface). |
 </script></section>
 <section id="map">
-  <div class="maphead"><h1>At a glance — one case, end to end</h1><a class="openfull" href="diagram.html" target="_blank" rel="noopener">Open full view ↗</a></div>
+  <div class="maphead"><h1>At a glance — one case, end to end</h1><a class="openfull" href="pages/diagram.html" target="_blank" rel="noopener">Open full view ↗</a></div>
   <p class="lead">Follow a single motor-claim case through Mimir. The <b>middle (platform) column never changes</b> between products — only the pack does. Dig into any layer using the sidebar.</p>
-  <iframe class="embed" src="diagram.html" title="At a glance — one case, end to end"></iframe>
+  <iframe class="embed" src="pages/diagram.html" title="At a glance — one case, end to end"></iframe>
 </section>
 <section id="arch">
-  <div class="maphead"><h1>Five planes, one map</h1><a class="openfull" href="components.html" target="_blank" rel="noopener">Open full view ↗</a></div>
+  <div class="maphead"><h1>Five planes, one map</h1><a class="openfull" href="pages/components.html" target="_blank" rel="noopener">Open full view ↗</a></div>
   <p class="lead">The service / component architecture: how the planes connect, and how a client can take one module or a group. Dig into any layer using the sidebar.</p>
-  <iframe class="embed" src="components.html" title="Five planes, one map"></iframe>
+  <iframe class="embed" src="pages/components.html" title="Five planes, one map"></iframe>
 </section>
 <section id="bt">
-  <div class="maphead"><h1>The back-test, on one page</h1><a class="openfull" href="backtest.html" target="_blank" rel="noopener">Open full view ↗</a></div>
+  <div class="maphead"><h1>The back-test, on one page</h1><a class="openfull" href="pages/backtest.html" target="_blank" rel="noopener">Open full view ↗</a></div>
   <p class="lead">13 sample products × 18 requirements. Every product forces at least one — the engine + packs split held for all. Dig into any layer using the sidebar.</p>
-  <iframe class="embed" src="backtest.html" title="The back-test, on one page"></iframe>
+  <iframe class="embed" src="pages/backtest.html" title="The back-test, on one page"></iframe>
+</section>
+<section id="mod-capture">
+  <div class="maphead"><h1>Capture</h1><a class="openfull" href="pages/module-capture.html" target="_blank" rel="noopener">Open full view ↗</a></div>
+  <p class="lead">Module 01 of 07 — the story, what we will build, the contract, implementation notes, and the open questions. Dig into any layer using the sidebar.</p>
+  <iframe class="embed" src="pages/module-capture.html" title="Capture"></iframe>
+</section>
+<section id="mod-extract">
+  <div class="maphead"><h1>Extract</h1><a class="openfull" href="pages/module-extract.html" target="_blank" rel="noopener">Open full view ↗</a></div>
+  <p class="lead">Module 02 of 07 — the story, what we will build, the contract, implementation notes, and the open questions. Dig into any layer using the sidebar.</p>
+  <iframe class="embed" src="pages/module-extract.html" title="Extract"></iframe>
+</section>
+<section id="mod-vision">
+  <div class="maphead"><h1>Vision</h1><a class="openfull" href="pages/module-vision.html" target="_blank" rel="noopener">Open full view ↗</a></div>
+  <p class="lead">Module 03 of 07 — the story, what we will build, the contract, implementation notes, and the open questions. Dig into any layer using the sidebar.</p>
+  <iframe class="embed" src="pages/module-vision.html" title="Vision"></iframe>
+</section>
+<section id="mod-verify">
+  <div class="maphead"><h1>Verify</h1><a class="openfull" href="pages/module-verify.html" target="_blank" rel="noopener">Open full view ↗</a></div>
+  <p class="lead">Module 04 of 07 — the story, what we will build, the contract, implementation notes, and the open questions. Dig into any layer using the sidebar.</p>
+  <iframe class="embed" src="pages/module-verify.html" title="Verify"></iframe>
+</section>
+<section id="mod-detect">
+  <div class="maphead"><h1>Detect</h1><a class="openfull" href="pages/module-detect.html" target="_blank" rel="noopener">Open full view ↗</a></div>
+  <p class="lead">Module 05 of 07 — the story, what we will build, the contract, implementation notes, and the open questions. Dig into any layer using the sidebar.</p>
+  <iframe class="embed" src="pages/module-detect.html" title="Detect"></iframe>
+</section>
+<section id="mod-estimate">
+  <div class="maphead"><h1>Estimate</h1><a class="openfull" href="pages/module-estimate.html" target="_blank" rel="noopener">Open full view ↗</a></div>
+  <p class="lead">Module 06 of 07 — the story, what we will build, the contract, implementation notes, and the open questions. Dig into any layer using the sidebar.</p>
+  <iframe class="embed" src="pages/module-estimate.html" title="Estimate"></iframe>
+</section>
+<section id="mod-decide">
+  <div class="maphead"><h1>Decide</h1><a class="openfull" href="pages/module-decide.html" target="_blank" rel="noopener">Open full view ↗</a></div>
+  <p class="lead">Module 07 of 07 — the story, what we will build, the contract, implementation notes, and the open questions. Dig into any layer using the sidebar.</p>
+  <iframe class="embed" src="pages/module-decide.html" title="Decide"></iframe>
 </section>
 <section id="s1"><script type="text/markdown"># 1 · Platform Goal
 
