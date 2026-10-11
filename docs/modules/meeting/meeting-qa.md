@@ -1,7 +1,7 @@
 # Mimir — Meeting Prep & Adversarial Q&A
 
 > Cheat-sheet for the review of **Mimir** (the Modules intelligence engine). Glance under pressure.
-> Audience: ML team · Architect · CTO · Chief Strategy Officer · VP Eng · PM.
+> Audience: Engineers & Architects · ML team · CTO · Chief Strategy Officer · VP Eng · PM.
 > **Golden framing:** one engine turns evidence → a verified, costed, risk-scored, auditable
 > decision; domain knowledge is a *pack*, never engine code; new category = new pack, zero engine change.
 
