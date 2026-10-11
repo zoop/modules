@@ -59,3 +59,8 @@ catalogs:
     react-dom: 19.2.0
     "@types/react": 19.2.9
     "@types/react-dom": 19.1.1
+
+allowBuilds:
+  esbuild: set this to true or false
+  nx: set this to true or false
+  sharp: set this to true or false

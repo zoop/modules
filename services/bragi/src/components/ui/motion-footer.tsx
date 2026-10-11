@@ -63,18 +63,14 @@ export default function MotionFooter() {
   const wordmarkRef = React.useRef<HTMLDivElement>(null);
 
   React.useEffect(() => {
+    // Match the rest of the page: no authored entrance motion under reduced-motion.
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     const ctx = gsap.context(() => {
       if (wordmarkRef.current) {
         gsap.fromTo(
           wordmarkRef.current,
           { opacity: 0, y: 40 },
-          {
-            opacity: 1,
-            y: 0,
-            duration: 1.2,
-            ease: "power3.out",
-            scrollTrigger: undefined,
-          },
+          { opacity: 1, y: 0, duration: 1.2, ease: "power3.out" },
         );
       }
     }, rootRef);
@@ -107,7 +103,7 @@ export default function MotionFooter() {
         </div>
       </div>
 
-      <div className="relative mx-auto max-w-6xl px-6 pt-24 pb-10">
+      <div className="relative mx-auto max-w-[90rem] px-6 pt-24 pb-10">
         {/* heading + CTAs */}
         <div className="max-w-2xl">
           <h2 className="font-display text-4xl font-bold leading-tight text-white sm:text-5xl">
@@ -125,7 +121,7 @@ export default function MotionFooter() {
         <div
           ref={wordmarkRef}
           aria-hidden="true"
-          className="pointer-events-none mt-16 select-none text-center font-display text-[18vw] font-bold leading-none tracking-tighter text-white/[0.06]"
+          className="pointer-events-none mt-16 select-none text-center font-display text-[clamp(2.5rem,14vw,13rem)] font-bold leading-none tracking-tighter text-white/[0.06]"
         >
           MODULES
         </div>
