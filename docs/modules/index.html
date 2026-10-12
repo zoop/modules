@@ -36,6 +36,7 @@
   .aside-foot a:hover{color:var(--accent)}
   .theme{margin-top:16px;border:1px solid var(--line);background:transparent;color:var(--muted);border-radius:8px;padding:7px 12px;font-size:13px;cursor:pointer;width:100%}
   main{padding:56px 7vw;max-width:1040px}
+  main:has(section.full.on){max-width:none;padding:20px 22px}
   section{display:none;animation:f .18s ease}
   section.on{display:block}
   @keyframes f{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
@@ -81,6 +82,8 @@
 <a href="#mod-detect" data-target="mod-detect">Detect</a>
 <a href="#mod-estimate" data-target="mod-estimate">Estimate</a>
 <a href="#mod-decide" data-target="mod-decide">Decide</a>
+<p class="navgroup">Demos</p>
+<a href="#demo-mfe" data-target="demo-mfe">Motor fraud engine</a>
 <p class="navgroup">The docs</p>
 <a href="#s1" data-target="s1">Platform Goal</a>
 <a href="#s2" data-target="s2">Component Architecture</a>
@@ -129,6 +132,7 @@ pack, **zero engine change**.
 | `index.html` | **The hub** — agenda, visual pages, module chapters and specs, one connected site |
 | `spec/01…06-*.md` | The written specs: goal → component architecture → products & back-test → domains → detailed architecture → build phases |
 | `pages/` | The standalone pages: `agenda`, `diagram` (one case end-to-end), `components` (five planes), `backtest` (13×18 matrix), `presentation` (16-slide deck), `speaker-crib`, and the seven `module-*` chapters |
+| `demos/` | Working product demos (sample data) — e.g. `motor-fraud-engine/`, embedded in the hub under “Demos” |
 | `meeting/meeting-qa.md` | Adversarial meeting-prep brief: thin ice, per-role Q&A |
 | `tools/generate-*.mjs` | Generators — `index.html` and the module pages are **generated**; edit the generator (or the `spec/*.md`), then `node tools/generate-index.mjs && node tools/generate-module-pages.mjs` |
 
@@ -205,6 +209,11 @@ pack, **zero engine change**.
   <div class="maphead"><h1>Decide</h1><a class="openfull" href="pages/module-decide.html" target="_blank" rel="noopener">Open full view ↗</a></div>
   <p class="lead">Module 07 of 07 — the story, what we will build, the contract, implementation notes, and the open questions. Dig into any layer using the sidebar.</p>
   <iframe class="embed" src="pages/module-decide.html" title="Decide"></iframe>
+</section>
+<section id="demo-mfe" class="full">
+  <div class="maphead"><h1>Demo — motor fraud engine</h1><a class="openfull" href="demos/motor-fraud-engine/index.html" target="_blank" rel="noopener">Open full view ↗</a></div>
+  <p class="lead">A working mock of the motor product built on the engine: send a claim through, watch the signals, score and flags come back. Sample data throughout. Dig into any layer using the sidebar.</p>
+  <iframe class="embed" src="demos/motor-fraud-engine/index.html" title="Demo — motor fraud engine" style="height:calc(100vh - 150px)"></iframe>
 </section>
 <section id="s1"><script type="text/markdown"># 1 · Platform Goal
 

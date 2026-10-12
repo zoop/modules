@@ -51,17 +51,25 @@ const navItems = [
   { id: 'bt',   title: 'Back-test (one page)' },
   { group: 'The modules' },
   ...moduleEmbeds.map((m) => ({ id: m.id, title: m.title })),
+  { group: 'Demos' },
+  { id: 'demo-mfe', title: 'Motor fraud engine' },
   { group: 'The docs' },
   ...docs.slice(1).map((d) => ({ id: d.id, title: d.title })),
+];
+
+// working demos, embedded like the visual pages (no theme handshake — they're apps)
+const demoEmbeds = [
+  { id: 'demo-mfe', title: 'Demo — motor fraud engine', src: 'demos/motor-fraud-engine/index.html', tall: true,
+    lead: 'A working mock of the motor product built on the engine: send a claim through, watch the signals, score and flags come back. Sample data throughout.' },
 ];
 const nav = navItems.map((n) =>
   n.group ? `<p class="navgroup">${n.group}</p>`
           : `<a href="#${n.id}" data-target="${n.id}">${n.title}</a>`).join('\n');
 
-const embedSection = (e) => `<section id="${e.id}">
+const embedSection = (e) => `<section id="${e.id}"${e.tall?` class="full"`:``}>
   <div class="maphead"><h1>${e.title}</h1><a class="openfull" href="${e.src}" target="_blank" rel="noopener">Open full view ↗</a></div>
   <p class="lead">${e.lead} Dig into any layer using the sidebar.</p>
-  <iframe class="embed" src="${e.src}" title="${e.title}"></iframe>
+  <iframe class="embed" src="${e.src}" title="${e.title}"${e.tall?` style="height:calc(100vh - 150px)"`:``}></iframe>
 </section>`;
 
 const docSection = (d) => `<section id="${d.id}"><script type="text/markdown">${d.md}</script></section>`;
@@ -71,6 +79,7 @@ const blocks = [
   docSection(docs[0]),
   ...embeds.map(embedSection),
   ...moduleEmbeds.map(embedSection),
+  ...demoEmbeds.map(embedSection),
   ...docs.slice(1).map(docSection),
 ].join('\n');
 
@@ -112,6 +121,7 @@ const html = `<!doctype html>
   .aside-foot a:hover{color:var(--accent)}
   .theme{margin-top:16px;border:1px solid var(--line);background:transparent;color:var(--muted);border-radius:8px;padding:7px 12px;font-size:13px;cursor:pointer;width:100%}
   main{padding:56px 7vw;max-width:1040px}
+  main:has(section.full.on){max-width:none;padding:20px 22px}
   section{display:none;animation:f .18s ease}
   section.on{display:block}
   @keyframes f{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}

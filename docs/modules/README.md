@@ -27,6 +27,7 @@ pack, **zero engine change**.
 | `index.html` | **The hub** — agenda, visual pages, module chapters and specs, one connected site |
 | `spec/01…06-*.md` | The written specs: goal → component architecture → products & back-test → domains → detailed architecture → build phases |
 | `pages/` | The standalone pages: `agenda`, `diagram` (one case end-to-end), `components` (five planes), `backtest` (13×18 matrix), `presentation` (16-slide deck), `speaker-crib`, and the seven `module-*` chapters |
+| `demos/` | Working product demos (sample data) — e.g. `motor-fraud-engine/`, embedded in the hub under “Demos” |
 | `meeting/meeting-qa.md` | Adversarial meeting-prep brief: thin ice, per-role Q&A |
 | `tools/generate-*.mjs` | Generators — `index.html` and the module pages are **generated**; edit the generator (or the `spec/*.md`), then `node tools/generate-index.mjs && node tools/generate-module-pages.mjs` |
 
