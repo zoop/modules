@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Modules — Design directions</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --teal:#0e7c7b; --teal-br:#2dd4bf; --navy:#0b1b2b; --ink:#0a0f1a;
+    --amber:#e08a00; --amber-br:#fbbf24; --violet:#6d4aff;
+    --sans:"IBM Plex Sans",system-ui,sans-serif; --disp:"Space Grotesk",sans-serif; --mono:"IBM Plex Mono",monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:var(--sans);background:#eef1f4;color:#0b1b2b;-webkit-font-smoothing:antialiased}
+  .label{position:sticky;top:0;z-index:5;display:flex;align-items:center;gap:12px;padding:10px 20px;
+    background:#0b1b2b;color:#fff;font-family:var(--mono);font-size:12px;letter-spacing:.05em}
+  .label b{font-family:var(--disp);font-size:13px;letter-spacing:0}
+  .label .tag{margin-left:auto;font-size:10px;padding:2px 8px;border-radius:999px;border:1px solid rgba(255,255,255,.25);color:#9fb2c2}
+  .mono{font-family:var(--mono);font-variant-numeric:tabular-nums slashed-zero}
+  .disp{font-family:var(--disp);letter-spacing:-.02em}
+
+  /* ============ A · FORENSIC EVIDENCE BOARD (bold, dark) ============ */
+  .A{position:relative;background:#0a0f1a;color:#e8eef3;overflow:hidden;padding:72px 48px 64px}
+  .A::before{content:"";position:absolute;inset:0;
+    background-image:linear-gradient(rgba(45,212,191,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(45,212,191,.05) 1px,transparent 1px);
+    background-size:44px 44px;mask-image:radial-gradient(120% 90% at 30% 20%,#000,transparent 75%)}
+  .A::after{content:"";position:absolute;top:-120px;left:-120px;width:520px;height:520px;border-radius:50%;
+    background:radial-gradient(circle,rgba(20,184,166,.18),transparent 65%);pointer-events:none}
+  .A .wrap{position:relative;max-width:1180px;margin:0 auto;display:grid;grid-template-columns:1.05fr .95fr;gap:56px;align-items:center}
+  .A .kicker{font-family:var(--mono);font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:#5f8f8c;margin-bottom:22px}
+  .A h1{font-family:var(--disp);font-weight:700;font-size:58px;line-height:1.02;letter-spacing:-.025em}
+  .A h1 .q{color:#fff}.A h1 em{font-style:normal;color:var(--amber-br)}
+  .A .sub{margin-top:22px;max-width:30rem;color:#9fb2c2;font-size:16px;line-height:1.6}
+  /* converging signature */
+  .converge{margin-top:34px;display:flex;align-items:center;gap:0;font-family:var(--mono);font-size:11px;letter-spacing:.08em}
+  .src{display:flex;flex-direction:column;gap:12px}
+  .node{border:1px solid #1e3347;background:#0e1b2b;border-radius:8px;padding:8px 12px;color:#9fb2c2}
+  .node .dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--teal-br);margin-right:7px}
+  .verdict{margin-left:26px;border:1px solid rgba(251,191,36,.5);background:rgba(251,191,36,.08);color:var(--amber-br);
+    border-radius:10px;padding:12px 16px;font-weight:600;text-align:center}
+  .verdict b{font-size:26px;display:block;letter-spacing:0}
+  .svgwire{width:60px;height:70px;margin:0 -2px}
+  /* evidence report panel */
+  .report{position:relative;border:1px solid #223549;border-radius:14px;background:linear-gradient(180deg,#0e1b2b,#0b1623);
+    box-shadow:0 30px 60px -20px rgba(0,0,0,.6)}
+  .report .rhead{display:flex;justify-content:space-between;align-items:center;padding:14px 18px;border-bottom:1px solid #1b2b3d;font-family:var(--mono);font-size:11px;color:#6e8aa0}
+  .report .score{display:flex;align-items:flex-end;justify-content:space-between;padding:18px}
+  .report .score .lab{font-family:var(--mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:#6e8aa0}
+  .report .score .band{color:#fb5a5a;font-weight:600;font-size:13px;margin-top:4px;font-family:var(--mono)}
+  .report .score .n{font-family:var(--mono);font-weight:600;font-size:60px;line-height:.8;color:#fb5a5a}
+  .report .flags{padding:0 18px 16px}
+  .fl{display:grid;grid-template-columns:auto 1fr;gap:12px;align-items:start;padding:11px 0;border-top:1px solid #15273a}
+  .fl .t{font-family:var(--mono);font-size:9px;font-weight:600;letter-spacing:.06em;padding:3px 6px;border-radius:4px;white-space:nowrap}
+  .t.hi{background:rgba(185,28,28,.18);color:#fb7185}.t.pass{background:rgba(20,184,166,.16);color:var(--teal-br)}.t.dmg{background:rgba(109,74,255,.18);color:#b9a6ff}
+  .fl .d{font-size:13px;color:#dbe6ee}.fl .d small{display:block;color:#7f97a9;font-family:var(--mono);font-size:11px;margin-top:2px}
+  .annot{position:absolute;right:-8px;top:50%;transform:translateX(100%);font-family:var(--mono);font-size:10px;color:#5f8f8c;white-space:nowrap}
+  .A .cta{margin-top:34px;display:flex;gap:14px}
+  .A .b1{background:var(--amber-br);color:#0a0f1a;font-weight:600;padding:12px 22px;border-radius:9px;font-size:14px}
+  .A .b2{border:1px solid #2a3f54;color:#cfe0ea;padding:12px 22px;border-radius:9px;font-size:14px}
+
+  /* ============ B · PRODUCT-LED (medium, bright editorial) ============ */
+  .B{background:#ffffff;padding:76px 48px 72px;position:relative;overflow:hidden}
+  .B::before{content:"";position:absolute;top:-140px;right:-120px;width:460px;height:460px;border-radius:50%;
+    background:radial-gradient(circle,rgba(14,124,123,.10),transparent 65%)}
+  .B .wrap{position:relative;max-width:1180px;margin:0 auto;display:grid;grid-template-columns:.92fr 1.08fr;gap:56px;align-items:center}
+  .B .kicker{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--teal);margin-bottom:18px}
+  .B h1{font-family:var(--disp);font-weight:700;font-size:60px;line-height:1.0;letter-spacing:-.03em;color:#0b1b2b}
+  .B .sub{margin-top:22px;max-width:28rem;color:#49617a;font-size:17px;line-height:1.6}
+  .B .cta{margin-top:30px;display:flex;gap:14px;align-items:center}
+  .B .b1{background:var(--amber);color:#0a0f1a;font-weight:600;padding:13px 24px;border-radius:10px;font-size:15px}
+  .B .b2{color:#0b1b2b;font-weight:600;padding:13px 10px;font-size:15px}
+  .B .meta{margin-top:26px;display:flex;gap:22px;font-size:13px;color:#6b7f90}
+  .B .meta span{display:flex;align-items:center;gap:7px}.B .meta i{width:6px;height:6px;border-radius:50%;background:var(--teal);display:inline-block}
+  /* realistic app window */
+  .win{border-radius:14px;overflow:hidden;border:1px solid #e2e8ee;box-shadow:0 40px 70px -30px rgba(11,27,43,.35),0 8px 20px -8px rgba(11,27,43,.1)}
+  .win .bar{display:flex;align-items:center;gap:8px;padding:11px 14px;background:#f4f7f9;border-bottom:1px solid #e7edf1}
+  .win .bar .d{width:11px;height:11px;border-radius:50%}
+  .win .url{margin-left:12px;flex:1;background:#fff;border:1px solid #e7edf1;border-radius:7px;padding:4px 12px;font-family:var(--mono);font-size:11px;color:#8294a3}
+  .app{display:grid;grid-template-columns:168px 1fr;min-height:360px;background:#fff}
+  .side{background:#0b1b2b;padding:18px 14px;color:#9fb2c2;font-size:13px}
+  .side .lg{display:flex;align-items:center;gap:8px;color:#fff;font-family:var(--disp);font-weight:600;margin-bottom:22px}
+  .side .nav{display:flex;flex-direction:column;gap:3px}
+  .side .nav a{padding:8px 10px;border-radius:7px}.side .nav a.on{background:#122838;color:#fff}
+  .main{padding:20px 22px}
+  .main .h{display:flex;justify-content:space-between;align-items:center}
+  .main .h .ttl{font-family:var(--disp);font-weight:600;font-size:17px;color:#0b1b2b}
+  .main .h .reg{font-family:var(--mono);font-size:12px;color:#6b7f90}
+  .tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:16px 0}
+  .tile{border:1px solid #e7edf1;border-radius:10px;padding:11px}
+  .tile .k{font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:#8294a3}
+  .tile .v{font-family:var(--mono);font-weight:600;font-size:22px;color:#0b1b2b;margin-top:3px}
+  .tile .v.hi{color:#b91c1c}
+  tbl{display:block}
+  table{width:100%;border-collapse:collapse;font-size:12.5px}
+  th{text-align:left;font-family:var(--mono);font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;color:#8294a3;padding:8px 8px;border-bottom:1px solid #eef2f5}
+  td{padding:9px 8px;border-bottom:1px solid #f2f5f7;color:#334b60}
+  .pill{font-family:var(--mono);font-size:9px;font-weight:600;padding:3px 7px;border-radius:5px}
+  .pill.hi{background:#fde7e7;color:#b91c1c}.pill.md{background:#fdf0dc;color:#b45309}
+  @media(max-width:900px){.A .wrap,.B .wrap{grid-template-columns:1fr}.A h1,.B h1{font-size:40px}}
+</style>
+</head>
+<body>
+
+<!-- ============ A ============ -->
+<div class="label"><b>Direction A — “Forensic evidence board”</b> <span>bold · dark-first · the hero IS a case file</span><span class="tag">risk: high · most distinctive</span></div>
+<section class="A">
+  <div class="wrap">
+    <div>
+      <div class="kicker">Claims intelligence · motor &amp; health</div>
+      <h1><span class="q">Read the photos.<br>Read the paperwork.</span><br><em>Know what to check.</em></h1>
+      <p class="sub">Send photos, video and claim documents. Get a damage report, a fraud score, and the red flags behind it — each with its reason. Your team decides.</p>
+      <div class="converge">
+        <div class="src">
+          <span class="node"><span class="dot"></span>PHOTOS · 8 angles</span>
+          <span class="node"><span class="dot"></span>PAPERWORK · 4 docs</span>
+        </div>
+        <svg class="svgwire" viewBox="0 0 60 70" fill="none">
+          <path d="M2 16 C 34 16, 30 35, 56 35" stroke="#2dd4bf" stroke-width="1.5"/>
+          <path d="M2 54 C 34 54, 30 35, 56 35" stroke="#2dd4bf" stroke-width="1.5"/>
+        </svg>
+        <div class="verdict">VERDICT<b>78 ▲</b>refer</div>
+      </div>
+      <div class="cta"><span class="b1">Request a demo</span><span class="b2">See the API →</span></div>
+    </div>
+
+    <div class="report">
+      <div class="rhead"><span>CASE · CLM-2026-90377</span><span>MH 12 AB 1234 · Swift ’19</span></div>
+      <div class="score">
+        <div><div class="lab">Fraud score</div><div class="band">HIGH · refer</div></div>
+        <div class="n">78</div>
+      </div>
+      <div class="flags">
+        <div class="fl"><span class="t hi">HIGH</span><span class="d">Policy lapsed before date of loss<small>ended 09 Sep · loss 11 Sep</small></span></div>
+        <div class="fl"><span class="t hi">HIGH</span><span class="d">Estimate total ≠ line items<small>₹62,400 printed · ₹58,900 sums</small></span></div>
+        <div class="fl"><span class="t dmg">DAMAGE</span><span class="d">Front bumper — scratch, moderate</span></div>
+        <div class="fl"><span class="t pass">VAHAN</span><span class="d">Plate &amp; chassis match<small>verified against source</small></span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ B ============ -->
+<div class="label"><b>Direction B — “Product-led”</b> <span>medium · bright editorial · show the real thing</span><span class="tag">risk: medium · credible</span></div>
+<section class="B">
+  <div class="wrap">
+    <div>
+      <div class="kicker">Claims intelligence for insurers</div>
+      <h1>Know what to check — before you pay.</h1>
+      <p class="sub">Send vehicle photos, video and claim documents. Get a damage report, a fraud score and the red flags behind it, each with a reason. Your team makes the call.</p>
+      <div class="cta"><span class="b1">Request a demo</span><span class="b2">See the API →</span></div>
+      <div class="meta"><span><i></i>Vahan-checked</span><span><i></i>Hindi &amp; English</span><span><i></i>PDF &amp; JSON</span></div>
+    </div>
+
+    <div class="win">
+      <div class="bar"><span class="d" style="background:#ff5f57"></span><span class="d" style="background:#febc2e"></span><span class="d" style="background:#28c840"></span>
+        <span class="url">app.modules — cases / CLM-2026-90377</span></div>
+      <div class="app">
+        <div class="side">
+          <div class="lg">
+            <svg width="20" height="20" viewBox="0 0 104 104"><path d="M28 64 L52 52 L76 64" fill="none" stroke="#2dd4bf" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/><path d="M40 44 L52 32 L64 44" fill="none" stroke="#fbbf24" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Modules</div>
+          <div class="nav"><a class="on">Cases</a><a>Capture</a><a>Developers</a></div>
+        </div>
+        <div class="main">
+          <div class="h"><span class="ttl">Maruti Suzuki Swift · 2019</span><span class="reg mono">MH 12 AB 1234</span></div>
+          <div class="tiles">
+            <div class="tile"><div class="k">Fraud score</div><div class="v hi">78</div></div>
+            <div class="tile"><div class="k">Red flags</div><div class="v">4+1</div></div>
+            <div class="tile"><div class="k">Parts</div><div class="v">3</div></div>
+            <div class="tile"><div class="k">Vahan</div><div class="v" style="color:#0e7c7b;font-size:15px;padding-top:6px">Match</div></div>
+          </div>
+          <table>
+            <thead><tr><th>Sev</th><th>Check</th><th>Why it was flagged</th></tr></thead>
+            <tbody>
+              <tr><td><span class="pill hi">HIGH</span></td><td>Policy on date of loss</td><td>Ended 9 Sep · loss 11 Sep</td></tr>
+              <tr><td><span class="pill hi">HIGH</span></td><td>Chassis across docs</td><td>Estimate 4471 · RC 4417</td></tr>
+              <tr><td><span class="pill hi">HIGH</span></td><td>Estimate vs line items</td><td>₹62,400 vs ₹58,900</td></tr>
+              <tr><td><span class="pill md">MED</span></td><td>File edited after creation</td><td>Saved 2 days after garage date</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+</body>
+</html>

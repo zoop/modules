@@ -1,0 +1,742 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Mimir — the Modules intelligence engine</title>
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<style>
+  :root{
+    --bg:#f6f5f1; --panel:#fff; --ink:#191919; --muted:#70706a; --line:#e4e1d8;
+    --accent:#1f6feb; --accent-soft:#e9f0fe; --code:#f0eee8; --shadow:0 1px 2px rgba(0,0,0,.05);
+    --platform:#1f6feb; --pack:#b4530a; --cross:#5a4fcf;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{ --bg:#0e1014; --panel:#161922; --ink:#e8eaef; --muted:#97a0ae; --line:#272c38;
+      --accent:#6aa2ff; --accent-soft:#182238; --code:#1b1f2a; --shadow:0 1px 2px rgba(0,0,0,.4);
+      --platform:#6aa2ff; --pack:#f0a062; --cross:#a79cff;}
+  }
+  [data-theme="light"]{--bg:#f6f5f1;--panel:#fff;--ink:#191919;--muted:#70706a;--line:#e4e1d8;--accent:#1f6feb;--accent-soft:#e9f0fe;--code:#f0eee8;--shadow:0 1px 2px rgba(0,0,0,.05);--platform:#1f6feb;--pack:#b4530a;--cross:#5a4fcf}
+  [data-theme="dark"]{--bg:#0e1014;--panel:#161922;--ink:#e8eaef;--muted:#97a0ae;--line:#272c38;--accent:#6aa2ff;--accent-soft:#182238;--code:#1b1f2a;--shadow:0 1px 2px rgba(0,0,0,.4);--platform:#6aa2ff;--pack:#f0a062;--cross:#a79cff}
+  *{box-sizing:border-box}
+  html,body{margin:0;background:var(--bg);color:var(--ink);
+    font:16px/1.65 ui-sans-serif,-apple-system,"Segoe UI",Inter,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+  .wrap{display:grid;grid-template-columns:280px 1fr;min-height:100vh}
+  aside{position:sticky;top:0;height:100vh;overflow:auto;border-right:1px solid var(--line);background:var(--panel);padding:28px 20px}
+  .brand{font-weight:700;font-size:20px;letter-spacing:-.02em;margin:0 0 2px}
+  .brand .dot{color:var(--accent)}
+  .tag{color:var(--muted);font-size:12.5px;margin:0 0 22px}
+  .navgroup{font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin:16px 0 4px;padding:0 12px}
+  nav{display:flex;flex-direction:column;gap:2px}
+  nav a{color:var(--ink);text-decoration:none;padding:8px 12px;border-radius:8px;font-size:14.5px}
+  nav a:hover{background:var(--accent-soft)}
+  nav a.active{background:var(--accent-soft);color:var(--accent);font-weight:600}
+  .aside-foot{margin-top:16px;border-top:1px solid var(--line);padding-top:14px;display:flex;flex-direction:column;gap:9px}
+  .aside-foot a{color:var(--muted);font-size:13px;text-decoration:none}
+  .aside-foot a:hover{color:var(--accent)}
+  .theme{margin-top:16px;border:1px solid var(--line);background:transparent;color:var(--muted);border-radius:8px;padding:7px 12px;font-size:13px;cursor:pointer;width:100%}
+  main{padding:56px 7vw;max-width:1040px}
+  section{display:none;animation:f .18s ease}
+  section.on{display:block}
+  @keyframes f{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+  h1{font-size:30px;letter-spacing:-.02em;margin:.2em 0 .5em}
+  h2{font-size:22px;letter-spacing:-.01em;margin:1.7em 0 .5em;padding-top:.3em;border-top:1px solid var(--line)}
+  h3{font-size:17px;margin:1.4em 0 .4em}
+  a{color:var(--accent)}
+  blockquote{margin:1em 0;padding:.6em 1em;border-left:3px solid var(--accent);background:var(--accent-soft);border-radius:0 8px 8px 0}
+  blockquote p{margin:.3em 0}
+  code{background:var(--code);padding:.12em .4em;border-radius:5px;font-size:.88em;font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+  pre{background:var(--code);padding:16px;border-radius:12px;overflow:auto;border:1px solid var(--line);box-shadow:var(--shadow)}
+  pre code{background:none;padding:0;font-size:12.5px;line-height:1.5}
+  table{border-collapse:collapse;width:100%;margin:1.2em 0;font-size:14px;display:block;overflow:auto}
+  th,td{border:1px solid var(--line);padding:9px 12px;text-align:left;vertical-align:top}
+  th{background:var(--accent-soft);font-weight:600}
+  tr:nth-child(even) td{background:color-mix(in srgb,var(--panel) 60%,var(--bg))}
+  hr{border:none;border-top:1px solid var(--line);margin:2em 0}
+  .maphead{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap}
+  .maphead h1{margin:.2em 0}
+  .openfull{font-size:13.5px;white-space:nowrap}
+  .lead{color:var(--muted);margin:0 0 18px;font-size:15px}
+  iframe.embed{width:100%;border:1px solid var(--line);border-radius:14px;background:var(--panel);min-height:640px;box-shadow:var(--shadow)}
+  @media(max-width:860px){.wrap{grid-template-columns:1fr}aside{position:static;height:auto}main{padding:32px 20px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <aside>
+    <p class="brand">Mimir<span class="dot">.</span></p>
+    <p class="tag">the Modules intelligence engine · architecture docs</p>
+    <nav id="nav"><p class="navgroup">Start here</p>
+<a href="#agenda" data-target="agenda">Meeting agenda</a>
+<a href="#s0" data-target="s0">Overview</a>
+<p class="navgroup">See it</p>
+<a href="#map" data-target="map">At a glance · example</a>
+<a href="#arch" data-target="arch">Architecture map</a>
+<a href="#bt" data-target="bt">Back-test (one page)</a>
+<p class="navgroup">The modules</p>
+<a href="#mod-capture" data-target="mod-capture">Capture</a>
+<a href="#mod-extract" data-target="mod-extract">Extract</a>
+<a href="#mod-vision" data-target="mod-vision">Vision</a>
+<a href="#mod-verify" data-target="mod-verify">Verify</a>
+<a href="#mod-detect" data-target="mod-detect">Detect</a>
+<a href="#mod-estimate" data-target="mod-estimate">Estimate</a>
+<a href="#mod-decide" data-target="mod-decide">Decide</a>
+<p class="navgroup">The docs</p>
+<a href="#s1" data-target="s1">Platform Goal</a>
+<a href="#s2" data-target="s2">Component Architecture</a>
+<a href="#s3" data-target="s3">Products & Back-Test</a>
+<a href="#s4" data-target="s4">Domains</a>
+<a href="#s5" data-target="s5">Detailed Architecture</a>
+<a href="#s6" data-target="s6">Build Phases</a></nav>
+    <div class="aside-foot">
+      <p class="navgroup" style="margin:0 0 4px;padding:0 12px">Present</p>
+      <a href="pages/presentation.html" target="_blank" rel="noopener">▸ The deck (16 slides)</a>
+      <a href="pages/speaker-crib.html" target="_blank" rel="noopener">▸ Speaker crib</a>
+    </div>
+    <button class="theme" id="theme">◐ Toggle theme</button>
+  </aside>
+  <main id="main"><section id="agenda">
+  <div class="maphead"><h1>Meeting agenda</h1><a class="openfull" href="pages/agenda.html" target="_blank" rel="noopener">Open full view ↗</a></div>
+  <p class="lead">What we’re thinking and what we want to decide together — the running order for the review. Dig into any layer using the sidebar.</p>
+  <iframe class="embed" src="pages/agenda.html" title="Meeting agenda"></iframe>
+</section>
+<section id="s0"><script type="text/markdown"># Mimir — the Modules intelligence engine
+
+> **Codename:** **Mimir** (Norse: keeper of the well of wisdom — the counsel you consult before
+> you decide; the human still decides). The engineering platform. Slots beside `bragi` under the
+> repo's Norse-codename convention.
+> **Status:** Draft for review · **Scope:** platform engineering architecture, product-agnostic
+> **Names:** **Modules** is the provisional product/market name; **Mimir** is the engine codename.
+
+## In one paragraph
+
+**Modules** is a domain-agnostic intelligence platform: one engine that turns raw evidence —
+images, video, documents, structured data — into a verified, risk-scored, costed, auditable
+decision, delivered by API, webhook and a no-install capture link. The engine knows nothing about
+any industry. **Domain knowledge is injected as a *pack*, never built in.** Product managers build
+products (vehicle inspection, document extraction, a fraud engine, an agentic assistant, …) by
+authoring a pack and choosing entitlements — not by changing the platform. New category = a new
+pack, **zero engine change**.
+
+## Start here
+
+**Open [`index.html`](./index.html)** — the hub. Everything below is reachable from its sidebar.
+
+## Folder map
+
+| Path | What it is |
+|---|---|
+| `index.html` | **The hub** — agenda, visual pages, module chapters and specs, one connected site |
+| `spec/01…06-*.md` | The written specs: goal → component architecture → products & back-test → domains → detailed architecture → build phases |
+| `pages/` | The standalone pages: `agenda`, `diagram` (one case end-to-end), `components` (five planes), `backtest` (13×18 matrix), `presentation` (16-slide deck), `speaker-crib`, and the seven `module-*` chapters |
+| `meeting/meeting-qa.md` | Adversarial meeting-prep brief: thin ice, per-role Q&A |
+| `tools/generate-*.mjs` | Generators — `index.html` and the module pages are **generated**; edit the generator (or the `spec/*.md`), then `node tools/generate-index.mjs && node tools/generate-module-pages.mjs` |
+
+## Reading order for the specs
+
+1. [`spec/01-platform-goal.md`](./spec/01-platform-goal.md) — the engineering goal and what "done" means.
+2. [`spec/02-component-architecture.md`](./spec/02-component-architecture.md) — the component architecture:
+   the planes, every component, one diagram.
+3. [`spec/03-products-and-usecases.md`](./spec/03-products-and-usecases.md) — sample products and use cases,
+   each **back-tested** against the architecture; the gaps this surfaced and the components added.
+4. [`spec/04-domains.md`](./spec/04-domains.md) — the domains we can serve and how each becomes a pack.
+5. [`spec/05-detailed-architecture.md`](./spec/05-detailed-architecture.md) — the deep dive: capability
+   services, the signal model, orchestration modes, data flow, contracts.
+6. [`spec/06-build-phases.md`](./spec/06-build-phases.md) — how we build it, in phases.
+
+## Glossary (read first — the names collide otherwise)
+
+| Term | Meaning |
+|---|---|
+| **Platform / engine** | The domain-agnostic intelligence pipeline, built once. |
+| **Capability service** | One engine capability — usable *and* sellable alone (Capture, Extract, Vision, Verify, Detect, Estimate, Decide). |
+| **Pack** | A domain configuration that lights up the engine for one category. |
+| **Product** | A pack + entitlements + branding + surface, assembled by a PM. |
+| **Case** | The unit of work — one event start-to-finish; everything hangs off it. |
+| **Signal** | A typed output any stage writes to the case; downstream stages read the whole set. |
+| **Pack vs product** | A pack is the config; a product is a pack made sellable (entitlements, pricing, surface). |
+</script></section>
+<section id="map">
+  <div class="maphead"><h1>At a glance — one case, end to end</h1><a class="openfull" href="pages/diagram.html" target="_blank" rel="noopener">Open full view ↗</a></div>
+  <p class="lead">Follow a single motor-claim case through Mimir. The <b>middle (platform) column never changes</b> between products — only the pack does. Dig into any layer using the sidebar.</p>
+  <iframe class="embed" src="pages/diagram.html" title="At a glance — one case, end to end"></iframe>
+</section>
+<section id="arch">
+  <div class="maphead"><h1>Five planes, one map</h1><a class="openfull" href="pages/components.html" target="_blank" rel="noopener">Open full view ↗</a></div>
+  <p class="lead">The service / component architecture: how the planes connect, and how a client can take one module or a group. Dig into any layer using the sidebar.</p>
+  <iframe class="embed" src="pages/components.html" title="Five planes, one map"></iframe>
+</section>
+<section id="bt">
+  <div class="maphead"><h1>The back-test, on one page</h1><a class="openfull" href="pages/backtest.html" target="_blank" rel="noopener">Open full view ↗</a></div>
+  <p class="lead">13 sample products × 18 requirements. Every product forces at least one — the engine + packs split held for all. Dig into any layer using the sidebar.</p>
+  <iframe class="embed" src="pages/backtest.html" title="The back-test, on one page"></iframe>
+</section>
+<section id="mod-capture">
+  <div class="maphead"><h1>Capture</h1><a class="openfull" href="pages/module-capture.html" target="_blank" rel="noopener">Open full view ↗</a></div>
+  <p class="lead">Module 01 of 07 — the story, what we will build, the contract, implementation notes, and the open questions. Dig into any layer using the sidebar.</p>
+  <iframe class="embed" src="pages/module-capture.html" title="Capture"></iframe>
+</section>
+<section id="mod-extract">
+  <div class="maphead"><h1>Extract</h1><a class="openfull" href="pages/module-extract.html" target="_blank" rel="noopener">Open full view ↗</a></div>
+  <p class="lead">Module 02 of 07 — the story, what we will build, the contract, implementation notes, and the open questions. Dig into any layer using the sidebar.</p>
+  <iframe class="embed" src="pages/module-extract.html" title="Extract"></iframe>
+</section>
+<section id="mod-vision">
+  <div class="maphead"><h1>Vision</h1><a class="openfull" href="pages/module-vision.html" target="_blank" rel="noopener">Open full view ↗</a></div>
+  <p class="lead">Module 03 of 07 — the story, what we will build, the contract, implementation notes, and the open questions. Dig into any layer using the sidebar.</p>
+  <iframe class="embed" src="pages/module-vision.html" title="Vision"></iframe>
+</section>
+<section id="mod-verify">
+  <div class="maphead"><h1>Verify</h1><a class="openfull" href="pages/module-verify.html" target="_blank" rel="noopener">Open full view ↗</a></div>
+  <p class="lead">Module 04 of 07 — the story, what we will build, the contract, implementation notes, and the open questions. Dig into any layer using the sidebar.</p>
+  <iframe class="embed" src="pages/module-verify.html" title="Verify"></iframe>
+</section>
+<section id="mod-detect">
+  <div class="maphead"><h1>Detect</h1><a class="openfull" href="pages/module-detect.html" target="_blank" rel="noopener">Open full view ↗</a></div>
+  <p class="lead">Module 05 of 07 — the story, what we will build, the contract, implementation notes, and the open questions. Dig into any layer using the sidebar.</p>
+  <iframe class="embed" src="pages/module-detect.html" title="Detect"></iframe>
+</section>
+<section id="mod-estimate">
+  <div class="maphead"><h1>Estimate</h1><a class="openfull" href="pages/module-estimate.html" target="_blank" rel="noopener">Open full view ↗</a></div>
+  <p class="lead">Module 06 of 07 — the story, what we will build, the contract, implementation notes, and the open questions. Dig into any layer using the sidebar.</p>
+  <iframe class="embed" src="pages/module-estimate.html" title="Estimate"></iframe>
+</section>
+<section id="mod-decide">
+  <div class="maphead"><h1>Decide</h1><a class="openfull" href="pages/module-decide.html" target="_blank" rel="noopener">Open full view ↗</a></div>
+  <p class="lead">Module 07 of 07 — the story, what we will build, the contract, implementation notes, and the open questions. Dig into any layer using the sidebar.</p>
+  <iframe class="embed" src="pages/module-decide.html" title="Decide"></iframe>
+</section>
+<section id="s1"><script type="text/markdown"># 1 · Platform Goal
+
+> Engine codename: **Mimir**. "Modules" is the provisional product/market name.
+
+## Engineering goal
+
+Build **one engine** that turns raw evidence into a trusted decision, and make every industry
+specific thing a **configuration on top of it**, so that:
+
+- A new product is launched by writing a **pack** + setting **entitlements** + pointing a
+  **surface** at a market — with **no change to the engine**.
+- Every capability (capture, extraction, vision, verification, risk, estimation, decisioning) is
+  **independently usable and sellable**, and also **composes** into a whole.
+- The same codebase runs **many products across many domains** at once.
+
+## Why a platform and not a product
+
+The market has many adjacent problems that are the *same shape*: collect evidence → understand it
+→ check it against truth → score/cost it → decide, auto or human. Building each as a bespoke
+product means rebuilding that shape every time. Building the shape **once** and injecting domain
+knowledge means the marginal cost of the next product is a pack, not a platform.
+
+This also hands product managers the freedom they actually need: to chase a different market or a
+different competitor by writing configuration, while engineering keeps building depth in the
+common engine.
+
+## Non-goals
+
+- **Not** a single-vertical product. Any vertical is a pack; none is privileged in the engine.
+- **Not** a bespoke-per-customer build. Customers get entitlements + a pack, not a fork.
+- **Not** a model lab. We integrate and route models (own and third-party) through a gateway; we
+  are not in the business of training foundation models.
+
+## What "done" looks like
+
+- One product is live end-to-end on the platform (evidence in → decision out, via API + link +
+  dashboard, with webhooks and an audit trail).
+- A **second product in a different domain** is stood up **without engine changes** — proving the
+  pack boundary is real.
+- Every automated decision is **explainable and auditable**, and human corrections **feed back**
+  into the models and rules.
+- We can **measure and publish** accuracy per capability, per pack.
+
+## The two planes (the whole idea in one picture)
+
+```
+PRODUCT LAYER (per category — assembled by PMs, no engine change)
+  pack { schemas · model bindings · source connectors · reference data ·
+         rules · workflow/agent policy · thresholds · report template }
+       + entitlements + branding + surface
+  ───────────────────────────────────────────────────────────────────────
+PLATFORM (built once — domain-agnostic)
+  Edge/Delivery · Case · Intelligence Engine · Orchestration · Cross-cutting
+```
+</script></section>
+<section id="s2"><script type="text/markdown"># 2 · Component Architecture
+
+> The map of what we build. Everything here is **domain-agnostic**. Domain specifics live in packs
+> ([`04-domains.md`](./04-domains.md)). Components marked **(added by back-test)** were forced by
+> running the sample products through the design — see [`03-products-and-usecases.md`](./03-products-and-usecases.md).
+
+## The component map
+
+```
+┌─ EDGE / DELIVERY ─────────────────────────────────────────────────────────┐
+│ Capture-Link Svc · API Gateway · Webhook/Event Delivery · Dashboard BFF ·  │
+│ File Ingest · Capture-Quality / Preprocessing (added by back-test)         │
+└─────────────────────────────────────────────────────────────────────────────┘
+┌─ CASE PLANE ──────────────────────────────────────────────────────────────┐
+│ Case Svc (event-sourced) · Evidence Store (content-addressed) ·            │
+│ Signal Model (typed outputs) · Entity / Link Graph (added by back-test)    │
+└─────────────────────────────────────────────────────────────────────────────┘
+┌─ INTELLIGENCE ENGINE — capability services ───────────────────────────────┐
+│ Extract(schema) · Vision(features) · Verify(sources) · Detect(rules) ·     │
+│ Estimate(reference data) (added by back-test) · Decide(thresholds)         │
+└─────────────────────────────────────────────────────────────────────────────┘
+┌─ ORCHESTRATION (two modes) ───────────────────────────────────────────────┐
+│ Workflow Engine — deterministic pack-defined DAG                           │
+│ Agent Runtime — LLM drives, services are tools (added by back-test)        │
+└─────────────────────────────────────────────────────────────────────────────┘
+┌─ SHARED ENGINE SERVICES ──────────────────────────────────────────────────┐
+│ Model Gateway (added by back-test) · Reference Data (added by back-test) · │
+│ Pack Registry (schemas, rules, bindings, policy, entitlements)             │
+└─────────────────────────────────────────────────────────────────────────────┘
+┌─ CROSS-CUTTING ───────────────────────────────────────────────────────────┐
+│ Identity/Tenancy · Entitlements · Audit Log · Metering/Billing ·           │
+│ Review Console + Feedback loop · Eval/Model Registry ·                     │
+│ Compliance plane (added by back-test — and a USP)                          │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+## Components at a glance
+
+### Edge / Delivery — how any product reaches the world
+| Component | Responsibility |
+|---|---|
+| **Capture-Link Service** | No-install, time-boxed links (SMS/WhatsApp/email); guided capture; consent recorded with the case. |
+| **API Gateway** | REST + webhooks; per-tenant auth (sandbox/live), rate limits, idempotency, routing. |
+| **Webhook / Event Delivery** | Signed, retried, replayable outbound events on every case state change. |
+| **Dashboard BFF** | Backend-for-frontend for the enterprise console. |
+| **File Ingest** | Presigned uploads, malware scan, format/size validation. |
+| **Capture-Quality / Preprocessing** *(added)* | Real-time quality gating (blur/glare/coverage), deskew/denoise, re-shoot guidance. The "best capture" capability. |
+
+### Case plane — the system of record
+| Component | Responsibility |
+|---|---|
+| **Case Service** | Event-sourced unit of work; the log *is* the audit trail. |
+| **Evidence Store** | Content-addressed raw artifacts; retention + residency per pack/tenant. |
+| **Signal Model** | Typed outputs every stage writes and every downstream stage reads (load-bearing — see detailed arch). |
+| **Entity / Link Graph** *(added)* | Cross-case entity resolution and links (claims rings, duplicate financing, cross-tenant shared checks, privacy-preserving). |
+
+### Intelligence engine — the capability services
+`Extract` · `Vision` · `Verify` · `Detect` · `Estimate` *(added)* · `Decide`. Each has a stable
+domain-neutral contract; a pack supplies its schema/model/rules/reference-data. Full specs in
+[`05-detailed-architecture.md`](./05-detailed-architecture.md).
+
+### Orchestration — two modes, same services
+| Mode | Use |
+|---|---|
+| **Workflow Engine** | Deterministic, pack-defined DAG; durable; partial-input tolerant; human-in-the-loop pauses. Default for structured products. |
+| **Agent Runtime** *(added)* | An LLM reasons over the case and calls capability services as **tools**; guardrailed; case-scoped memory; full reasoning trace for audit. Powers "agentic" products. |
+
+**Execution model (orthogonal to mode):** every capability is reachable **sync** (request/response,
+single-shot, low-latency) *and* **async** (case-based, webhook on completion). Async work carries a
+**priority class** (`interactive` > `standard` > `batch`), per-capability queues, and per-tenant
+fairness. Detail in [`05-detailed-architecture.md`](./05-detailed-architecture.md) §5.3.
+
+### Shared engine services
+| Component | Responsibility |
+|---|---|
+| **Model Gateway** *(added)* | Provider-agnostic access to LLMs/vision models (own + third-party): routing, fallback, versioning, cost/latency control. Used by Extract, Vision, Detect, Estimate, Agent Runtime. |
+| **Reference Data** *(added)* | Versioned catalogs/price-lists/rate-cards (distinct from identity sources). Powers Estimate. |
+| **Pack Registry** | Versioned store of each pack: schemas, rules, thresholds, prompts, model + reference-data bindings, workflow DAG / agent policy, entitlements. Sandbox vs live. |
+
+### Cross-cutting
+Identity/Tenancy · Entitlements (which services a tenant may call) · Audit Log · Metering/Billing ·
+**Review Console + Feedback loop** (human decisions + corrections become labels) · **Eval/Model
+Registry** (versioned models + eval sets → published accuracy) · **Compliance plane** *(added)* —
+policy-as-config per pack, enforced by the platform at runtime (residency, consent lifecycle,
+retention/erasure, PII, purpose-limited access, regulator-grade audit, decision guardrails,
+certification posture). Built once, inherited by every pack — **"compliant by construction" is a
+product USP.** Detail in [`05-detailed-architecture.md`](./05-detailed-architecture.md) §5.7.
+
+## What a PM touches vs. what engineering owns
+
+- **Engineering owns, builds once:** everything in Edge, Case, Engine, Orchestration, Shared
+  (minus pack contents), and Cross-cutting.
+- **A PM assembles a product from:** a **Pack Registry** entry + **Entitlements** + **Surface**.
+  No code in the engine.
+</script></section>
+<section id="s3"><script type="text/markdown"># 3 · Products, Use Cases & Back-Test
+
+> The method: take real products we want to build, run each through the component architecture,
+> and find what it needs that the architecture **doesn't have yet** — then add that component.
+> The architecture in [`02-component-architecture.md`](./02-component-architecture.md) is the
+> *result* of this exercise. **The idea does not fail** — the engine + packs split holds for every
+> product below — but the back-test forced eighteen requirements.
+
+## Sample products
+
+The seven you named, plus six I've added to widen the back-test (non-vehicle, agentic, media,
+cross-case). Each is a product a PM could assemble from the platform.
+
+| # | Product | Capabilities used | Domain |
+|---|---|---|---|
+| P1 | **Vehicle inspection** | Capture, Capture-Quality, Vision | Motor |
+| P2 | **Document extraction** | Capture, Capture-Quality, Extract | Any |
+| P3 | **Agentic AI assistant** | Agent Runtime over all services | Any |
+| P4 | **Estimate-from-images** | Vision, Estimate, Reference Data | Motor / property |
+| P5 | **Fraud engine** | Detect (+ Entity/Link Graph) | Any |
+| P6 | **Verification engine** | Verify (+ source connectors) | Identity-bearing |
+| P7 | **Best capture + extraction** | Capture-Quality, Capture, Extract, Vision | Any |
+| P8 | **KYC / onboarding** *(added)* | Extract, Verify, Detect | Financial / telco |
+| P9 | **Lending collateral valuation** *(added)* | Vision, Estimate, Verify | Lending |
+| P10 | **Before/after condition monitoring** *(added)* | Capture, Vision (compare) | Fleet / logistics / warranty |
+| P11 | **Media authenticity / tamper check** *(added)* | Detect (on images alone) | Any |
+| P12 | **Invoice / expense audit** *(added)* | Extract, Detect | Finance / enterprise |
+| P13 | **Health claim checks** *(added)* | Extract, Vision, Detect, Decide | Health (compliance-heavy) |
+
+## Back-test — what each product stressed, and the gap it forced
+
+| Product | What it stresses | Gap it exposed → requirement |
+|---|---|---|
+| P1 Vehicle inspection | Vision must return motor features without the engine knowing "damage" | Engine vocabulary must stay generic → **R4** |
+| P2 Document extraction | A standalone extract product needs schema management + correction UI | Pack Registry for schemas → **R15**; review as a product surface → **R16** |
+| P3 **Agentic AI** | The design only had a *deterministic* DAG; an agent must reason and pick steps dynamically | **Agent Runtime** (services-as-tools, guardrails, trace) → **R9**; a **Model Gateway** to call LLMs → **R10** |
+| P4 **Estimate-from-images** | Mapping detected features → cost needs priced reference data + a calc capability | **Reference-Data plane** → **R11**; **Estimate** capability service → **R12** |
+| P5 Fraud engine | "Links across claims", duplicate financing, cross-insurer checks aren't single-case | **Entity / Link Graph** → **R13** |
+| P6 Verification engine | Government/registry rails must plug in, async, fail-soft | **Source-of-Truth connector interface** → **R5** |
+| P7 **Best capture** | Capture quality is itself the product and a shared enhancer | **Capture-Quality / Preprocessing** component → **R14** |
+| P8 KYC (non-vehicle) | Nothing vehicle-specific may leak into the engine | Confirms **R4**; packs own all domain schema |
+| P9 Lending valuation | Estimate + Verify composed in a non-insurance domain | Confirms **R11/R12** are domain-neutral |
+| P10 Before/after | Compare two capture sessions — "what changed?" | Multi-session case + Vision compare mode → **R3** |
+| P11 Media authenticity | Detect must run on images alone (manipulation/AI-generation) | Confirms **R2** (Detect reads a generic signal set, any subset) |
+| P12 Invoice audit | Detect on documents alone (inflation, mismatch) | Confirms **R2**; Detect is modality-agnostic |
+| P13 Health claims | Health-data sensitivity, DPDP, residency, consent, purpose limits — *different per domain* | **Compliance plane** → **R18** (supersedes R8); compliance-aware model routing |
+| A customer waiting at a link vs. a bulk batch job | Not all async work is equal; single-shot calls need a sync path | **Sync + async with priority classes** → **R17** |
+
+## The eighteen requirements
+
+Carried from the first back-test (R1–R8) and added by these products (R9–R18).
+
+| # | Requirement | Forced by |
+|---|---|---|
+| R1 | Pipeline is a **pack-defined DAG**, not a fixed linear line (stages optional) | subset products (P6, P2) |
+| R2 | A shared typed **Signal model** on the case — the thing that makes fused checks generic *(load-bearing)* | P5, P11, P12 |
+| R3 | Case holds **ordered capture sessions + a compare op** | P10 |
+| R4 | **Engine vocabulary stays generic**; domain concepts live only in packs | P1, P8 |
+| R5 | **Source-of-Truth connector interface** (async, cached, fail-soft) | P6 |
+| R6 | A **Feedback & Eval plane** (labels from review, eval harness, model registry) | publishing accuracy; training loop |
+| R7 | **Durable, long-lived orchestration** (human review can take days) | P1–P12 Decide/Flow |
+| R8 | **PII / residency / retention as pack+tenant policy** | identity-bearing products |
+| R9 | **Agent Runtime** — LLM drives, capability services are tools, guardrailed, traced | P3 |
+| R10 | **Model Gateway** — provider-agnostic model access, routing, versioning | P3 + all model-using services |
+| R11 | **Reference-Data plane** — versioned catalogs/price-lists/rate-cards | P4, P9 |
+| R12 | **Estimate** capability service — features + reference data → itemized cost | P4, P9 |
+| R13 | **Entity / Link Graph** — cross-case entity resolution & link fraud | P5 |
+| R14 | **Capture-Quality / Preprocessing** component | P7 |
+| R15 | **Pack Registry** — versioned schemas, rules, bindings, policy, entitlements (sandbox/live) | P2 and all |
+| R16 | **Review Console as a productizable surface**, not just a feedback sink | P2 |
+| R17 | **Dual execution: sync + async**, async with **priority classes** + per-capability queues + per-tenant fairness | live-link vs batch work |
+| R18 | **Compliance plane** — policy-as-config per pack, enforced by the platform (residency, consent lifecycle, retention/erasure, PII, purpose-limited access, regulator-grade audit, decision guardrails, certification posture). **A USP.** Supersedes R8 | P13 + every identity/health/finance product |
+
+## Verdict
+
+- **The platform thesis survives every product.** Each is "evidence → understand → check → cost →
+  decide," composed from the same services with a different pack.
+- **Compliance holds the thesis too.** Different regimes per domain (health/DPDP, insurance/IRDAI,
+  lending/RBI, residency everywhere) do **not** fork the engine: each pack *declares* its regime and
+  the **Compliance plane enforces it at runtime** (R18). Because it is built once and inherited by
+  every pack, "compliant by construction" becomes a **selling point**, not a per-product cost. One
+  caveat it forced: the **Model Gateway must be compliance-aware** — never route restricted PII to a
+  non-compliant model/region, and redact before egress.
+- **What changed:** the engine gained one capability service (**Estimate**), a second orchestration
+  mode (**Agent Runtime**), four shared/cross-cutting components (**Model Gateway**, **Reference
+  Data**, **Entity/Link Graph**, **Capture-Quality**), a **dual sync/async execution model with
+  priority** (R17), and a **Compliance plane** (R18). All are in
+  [`02-component-architecture.md`](./02-component-architecture.md) and detailed in
+  [`05-detailed-architecture.md`](./05-detailed-architecture.md).
+- **The one existential risk** is R4 — domain vocabulary leaking into the engine. It is a
+  discipline problem, guarded by R2 (services speak generic signals) and the pack boundary.
+- **Scope discipline (lazy-but-right):** build generic *contracts* now; do **not** build a pack-
+  authoring SDK, plugin marketplace, or the cross-tenant link graph until a *second* real product
+  needs them. One example can't design a good extension API. See [`06-build-phases.md`](./06-build-phases.md).
+</script></section>
+<section id="s4"><script type="text/markdown"># 4 · Domains
+
+> A **domain** is a category the platform serves. A domain is expressed entirely as a **pack** —
+> never as engine code. This file lists the domains we can serve and what each pack supplies.
+
+## A domain = a pack
+
+Every domain binds the same six slots. The engine is identical across all of them; only these
+bindings differ.
+
+| Pack slot | What it is | Feeds |
+|---|---|---|
+| **Schemas** | The entities/fields that matter in this domain | Extract, Vision |
+| **Feature schema** | What Vision should detect/measure | Vision |
+| **Source connectors** | Which registries/APIs are authoritative | Verify |
+| **Reference data** | Catalogs / price-lists / rate-cards | Estimate |
+| **Rules + weights** | What is risky / invalid here | Detect |
+| **Policy** | Workflow DAG or agent policy, thresholds, hard limits, report template | Orchestration, Decide |
+
+## Domains we can serve
+
+| Domain | Example products | Feature schema (Vision) | Sources (Verify) | Reference data (Estimate) | Risk rules (Detect) |
+|---|---|---|---|---|---|
+| **Motor / vehicle** | P1, P4, P5, P10 | damage, parts, severity, plate, odometer | RC/Vahan, DL, PAN, GST | parts catalog, labour rates | tampering, inflation, claims links, story-fit |
+| **Property** | valuation, damage claims | rooms, fixtures, damage area | land/title registries | material & labour rates | over-scoping, duplicate claims |
+| **Health** | claim document checks | medical imagery, bill line-items | provider/registry lookups | procedure/drug price lists | up-coding, duplicate billing |
+| **Lending / financial** | P8, P9 | collateral condition | bank, PAN, GST, bureau | collateral valuation tables | duplicate financing, identity mismatch |
+| **Logistics / fleet** | P10 | condition before/after, seals | fleet registries | — | transit-damage disputes |
+| **Used-car / resale** | condition grading | condition, odometer, parts | RC/Vahan, loan-on-RC | resale price guides | odometer rollback, ownership |
+| **Identity / KYC** | P6, P8 | — (document-first) | ID registries | — | forgery, mismatch, synthetic ID |
+| **Media / content** | P11 | tamper/AI-gen signals | — | — | manipulation, re-digitisation, reuse |
+| **Finance / enterprise** | P12 | — (document-first) | GST, bank | — | invoice inflation, duplicate, mismatch |
+
+## What the engine must never assume
+
+Driven by **R4** (the existential risk). None of these may appear in engine code — only in a pack:
+
+- A specific feature vocabulary (e.g. "bumper", "fracture", "room"). Vision returns a *pack-defined*
+  feature schema.
+- A specific source of truth (e.g. Vahan). Verify calls *pack-selected* connectors.
+- A specific price basis. Estimate reads *pack-bound* reference data.
+- A specific risk rule or threshold. Detect/Decide run *pack-supplied* rules and limits.
+
+If a new domain needs something none of the six slots can express, that is a **signal to extend the
+engine contract deliberately** — not to special-case the domain in engine code.
+
+## Expansion model
+
+Category N+1 = a new pack (six bindings) + entitlements + surface. **Zero engine change.** The
+platform's leverage is that the hardest, most expensive parts (ingestion, orchestration, model
+gateway, audit, review/feedback) are built once and shared across every domain above.
+</script></section>
+<section id="s5"><script type="text/markdown"># 5 · Detailed Architecture
+
+> The deep dive behind [`02-component-architecture.md`](./02-component-architecture.md): the
+> capability-service contracts, the signal model, the execution model (sync/async + priority),
+> the two orchestration modes, and the compliance plane. Everything domain-agnostic.
+
+## 5.1 Capability services
+
+Each service has a stable domain-neutral contract; a pack supplies the schema/model/rules/
+reference-data it runs with. Each is usable **alone** (sync or async) and **composed** (as a
+workflow/agent step).
+
+| Service | Does | In → Out | Pack injects | Sold as |
+|---|---|---|---|---|
+| **Capture** (+ Capture-Quality) | Collect evidence, no install; gate quality | capture request → link/upload → validated artifacts + consent | capture script, quality thresholds, consent copy, language | per session |
+| **Extract** | Documents → structured fields | documents → typed field signals + source spans + confidence | document schemas, model binding | per document/page |
+| **Vision** | Images/video → domain features; or **diff** two sessions | media → feature signals (regions, classes, scores) per pack schema | feature schema, vision model binding | per inspection/comparison |
+| **Verify** | Prove authenticity/consistency vs sources | entities → match/mismatch signals + figures | which Source-of-Truth connectors, cross-check rules | per verification/lookup |
+| **Detect** | Risk score over the whole signal set, with reasons | case signals (any subset) → pass/fail checks + score | rule set + weights | per case scored |
+| **Estimate** | Features → itemised cost / repair-vs-replace | feature signals + reference data → costed line items | reference-data binding, calc config | per estimate |
+| **Decide** | Thresholds: auto-clear vs route to human | risk/estimate signals + thresholds → decision + flags | thresholds, routing, hard limits | per decision |
+
+**Outputs (every service):** structured JSON + branded PDF + an immutable audit entry. The report
+is the **union** of whatever stages ran — a customer never pays for a section they didn't use.
+
+## 5.2 The Signal model *(R2 — load-bearing)*
+
+Every stage writes **typed Signals** to the case; downstream stages read the *whole set*, not each
+other's APIs. This is what keeps the engine generic while enabling fused checks:
+
+- Detect can score on images alone (P11), documents alone (P12), or **both fused** (P1/P5) — it
+  just reads whichever signals exist. The fused checks ("parts billed with no visible damage",
+  "plate in photo vs RC") are only generic because they are rules over a generic signal set, not
+  code that knows about vehicles.
+- A Signal carries: type, source stage, value (pack-schema-shaped), confidence, and provenance
+  (which artifact/figure it came from) — provenance is what makes every flag explainable (R6) and
+  auditable (R8/R18).
+
+## 5.3 Execution model — sync, async, and priority *(R17)*
+
+The **same capability service** is reachable two ways:
+
+- **Sync (request/response).** Low-latency, single-shot, bounded work: "verify this PAN", "extract
+  this one doc", "is this image tampered". Returns inline. Used when the caller needs an answer now.
+- **Async (case-based).** Long-running, multi-stage, human-in-the-loop, or heavy model work: create
+  a case → `202` + case id → **webhook** on completion. Default for full products.
+
+**Priority inside async** — not all async work is equal:
+
+- **Priority classes:** `interactive` (a customer waiting at a capture link) > `standard` > `batch`
+  (bulk re-processing). Set per pack/product, overridable per request; maps to SLA tier.
+- **Per-capability queues + autoscaling:** Vision and LLM work is expensive and bursty; each
+  capability has its own queue so a backlog in one never blocks another.
+- **Per-tenant fairness:** no tenant starves others; quotas enforced at the gateway + queue.
+
+## 5.4 Orchestration — two modes
+
+| Mode | How it runs | When |
+|---|---|---|
+| **Workflow Engine** *(R1, R7)* | A durable, pack-defined **DAG** of stages over the case; stages optional; pauses for human review for days; retries; emits an event per transition | Structured products with a known flow |
+| **Agent Runtime** *(R9)* | An LLM reasons over the case and calls capability services as **tools**; bounded by guardrails (incl. compliance, §5.7); case-scoped memory; a full **reasoning trace** that is itself an audit artifact | "Agentic" products; open-ended triage |
+
+Both modes call the same services and go through the **Model Gateway** *(R10)*: provider-agnostic
+access to LLMs/vision models (own + third-party) with routing, fallback, versioning, and
+cost/latency control. **The gateway is compliance-aware** — it will not route restricted PII to a
+non-compliant model or region, and redacts before egress (see §5.7).
+
+## 5.5 Reference Data & Estimate *(R11, R12)*
+
+- **Reference Data plane:** versioned catalogs / price-lists / rate-cards, distinct from identity
+  Source-of-Truth connectors. Licensed data lives here, versioned so estimates are reproducible.
+- **Estimate** maps feature signals → itemised cost using the pack's bound reference-data set.
+  Generic: vehicle parts, property materials, medical procedures — all the same shape.
+
+## 5.6 Entity / Link Graph *(R13)*
+
+Cross-case entity resolution + a link graph: the same vehicle/person/payee/invoice seen across
+cases, and the links between them (claims rings, duplicate financing). Cross-tenant checks are
+**privacy-preserving** (hashed/tokenised identifiers, no raw PII shared). Deferred until a second
+product needs it — see phases.
+
+## 5.7 Compliance plane *(R18 — and a USP)*
+
+Different domains carry different regimes (health data sensitivity + DPDP; insurance IRDAI +
+legal auto-approve caps; lending RBI/KYC; residency everywhere). We make **"compliant by
+construction"** a platform property: a pack **declares** its regime, and the platform **enforces**
+it at runtime — compliance is not re-implemented per product.
+
+Policy-as-config, enforced by the platform:
+
+| Control | Enforced as |
+|---|---|
+| **Data residency** | Where evidence + PII are stored *and processed* (incl. model routing, §5.4) |
+| **Consent lifecycle** | Captured, versioned, checked **before** processing; withdrawal honoured |
+| **Retention & erasure** | Per data class; right-to-erasure; auto-expiry |
+| **PII handling** | Field-level encryption, tokenisation, redaction, data minimisation |
+| **Purpose-limited access** | Who/what may read which signals, for what declared purpose |
+| **Regulator-grade audit** | Immutable, exportable case history (the event log) |
+| **Decision guardrails** | Decide never auto-clears above a legal/customer cap; AI-decision provenance recorded |
+| **Posture** | Org certifications (SOC 2, ISO 27001, DPDP) + model/eval provenance for defensibility |
+
+Because this is built once and inherited by every pack, compliance becomes a **selling point** —
+every product on Modules is compliant for its domain the day it ships, which is exactly the kind
+of expensive common part a platform exists to amortise.
+
+## 5.8 Feedback & Eval *(R6)*
+
+The Review Console captures human decisions and **corrections as labels**; the Eval/Model Registry
+versions models + eval sets per pack. This powers the training loop ("every correction improves the
+engine") and lets us **publish accuracy** per capability per pack — a differentiator in a market of
+vendor-claimed numbers.
+
+## 5.9 One case, end to end (data flow)
+
+```
+link/API → File Ingest → Capture-Quality (re-shoot if poor) → Case created (consent, residency set)
+   → Orchestration (DAG or Agent) runs enabled stages, each writing Signals:
+        Extract · Vision · Verify(connectors) · Estimate(ref data) · Detect(rules over all signals)
+   → Decide (thresholds, hard caps) → clear | route-to-human (Review Console)
+   → Outputs: JSON + PDF + audit entry → Webhook to customer systems
+   (every step: compliance-enforced, metered, audit-logged; corrections → labels)
+```
+</script></section>
+<section id="s6"><script type="text/markdown"># 6 · Build Phases
+
+> How we build the platform without boiling the ocean. The rule throughout: build generic
+> **contracts** early; build generic **tooling** only when a *second* real product proves the shape.
+> One example can't design a good extension API.
+
+## Sequencing principle
+
+The capability services are the hard dependency — the Agent Runtime, the Entity Graph, and any
+pack-authoring tooling all sit *on top of* services that must exist first. So we build **one real
+product end-to-end**, then the shared parts that a **second** product forces, then the
+cross-product leverage.
+
+## Phase 1 — One product, end to end *(prove the spine)*
+
+**Goal:** evidence in → decision out, for a single product (Vehicle inspection + Document
+extraction), via API + link + dashboard, with webhooks and an audit trail.
+
+- **Edge:** Capture-Link, API Gateway (sync **and** async endpoints), Webhook delivery, File
+  Ingest, **Capture-Quality**.
+- **Case:** Case Service (event-sourced), Evidence Store, **Signal model**.
+- **Engine:** Extract, Vision, basic Decide. Behind the **Model Gateway** from day one.
+- **Orchestration:** Workflow Engine (deterministic DAG) only. Sync for single-shot calls; async
+  with **priority classes** for full cases.
+- **Cross-cutting:** Identity/Tenancy, Audit Log, basic Metering, **Compliance plane v1**
+  (residency, consent, retention, PII encryption) — compliance is foundational, not deferred.
+- **Pack:** one motor pack. No pack tooling yet — config checked in and reviewed by engineering.
+
+**Exit:** one product live; every decision explainable + auditable.
+
+## Phase 2 — Depth + a second product *(prove the pack boundary)*
+
+**Goal:** stand up a second product in a different domain **without engine changes**, and add the
+capabilities the richer products need.
+
+- **Engine:** Verify (+ Source-of-Truth connector interface), Detect (fused signals via the Signal
+  model), **Estimate + Reference-Data plane**.
+- **Case:** multi-session + Vision **compare** mode (before/after).
+- **Orchestration:** entitlements + per-tenant fairness; richer priority/SLA tiers.
+- **Cross-cutting:** **Review Console + Feedback loop**, **Eval/Model Registry** (publish accuracy),
+  **Compliance plane v2** (purpose-limited access, regulator export, per-domain regimes e.g. health).
+- **Pack:** a second domain pack (e.g. KYC/lending or health) — the real test of R4 (no vehicle
+  concept in the engine).
+
+**Exit:** two products, two domains, one engine, no forks.
+
+## Phase 3 — Leverage across products *(only now generalise)*
+
+**Goal:** the capabilities that only make sense once services + multiple packs exist.
+
+- **Agent Runtime** — capability services as tools; powers "agentic" products. (Needs the services
+  from Phases 1–2 as its toolset.)
+- **Entity / Link Graph** — cross-case and privacy-preserving cross-tenant link fraud.
+- **Pack-authoring tooling** — schema/rule/threshold authoring, versioning, sandbox→live promotion.
+  Built **now**, against ≥2 real packs — not before.
+- **Compliance plane v3** — certification posture (SOC 2 / ISO / DPDP), model-decision provenance
+  as a published differentiator.
+- **More domains** — each a pack, zero engine change.
+
+## What we deliberately defer (and why)
+
+| Deferred | Until | Why |
+|---|---|---|
+| Pack-authoring SDK / marketplace | ≥2 real packs (Phase 3) | Can't design a good extension API from one example |
+| Agent Runtime | Services exist (Phase 3) | The services are its tools; no tools, no agent |
+| Cross-tenant link graph | A product needs it (Phase 3) | Heavy + privacy-sensitive; speculative before demand |
+| Call-recordings / audio modality | A product needs it | New modality on the same Capture/Signal contracts |
+
+## Dependency snapshot
+
+```
+Signal model + Case ──┬─▶ capability services (Extract, Vision, Verify, Detect, Estimate, Decide)
+Model Gateway ────────┘            │
+                                   ├─▶ Workflow Engine ─▶ products (Phase 1–2)
+                                   └─▶ Agent Runtime ───▶ agentic products (Phase 3)
+Compliance plane ─ enforced across every phase, deepening v1 → v3
+```
+</script></section></main>
+</div>
+<script>
+  marked.setOptions({gfm:true, breaks:false});
+  document.querySelectorAll('section > script[type="text/markdown"]').forEach(sc=>{
+    const parent=sc.parentElement;
+    const div=document.createElement('div'); div.innerHTML=marked.parse(sc.textContent);
+    parent.innerHTML=''; parent.appendChild(div);
+  });
+  const navs=[...document.querySelectorAll('#nav a')];
+  const secs=[...document.querySelectorAll('section')];
+  const frames=[...document.querySelectorAll('iframe.embed')];
+  function curTheme(){ return document.documentElement.getAttribute('data-theme')
+      || (matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'); }
+  function pushTheme(target){
+    const list = target ? [target] : frames;
+    list.forEach(fr=>{ try{ fr.contentWindow && fr.contentWindow.postMessage({type:'theme',value:curTheme()},'*'); }catch(e){} });
+  }
+  frames.forEach(f=>f.addEventListener('load',()=>pushTheme(f)));
+  window.addEventListener('message',e=>{
+    if(e.data&&e.data.type==='size'){ const f=frames.find(fr=>fr.contentWindow===e.source); if(f) f.style.height=(e.data.height+28)+'px'; }
+  });
+  function show(id){
+    secs.forEach(s=>s.classList.toggle('on', s.id===id));
+    navs.forEach(a=>a.classList.toggle('active', a.dataset.target===id));
+    history.replaceState(null,'','#'+id); window.scrollTo({top:0});
+    const sec=document.getElementById(id); const fr=sec&&sec.querySelector('iframe.embed'); if(fr) pushTheme(fr);
+  }
+  navs.forEach(a=>a.addEventListener('click',e=>{e.preventDefault();show(a.dataset.target)}));
+  show((location.hash||'#agenda').slice(1) || 'agenda');
+  document.getElementById('theme').addEventListener('click',()=>{
+    document.documentElement.setAttribute('data-theme', curTheme()==='dark'?'light':'dark');
+    pushTheme();
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Mimir — the back-test, on one page</title>
+<style>
+  :root{
+    --bg:#f6f5f1; --panel:#fff; --ink:#191919; --muted:#70706a; --line:#e4e1d8;
+    --platform:#1f6feb; --platform-soft:#e9f0fe; --pack:#b4530a; --cross:#5a4fcf;
+    --forced:#1f6feb; --confirm:#9aa3b2; --shadow:0 1px 3px rgba(0,0,0,.07);
+  }
+  @media(prefers-color-scheme:dark){:root{
+    --bg:#0e1014; --panel:#161922; --ink:#e8eaef; --muted:#97a0ae; --line:#272c38;
+    --platform:#6aa2ff; --platform-soft:#182238; --pack:#f0a062; --cross:#a79cff;
+    --forced:#6aa2ff; --confirm:#5c6678; --shadow:0 1px 3px rgba(0,0,0,.4);}}
+  [data-t="light"]{--bg:#f6f5f1;--panel:#fff;--ink:#191919;--muted:#70706a;--line:#e4e1d8;--platform:#1f6feb;--platform-soft:#e9f0fe;--pack:#b4530a;--cross:#5a4fcf;--forced:#1f6feb;--confirm:#9aa3b2;--shadow:0 1px 3px rgba(0,0,0,.07)}
+  [data-t="dark"]{--bg:#0e1014;--panel:#161922;--ink:#e8eaef;--muted:#97a0ae;--line:#272c38;--platform:#6aa2ff;--platform-soft:#182238;--pack:#f0a062;--cross:#a79cff;--forced:#6aa2ff;--confirm:#5c6678;--shadow:0 1px 3px rgba(0,0,0,.4)}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 ui-sans-serif,-apple-system,"Segoe UI",Inter,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+  .page{max-width:1180px;margin:0 auto;padding:40px 24px 80px}
+  header{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap}
+  h1{font-size:28px;letter-spacing:-.02em;margin:0}
+  h1 b{color:var(--platform)}
+  .sub{color:var(--muted);margin:6px 0 0;font-size:15px}
+  .theme{border:1px solid var(--line);background:var(--panel);color:var(--muted);border-radius:8px;padding:7px 12px;font-size:13px;cursor:pointer}
+  .legend{display:flex;gap:18px;flex-wrap:wrap;margin:20px 0 10px;font-size:13px;color:var(--muted)}
+  .legend b{color:var(--ink)}
+  .dot{display:inline-block;width:16px;text-align:center;font-weight:700}
+  .dot.f{color:var(--forced)} .dot.c{color:var(--confirm)}
+  .matrix{overflow:auto;border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow);background:var(--panel)}
+  table{border-collapse:collapse;font-size:12.5px;min-width:900px}
+  th,td{border:1px solid var(--line);padding:0;text-align:center}
+  thead th{background:var(--platform-soft);font-weight:600;padding:7px 5px;position:sticky;top:0;white-space:nowrap}
+  thead th.rc{cursor:help}
+  tbody th{background:var(--bg);font-weight:600;text-align:left;padding:7px 10px;white-space:nowrap;position:sticky;left:0;z-index:1}
+  tbody th small{color:var(--muted);font-weight:400}
+  td.cell{width:34px;height:30px;font-weight:700}
+  td.f{color:var(--forced);background:var(--platform-soft)}
+  td.c{color:var(--confirm)}
+  td.x{color:var(--muted);background:repeating-linear-gradient(45deg,transparent,transparent 4px,var(--line) 4px,var(--line) 5px)}
+  .note{font-size:12px;color:var(--muted);margin:10px 0 0}
+  .cols{display:grid;grid-template-columns:1fr 1fr;gap:26px;margin-top:34px}
+  @media(max-width:760px){.cols{grid-template-columns:1fr}}
+  .cols h2{font-size:16px;margin:0 0 8px}
+  .list{font-size:13px;line-height:1.7}
+  .list .id{display:inline-block;min-width:34px;font-weight:700;color:var(--platform)}
+  .list .pid{color:var(--pack)}
+  .verdict{margin-top:30px;background:var(--platform-soft);border:1px solid var(--line);border-radius:12px;padding:14px 18px;font-size:14px}
+  .verdict b{color:var(--platform)}
+  .foot{margin-top:26px;color:var(--muted);font-size:12.5px;text-align:center}
+</style>
+</head>
+<body>
+<div class="page">
+  <a class="docs-home" id="docsHome" href="../index.html" style="display:inline-block;margin-bottom:10px;color:var(--muted);text-decoration:none;font-size:13px">← Mimir docs</a>
+  <header>
+    <div>
+      <h1><b>Mimir</b> — the back-test, on one page</h1>
+      <p class="sub">13 sample products + the sync/async case, run through the architecture, forced 18 requirements. Every product forces at least one.</p>
+    </div>
+    <button class="theme" id="theme">◐ Theme</button>
+  </header>
+
+  <div class="legend">
+    <span><span class="dot f">●</span> <b>forced</b> this requirement</span>
+    <span><span class="dot c">○</span> <b>confirms / exercises</b> it</span>
+    <span>∗ = spans all products (not a single forcer)</span>
+    <span style="color:var(--muted)">hover any header or cell for detail</span>
+  </div>
+
+  <div class="matrix"><table id="mx"></table></div>
+  <p class="note" id="xnote"></p>
+
+  <div class="cols">
+    <div>
+      <h2>The 13 products (+ the execution case)</h2>
+      <div class="list" id="plist"></div>
+    </div>
+    <div>
+      <h2>The 18 requirements</h2>
+      <div class="list" id="rlist"></div>
+    </div>
+  </div>
+
+  <div class="verdict">
+    <b>Verdict:</b> the engine + packs split held for all 13 products — each is "collect → understand → check → cost → decide," composed from the same services with a different pack. The back-test <i>added</i> one capability service (Estimate), a second orchestration mode (Agent Runtime), four shared/cross-cutting components (Model Gateway, Reference Data, Entity/Link Graph, Capture-Quality), a dual sync/async execution model (R17), and a Compliance plane (R18). The one existential risk is <b>R4</b> — domain vocabulary leaking into the engine — guarded by the generic Signal model (R2) and the pack boundary.
+  </div>
+
+  <p class="foot">Mimir · the Modules intelligence engine — source: docs/modules/03-products-and-usecases.md</p>
+</div>
+<script>
+  const prods = [
+    ['P1','Vehicle inspection'],['P2','Document extraction'],['P3','Agentic AI assistant'],
+    ['P4','Estimate-from-images'],['P5','Fraud engine'],['P6','Verification engine'],
+    ['P7','Best capture + extraction'],['P8','KYC / onboarding'],['P9','Lending valuation'],
+    ['P10','Before/after monitoring'],['P11','Media authenticity'],['P12','Invoice / expense audit'],
+    ['P13','Health claim checks'],['SYNC','Live-link vs batch (exec)']
+  ];
+  const reqs = [
+    ['R1','Pack-defined DAG'],['R2','Signal model (load-bearing)'],['R3','Multi-session + compare'],
+    ['R4','Generic engine vocabulary'],['R5','Source-of-truth connectors'],['R6','Feedback & Eval plane'],
+    ['R7','Durable orchestration'],['R8','PII/residency → folded into R18'],['R9','Agent Runtime'],
+    ['R10','Model Gateway'],['R11','Reference-Data plane'],['R12','Estimate service'],
+    ['R13','Entity / Link graph'],['R14','Capture-Quality'],['R15','Pack Registry'],
+    ['R16','Review as a surface'],['R17','Sync/async + priority'],['R18','Compliance plane (USP)']
+  ];
+  // documented mappings (docs/modules/03): forced ●, confirms ○
+  const forced = {
+    R1:['P6','P2'], R2:['P5','P11','P12'], R3:['P10'], R4:['P1','P8'], R5:['P6'],
+    R9:['P3'], R10:['P3'], R11:['P4','P9'], R12:['P4','P9'], R13:['P5'], R14:['P7'],
+    R15:['P2'], R16:['P2'], R17:['SYNC'], R18:['P13']
+  };
+  const confirms = { R18:['P6','P8','P12'] };
+  // cross-cutting requirements with no single forcer
+  const starReq = { R6:'spans all — accuracy + training loop', R7:'spans all products (Decide/Flow)', R8:'superseded by R18 (identity-bearing products)' };
+
+  const mx = document.getElementById('mx');
+  let head = '<thead><tr><th style="text-align:left">Product \\ Requirement</th>';
+  reqs.forEach(([id,full])=>{ const star=starReq[id]?' ∗':''; head += `<th class="rc" title="${id}: ${full}${starReq[id]? ' — '+starReq[id]:''}">${id}${star}</th>`; });
+  head += '</tr></thead>';
+  let body = '<tbody>';
+  prods.forEach(([pid,pname])=>{
+    body += `<tr><th>${pid} <small>· ${pname}</small></th>`;
+    reqs.forEach(([rid,rfull])=>{
+      const isF = (forced[rid]||[]).includes(pid);
+      const isC = (confirms[rid]||[]).includes(pid);
+      if(isF) body += `<td class="cell f" title="${pid} forced ${rid}: ${rfull}">●</td>`;
+      else if(isC) body += `<td class="cell c" title="${pid} confirms ${rid}: ${rfull}">○</td>`;
+      else if(starReq[rid]) body += `<td class="cell x" title="${rid}: ${starReq[rid]}"></td>`;
+      else body += `<td class="cell"></td>`;
+    });
+    body += '</tr>';
+  });
+  body += '</tbody>';
+  mx.innerHTML = head + body;
+
+  document.getElementById('xnote').textContent =
+    '∗ columns (R6, R7, R8) are cross-cutting — exercised by many/all products rather than forced by one, so they are shown hatched.';
+
+  document.getElementById('plist').innerHTML = prods.map(([id,n])=>`<div><span class="id pid">${id}</span> ${n}</div>`).join('');
+  document.getElementById('rlist').innerHTML = reqs.map(([id,n])=>`<div><span class="id">${id}</span> ${n}</div>`).join('');
+
+  document.getElementById('theme').addEventListener('click',()=>{
+    const d=document.documentElement,c=d.getAttribute('data-t');
+    d.setAttribute('data-t',c==='dark'?'light':c==='light'?'dark':(matchMedia('(prefers-color-scheme: dark)').matches?'light':'dark'));
+  });
+  const inFrame=window.self!==window.top;
+  if(inFrame){const tb=document.getElementById('theme');if(tb)tb.style.display='none';document.body.style.background='transparent';const dh=document.getElementById('docsHome');if(dh)dh.style.display='none';}
+  window.addEventListener('message',e=>{if(e.data&&e.data.type==='theme')document.documentElement.setAttribute('data-t',e.data.value);});
+  function postSize(){if(inFrame){try{parent.postMessage({type:'size',height:document.body.scrollHeight},'*');}catch(_){}}}
+  window.addEventListener('load',postSize);
+  if(window.ResizeObserver)new ResizeObserver(postSize).observe(document.body);
+</script>
+</body>
+</html>

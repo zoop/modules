@@ -22,6 +22,7 @@ run = '''
 BOLD="\033[1m"; RESET="\033[0m"; CYAN="\033[36m"; GREEN="\033[32m"; YELLOW="\033[33m"; DIM="\033[2m"
 printf "\n${CYAN}${BOLD}── SETUP ───────────────────────────────${RESET}\n"
 printf "  ${GREEN}setup${RESET}            ${DIM}install all dependencies${RESET}\n"
+printf "  ${GREEN}setup-agent-skills${RESET} ${DIM}(optional) recommended AI agent skills${RESET}\n"
 printf "\n${YELLOW}${BOLD}── DAILY (optionally pass a service) ───${RESET}\n"
 printf "  ${GREEN}dev [svc]${RESET}        ${DIM}start dev servers (all, or one)${RESET}\n"
 printf "  ${GREEN}build [svc]${RESET}      ${DIM}build all services (or one)${RESET}\n"
@@ -66,6 +67,54 @@ run = '''
     printf "${DIM}Next steps:${RESET}\n"
     printf "  ${YELLOW}mise run dev${RESET}       ${DIM}start all services${RESET}\n"
     printf "  ${YELLOW}mise run info${RESET}      ${DIM}see all tasks${RESET}\n\n"
+'''
+dir = "{{config_root}}"
+
+# OPTIONAL + tool-specific: deliberately NOT part of `setup` (keep setup provider-neutral).
+# Installs a recommended set of AI agent skills for whoever opts in. The Claude plugins
+# are project-scoped (committed to .claude/settings.json, so Claude Code users auto-get
+# them); graphify is a cross-tool CLI installed per-developer via uv.
+[tasks.setup-agent-skills]
+description = "OPTIONAL: install recommended agent skills (ponytail, superpowers, mattpocock, i-have-adhd, graphify)"
+run = '''
+    BOLD="\033[1m"; RESET="\033[0m"; GREEN="\033[32m"; CYAN="\033[36m"; YELLOW="\033[33m"; DIM="\033[2m"
+    TICK="${GREEN}✓${RESET}"; ARROW="${CYAN}→${RESET}"
+
+    printf "\n${BOLD}Installing recommended agent skills (optional)...${RESET}\n\n"
+
+    # --- Claude Code plugins (project scope → .claude/settings.json) ---
+    if command -v claude >/dev/null 2>&1; then
+      printf "${ARROW} ${CYAN}Claude Code plugins${RESET}\n"
+      claude plugin marketplace add DietrichGebert/ponytail --scope project >/dev/null 2>&1 || true
+      claude plugin marketplace add ayghri/i-have-adhd --scope project >/dev/null 2>&1 || true
+      for p in ponytail@ponytail superpowers@claude-plugins-official mattpocock-skills@claude-plugins-official i-have-adhd@i-have-adhd; do
+        if claude plugin install "$p" --scope project >/dev/null 2>&1; then
+          printf "  ${TICK} $p\n"
+        else
+          printf "  ${YELLOW}! $p (skipped)${RESET}\n"
+        fi
+      done
+      printf "\n"
+    else
+      printf "${YELLOW}! 'claude' CLI not found — skipping Claude Code plugins${RESET}\n\n"
+    fi
+
+    # --- graphify (cross-tool CLI + /graphify skill; installs per-developer) ---
+    # Swap --platform (claude|codex|cursor|gemini|opencode|…) for a different agent.
+    if command -v uv >/dev/null 2>&1; then
+      printf "${ARROW} ${CYAN}graphify${RESET} ${DIM}(uv tool, from Graphify-Labs)${RESET}\n"
+      uv tool install "git+https://github.com/Graphify-Labs/graphify" >/dev/null 2>&1 \
+        || uv tool upgrade graphifyy >/dev/null 2>&1 || true
+      if graphify install --platform claude >/dev/null 2>&1; then
+        printf "  ${TICK} graphify installed — type: ${YELLOW}/graphify .${RESET}\n\n"
+      else
+        printf "  ${YELLOW}! graphify install failed${RESET}\n\n"
+      fi
+    else
+      printf "${YELLOW}! 'uv' not found — install uv for graphify (https://docs.astral.sh/uv)${RESET}\n\n"
+    fi
+
+    printf "${GREEN}${BOLD}✓ Agent skills done.${RESET} ${DIM}Restart your agent to load them.${RESET}\n\n"
 '''
 dir = "{{config_root}}"
 

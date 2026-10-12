@@ -8,15 +8,25 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "lint": "eslint src --ext .ts,.tsx,.astro",
+    "lint": "eslint src",
     "typecheck": "astro check",
     "test:e2e": "playwright test"
   },
   "dependencies": {
     "@astrojs/react": "catalog:astro",
+    "@modules/brand": "workspace:*",
+    "@radix-ui/react-accordion": "catalog:",
+    "@radix-ui/react-label": "catalog:",
+    "@radix-ui/react-slot": "catalog:",
+    "@radix-ui/react-tabs": "catalog:",
     "astro": "catalog:astro",
+    "class-variance-authority": "catalog:",
+    "clsx": "catalog:",
+    "gsap": "catalog:",
+    "lucide-react": "catalog:",
     "react": "catalog:react19",
-    "react-dom": "catalog:react19"
+    "react-dom": "catalog:react19",
+    "tailwind-merge": "catalog:"
   },
   "devDependencies": {
     "@playwright/test": "catalog:",
@@ -25,7 +35,11 @@
     "@types/react": "catalog:react19",
     "@types/react-dom": "catalog:react19",
     "eslint": "catalog:",
+    "@eslint/js": "catalog:",
+    "typescript-eslint": "catalog:",
+    "eslint-plugin-astro": "catalog:",
     "tailwindcss": "catalog:",
+    "tw-animate-css": "catalog:",
     "typescript": "catalog:"
   }
 }

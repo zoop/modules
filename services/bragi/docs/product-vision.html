@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Claims Intelligence — Platform Vision</title>
+<style>
+  :root{
+    --navy:#0C2340; --navy-2:#0E2A4E; --navy-soft:#15355c;
+    --teal:#13B5A6; --teal-deep:#0E8C80; --teal-soft:#0f3a44;
+    --amber:#F6A609; --amber-soft:#3a2f12;
+    --ink:#0C2340; --slate:#5b6b82; --mute:#8a99ad;
+    --line:#e5ebf2; --bg:#f4f7fb; --card:#ffffff;
+    --live:#13B5A6; --next:#F6A609;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,Helvetica,Arial,sans-serif;
+    background:var(--bg);color:var(--ink);line-height:1.5;-webkit-font-smoothing:antialiased;padding:32px 20px}
+  .wrap{max-width:1120px;margin:0 auto;display:flex;flex-direction:column;gap:26px}
+  .slide{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:34px 38px;
+    box-shadow:0 1px 2px rgba(12,35,64,.04),0 12px 34px rgba(12,35,64,.06)}
+  .eyebrow{font-size:11px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--teal-deep);margin-bottom:10px}
+  h1{font-size:30px;line-height:1.15;letter-spacing:-.01em;font-weight:800}
+  h2{font-size:23px;line-height:1.2;letter-spacing:-.01em;font-weight:800}
+  h1 .amber,h2 .amber{color:var(--amber)}
+  h1 .teal,h2 .teal{color:var(--teal-deep)}
+  .sub{color:var(--slate);font-size:15px;margin-top:10px;max-width:70ch}
+  .tag{display:inline-flex;align-items:center;gap:7px;font-size:11px;font-weight:700;letter-spacing:.04em;
+    padding:4px 10px;border-radius:999px;border:1px solid var(--line);color:var(--slate);background:#fbfdff}
+  .dot{width:8px;height:8px;border-radius:50%}
+  .dot.live{background:var(--live)} .dot.next{background:var(--next)} .dot.future{background:#c3cedb}
+
+  /* ---- hero band ---- */
+  .hero{background:linear-gradient(135deg,var(--navy) 0%,var(--navy-2) 60%,#123a6b 100%);color:#fff;border:none}
+  .hero .eyebrow{color:#7fe6da}
+  .hero h1{color:#fff;font-size:34px}
+  .hero .sub{color:#c6d4e6;max-width:78ch}
+  .brandrow{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;flex-wrap:wrap;gap:12px}
+  .brand{display:flex;align-items:center;gap:12px;font-weight:800;letter-spacing:.02em}
+  .logomark{width:30px;height:30px;border-radius:8px;background:linear-gradient(135deg,var(--teal),var(--amber));
+    display:grid;place-items:center;color:var(--navy);font-weight:900;font-size:16px}
+  .hero .meta{font-size:12px;color:#9fb4ce;letter-spacing:.04em}
+  .oneliners{display:flex;gap:26px;flex-wrap:wrap;margin-top:22px}
+  .ol{flex:1;min-width:210px;border-left:2px solid rgba(255,255,255,.18);padding-left:14px}
+  .ol b{color:#fff;font-size:14px;display:block;margin-bottom:3px}
+  .ol span{color:#aec2da;font-size:13px}
+
+  /* ---- grid (capability x line) ---- */
+  table{border-collapse:separate;border-spacing:0;width:100%;margin-top:22px;font-size:12.5px}
+  th,td{text-align:left;padding:12px 13px;vertical-align:top;border-bottom:1px solid var(--line)}
+  thead th{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--slate);
+    border-bottom:2px solid var(--line);white-space:nowrap}
+  thead th.linehead{position:relative}
+  th.mod{width:21%}
+  td.mod{font-weight:700;color:var(--navy)}
+  td.mod small{display:block;font-weight:500;color:var(--mute);font-size:11px;margin-top:2px}
+  .col-motor{background:#f0faf8}
+  thead th.col-motor{background:#e3f5f1;border-top-left-radius:10px;border-top-right-radius:10px}
+  .col-health{background:#fff9ec}
+  thead th.col-health{background:#fdf2d9}
+  .cell-b{font-weight:600;color:var(--navy);display:block}
+  .cell-s{color:var(--slate);font-size:11.5px}
+  .future-col{color:var(--mute);font-style:italic}
+  tr:last-child td{border-bottom:none}
+  td.mod.settle{color:var(--teal-deep)}
+  .mod-settle-row td{background:linear-gradient(0deg,#f0faf8,#f0faf8)}
+  .legend{display:flex;gap:18px;flex-wrap:wrap;margin-top:16px;font-size:12px;color:var(--slate)}
+  .legend span{display:inline-flex;align-items:center;gap:7px}
+
+  /* ---- flow / layer cake ---- */
+  .flow{display:flex;align-items:stretch;gap:0;margin-top:26px;flex-wrap:wrap}
+  .step{flex:1;min-width:120px;position:relative;padding:4px 6px}
+  .chip{border-radius:12px;padding:16px 14px;height:100%;border:1px solid var(--line);background:#fbfdff}
+  .chip .n{font-size:11px;font-weight:800;color:var(--teal-deep);letter-spacing:.1em}
+  .chip h3{font-size:14.5px;margin:7px 0 5px;color:var(--navy)}
+  .chip p{font-size:12px;color:var(--slate)}
+  .arrow{align-self:center;color:#c3cedb;font-size:20px;font-weight:700;padding:0 2px}
+  .chip.cap{border-color:#bfe8e2} .chip.understand{border-color:#bfe8e2}
+  .chip.settle{background:linear-gradient(135deg,var(--navy),var(--navy-2));border:none}
+  .chip.settle .n{color:#7fe6da} .chip.settle h3{color:#fff} .chip.settle p{color:#c6d4e6}
+  .decide{margin-top:18px;font-size:13px;color:var(--slate);border-left:3px solid var(--amber);padding:6px 0 6px 14px}
+  .decide b{color:var(--navy)}
+  .understand-pair{display:flex;flex-direction:column;gap:6px}
+  .mini{font-size:11px;background:#eef5ff;color:var(--navy-soft);border-radius:6px;padding:3px 7px;font-weight:600}
+
+  /* ---- packaging ladder ---- */
+  .ladder{display:flex;gap:16px;margin-top:24px;flex-wrap:wrap}
+  .rung{flex:1;min-width:230px;border:1px solid var(--line);border-radius:14px;padding:20px 20px 22px;background:#fbfdff;position:relative;overflow:hidden}
+  .rung::before{content:"";position:absolute;left:0;top:0;bottom:0;width:5px}
+  .rung.t1::before{background:#9fb4ce} .rung.t2::before{background:var(--teal)} .rung.t3::before{background:var(--amber)}
+  .rung .lvl{font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--mute)}
+  .rung h3{font-size:17px;margin:8px 0 4px;color:var(--navy)}
+  .rung .who{font-size:12px;color:var(--teal-deep);font-weight:600;margin-bottom:10px}
+  .rung p{font-size:12.5px;color:var(--slate);margin-bottom:10px}
+  .rung ul{list-style:none;font-size:12px;color:var(--navy-soft)}
+  .rung li{padding:3px 0 3px 16px;position:relative}
+  .rung li::before{content:"";position:absolute;left:0;top:10px;width:5px;height:5px;border-radius:50%;background:var(--teal)}
+  .motion{margin-top:20px;display:flex;align-items:center;gap:14px;font-size:13px;color:var(--slate);
+    background:#f0faf8;border:1px solid #d3efe9;border-radius:12px;padding:14px 18px}
+  .motion b{color:var(--teal-deep)}
+  .compound{display:flex;gap:26px;flex-wrap:wrap;margin-top:22px}
+  .cmp{flex:1;min-width:230px}
+  .cmp b{display:block;color:var(--navy);font-size:14px;margin-bottom:4px}
+  .cmp span{color:var(--slate);font-size:13px}
+  .cmp .big{font-size:26px;font-weight:800;color:var(--amber);letter-spacing:-.01em}
+  .foot{text-align:center;color:var(--mute);font-size:11.5px;padding:4px 0 8px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- ================= HERO ================= -->
+  <section class="slide hero">
+    <div class="brandrow">
+      <div class="brand"><span class="logomark">◈</span> Claims&nbsp;Intelligence</div>
+      <div class="meta">PLATFORM VISION · WORKING NAME · DRAFT</div>
+    </div>
+    <div class="eyebrow">The thesis</div>
+    <h1>One claims-intelligence stack.<br><span class="teal">Every insurance line.</span> <span class="amber">Built once, sold many times.</span></h1>
+    <p class="sub">We don't build a motor product. We build the reusable capabilities a claim needs — capture, document intelligence, verification, image intelligence, fraud, and agentic settlement — then point them at one line after another. Motor is the first composition. Health is the same stack, reconfigured.</p>
+    <div class="oneliners">
+      <div class="ol"><b>What it is</b><span>Six composable modules + an agent that runs the claim.</span></div>
+      <div class="ol"><b>Why it wins</b><span>Each new line reuses the stack; each new module lifts every line.</span></div>
+      <div class="ol"><b>How it sells</b><span>Outcome products on top, capability APIs underneath.</span></div>
+    </div>
+  </section>
+
+  <!-- ================= SLIDE 1 — THE GRID ================= -->
+  <section class="slide">
+    <div class="eyebrow">1 · The platform in one picture</div>
+    <h2>Capabilities &times; lines — <span class="teal">build a row once, reuse it down every column</span></h2>
+    <p class="sub">Rows are the modules (horizontal, reused everywhere). Columns are insurance lines (vertical). A cell is what that module becomes for that line. "Motor Fraud Engine" = a few of these rows, one column.</p>
+
+    <table>
+      <thead>
+        <tr>
+          <th class="mod">Module (reused across lines)</th>
+          <th class="linehead col-motor">Motor <span class="tag"><span class="dot live"></span>Live · Phase 1</span></th>
+          <th class="linehead col-health">Health <span class="tag"><span class="dot next"></span>Next</span></th>
+          <th class="linehead">More lines <span class="tag"><span class="dot future"></span>Future</span></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="mod">Capture<small>collect from the customer, any channel</small></td>
+          <td class="col-motor"><span class="cell-b">Guided vehicle photo &amp; video tour</span><span class="cell-s">link · SMS · WhatsApp · email</span></td>
+          <td class="col-health"><span class="cell-b">Bills, discharge summary, scans</span><span class="cell-s">same channels, health doc set</span></td>
+          <td class="future-col">same intake, new doc set</td>
+        </tr>
+        <tr>
+          <td class="mod">Document Intelligence<small>extract the data from any document</small></td>
+          <td class="col-motor"><span class="cell-b">RC, policy, FIR, garage estimate</span></td>
+          <td class="col-health"><span class="cell-b">Hospital bills, lab reports, Rx</span></td>
+          <td class="future-col">line-specific documents</td>
+        </tr>
+        <tr>
+          <td class="mod">Verification<small>prove documents are real &amp; consistent</small></td>
+          <td class="col-motor"><span class="cell-b">Plate &amp; chassis vs Vahan</span></td>
+          <td class="col-health"><span class="cell-b">Hospital / doctor registry, bill authenticity</span></td>
+          <td class="future-col">registry &amp; source checks</td>
+        </tr>
+        <tr>
+          <td class="mod">Image Intelligence<small>read the photos</small></td>
+          <td class="col-motor"><span class="cell-b">Damage detection &amp; severity</span></td>
+          <td class="col-health"><span class="cell-b">Scans, bill images, injury photos</span></td>
+          <td class="future-col">domain vision model</td>
+        </tr>
+        <tr>
+          <td class="mod">Fraud<small>one risk score, with reasons</small></td>
+          <td class="col-motor"><span class="cell-b">Staged loss, inflated estimate</span></td>
+          <td class="col-health"><span class="cell-b">Upcoding, phantom billing, identity</span></td>
+          <td class="future-col">line-specific rules</td>
+        </tr>
+        <tr class="mod-settle-row">
+          <td class="mod settle">Agentic Settlement<small>the agent that runs the claim</small></td>
+          <td class="col-motor"><span class="cell-b">Orchestrates the above → recommendation</span></td>
+          <td class="col-health"><span class="cell-b">Same agent, health policy rules</span></td>
+          <td class="future-col">same agent, new rulebook</td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="legend">
+      <span><span class="dot live"></span> Live / Phase 1 (Motor)</span>
+      <span><span class="dot next"></span> Next (Health)</span>
+      <span><span class="dot future"></span> Future lines — reuse the same rows</span>
+    </div>
+  </section>
+
+  <!-- ================= SLIDE 2 — THE FLOW ================= -->
+  <section class="slide">
+    <div class="eyebrow">2 · How a claim moves through the stack</div>
+    <h2>Capture → Understand → Verify → Score → <span class="teal">Settle</span></h2>
+    <p class="sub">The same pipeline for every line. Only the models and rules in the middle change. The agent at the end is the moat — it turns a set of tools into the system that runs the claim.</p>
+
+    <div class="flow">
+      <div class="step"><div class="chip cap"><div class="n">01 · CAPTURE</div><h3>Collect</h3><p>Docs &amp; images from the customer, any channel.</p></div></div>
+      <div class="arrow">→</div>
+      <div class="step"><div class="chip understand"><div class="n">02 · UNDERSTAND</div><h3>Read it</h3>
+        <div class="understand-pair"><span class="mini">Document Intelligence</span><span class="mini">Image Intelligence</span></div>
+      </div></div>
+      <div class="arrow">→</div>
+      <div class="step"><div class="chip"><div class="n">03 · VERIFY</div><h3>Check it</h3><p>Real &amp; consistent vs trusted sources.</p></div></div>
+      <div class="arrow">→</div>
+      <div class="step"><div class="chip"><div class="n">04 · SCORE</div><h3>Risk</h3><p>One fraud score, with the reasons behind it.</p></div></div>
+      <div class="arrow">→</div>
+      <div class="step"><div class="chip settle"><div class="n">05 · SETTLE</div><h3>Agent acts</h3><p>Orchestrates all of it into a recommendation.</p></div></div>
+    </div>
+    <p class="decide"><b>The human still decides.</b> Through Phase 1 the stack recommends and explains; it never auto-approves or rejects. Agentic settlement raises how much it can do on its own, line by line, as trust is earned.</p>
+  </section>
+
+  <!-- ================= SLIDE 3 — PACKAGING LADDER ================= -->
+  <section class="slide">
+    <div class="eyebrow">3 · How we package &amp; sell it</div>
+    <h2>Land on a capability, expand to the outcome, grow into <span class="amber">the agent</span></h2>
+    <p class="sub">Same code, three price points and three stories. Sell the outcome to the business; sell the API to the developer; sell the agent as the future.</p>
+
+    <div class="ladder">
+      <div class="rung t1">
+        <div class="lvl">Tier 1 · Land</div>
+        <h3>Module APIs</h3>
+        <div class="who">Buyer: developers / digital teams</div>
+        <p>Buy one capability and wire it in. Proves the composability and gets us in the door.</p>
+        <ul><li>Document Intelligence API</li><li>Capture API</li><li>Verification API</li></ul>
+      </div>
+      <div class="rung t2">
+        <div class="lvl">Tier 2 · Expand</div>
+        <h3>Vertical Engines</h3>
+        <div class="who">Buyer: claims &amp; investigation teams</div>
+        <p>A pre-wired bundle for one line, sold as an outcome with a report and a dashboard.</p>
+        <ul><li>Motor Fraud Engine <b style="color:var(--teal-deep)">· today</b></li><li>Health Claims Engine · next</li><li>…one per line</li></ul>
+      </div>
+      <div class="rung t3">
+        <div class="lvl">Tier 3 · Own the claim</div>
+        <h3>Agentic Settlement</h3>
+        <div class="who">Buyer: claims leadership / COO</div>
+        <p>The agent runs the end-to-end claim. Highest value, deepest lock-in, the north star.</p>
+        <ul><li>Straight-through for clean claims</li><li>Investigator-ready for the rest</li><li>Priced on outcomes</li></ul>
+      </div>
+    </div>
+
+    <div class="motion"><b>Go-to-market in one line:</b>&nbsp;sell the <b>outcome</b> (vertical engine), build the <b>capability</b> (horizontal module), expose <b>both</b> — specificity sells, generality scales.</div>
+
+    <div class="compound">
+      <div class="cmp"><span class="big">~80%</span><b>reused per new line</b><span>A new line is mostly configuration — new doc set, vision model, rulebook — on the same stack.</span></div>
+      <div class="cmp"><span class="big">1 → N</span><b>every module lifts every line</b><span>Improve Document Intelligence once and Motor, Health and every future line get better at the same time.</span></div>
+      <div class="cmp"><span class="big">Agent</span><b>the compounding moat</b><span>More lines &amp; more claims make the settlement agent smarter — the hard thing to copy.</span></div>
+    </div>
+  </section>
+
+  <div class="foot">Claims Intelligence (working name) — platform vision overview. Illustrative; percentages and tiers are directional, for discussion.</div>
+</div>
+</body>
+</html>

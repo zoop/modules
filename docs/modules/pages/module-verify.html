@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Mimir — Verify</title>
+<style>
+  :root{
+    --bg:#f6f5f1; --panel:#fff; --ink:#191919; --muted:#70706a; --line:#e4e1d8;
+    --platform:#1f6feb; --platform-soft:#e9f0fe; --pack:#b4530a; --pack-soft:#fcefe2;
+    --cross:#5a4fcf; --cross-soft:#ecebfb; --shadow:0 1px 3px rgba(0,0,0,.07);
+  }
+  @media(prefers-color-scheme:dark){:root{
+    --bg:#0e1014; --panel:#161922; --ink:#e8eaef; --muted:#97a0ae; --line:#272c38;
+    --platform:#6aa2ff; --platform-soft:#182238; --pack:#f0a062; --pack-soft:#2c2013;
+    --cross:#a79cff; --cross-soft:#1f1c33; --shadow:0 1px 3px rgba(0,0,0,.4);}}
+  [data-t="light"]{--bg:#f6f5f1;--panel:#fff;--ink:#191919;--muted:#70706a;--line:#e4e1d8;--platform:#1f6feb;--platform-soft:#e9f0fe;--pack:#b4530a;--pack-soft:#fcefe2;--cross:#5a4fcf;--cross-soft:#ecebfb;--shadow:0 1px 3px rgba(0,0,0,.07)}
+  [data-t="dark"]{--bg:#0e1014;--panel:#161922;--ink:#e8eaef;--muted:#97a0ae;--line:#272c38;--platform:#6aa2ff;--platform-soft:#182238;--pack:#f0a062;--pack-soft:#2c2013;--cross:#a79cff;--cross-soft:#1f1c33;--shadow:0 1px 3px rgba(0,0,0,.4)}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font:15.5px/1.6 ui-sans-serif,-apple-system,"Segoe UI",Inter,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+  .page{max-width:880px;margin:0 auto;padding:40px 24px 80px}
+  .topnav{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;font-size:13px}
+  .topnav a{color:var(--muted);text-decoration:none}
+  .topnav a:hover{color:var(--platform)}
+  .theme{border:1px solid var(--line);background:var(--panel);color:var(--muted);border-radius:8px;padding:6px 11px;font-size:13px;cursor:pointer}
+  .tagline{font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--pack);font-weight:700;margin:14px 0 6px}
+  h1{font-size:34px;letter-spacing:-.02em;margin:0 0 4px}
+  h1 b{color:var(--platform)}
+  .promise{font-size:18px;color:var(--muted);margin:0 0 22px;line-height:1.45}
+  .story{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px 22px;box-shadow:var(--shadow);font-size:15.5px;line-height:1.65;margin-bottom:30px}
+  .story::before{content:"The story so far";display:block;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--platform);font-weight:700;margin-bottom:8px}
+  h2{font-size:19px;margin:30px 0 12px;letter-spacing:-.01em}
+  .build{display:flex;flex-direction:column;gap:10px}
+  .b{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:13px 17px;box-shadow:var(--shadow)}
+  .b h3{margin:0 0 4px;font-size:15px;color:var(--platform)}
+  .b p{margin:0;color:var(--ink);font-size:14px;line-height:1.55}
+  .meta{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:8px}
+  @media(max-width:700px){.meta{grid-template-columns:1fr}}
+  .mcard{border:1px solid var(--line);border-radius:12px;padding:13px 16px;font-size:13.5px;line-height:1.55}
+  .mcard.contract{background:var(--platform-soft)}
+  .mcard.packs{background:var(--pack-soft)}
+  .mcard .k{font-size:11px;letter-spacing:.07em;text-transform:uppercase;font-weight:700;margin:0 0 6px}
+  .mcard.contract .k{color:var(--platform)} .mcard.packs .k{color:var(--pack)}
+  .engsec{margin-top:30px;border:1px solid var(--line);border-radius:14px;padding:16px 20px;background:var(--panel);box-shadow:var(--shadow)}
+  .engsec h2{margin:0 0 10px;font-size:17px}
+  .engsec h2 span{font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);font-weight:600;margin-left:8px}
+  .engsec ul{margin:0;padding-left:20px}
+  .engsec li{margin:7px 0;font-size:14px;line-height:1.55}
+  .open{background:var(--cross-soft);border:1px solid var(--line);border-radius:14px;padding:16px 20px;margin-top:30px}
+  .open h2{margin:0 0 10px;color:var(--cross);font-size:17px}
+  .open ol{margin:0;padding-left:20px}
+  .open li{margin:7px 0;font-size:14.5px}
+  .chapnav{display:flex;justify-content:space-between;gap:12px;margin-top:36px}
+  .chapnav a{flex:1;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px 16px;text-decoration:none;color:var(--ink);box-shadow:var(--shadow);font-size:14px}
+  .chapnav a:hover{border-color:var(--platform)}
+  .chapnav .dir{display:block;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:3px}
+  .chapnav .next{text-align:right}
+  .foot{margin-top:26px;color:var(--muted);font-size:12.5px;text-align:center}
+  code{background:var(--platform-soft);padding:.1em .4em;border-radius:5px;font-size:.9em;font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="topnav">
+    <a id="docsHome" href="../index.html">← Mimir docs</a>
+    <button class="theme" id="theme">◐ Theme</button>
+  </div>
+  <p class="tagline">Module 04 · proving it’s real</p>
+  <h1><b>Verify</b></h1>
+  <p class="promise">Claims about identity checked against sources of truth — not taken from the form.</p>
+
+  <div class="story">The estimate says the car is a 2022 hatchback owned by Priya. The photos show a plate. The RC shows a chassis number. Verify’s job is to stop trusting the paperwork and start checking it: plate against Vahan, owner against the RC, PAN against the tax registry. Most fraud doesn’t survive a cross-check — if the cross-check actually happens.</div>
+
+  <h2>What we're going to build</h2>
+  <div class="build">
+    <div class="b"><h3>The connector interface</h3><p>Sources of truth plug in as connectors — Vahan, DL, PAN, GST for motor; different registries for other domains. Async, cached, rate-limited, and fail-soft: a registry being down degrades the report honestly instead of blocking the case.</p></div>
+    <div class="b"><h3>Cross-source matching</h3><p>Entities extracted from documents and images are matched across sources, and every match/mismatch is a signal carrying the exact figures compared — "plate in photo: MH12AB1234; RC: MH12AB1234; Vahan: match."</p></div>
+    <div class="b"><h3>Caching & staleness policy</h3><p>Registry answers are cached with explicit freshness windows per connector — fast and cheap on repeat lookups, and the report always says how fresh the answer is.</p></div>
+    <div class="b"><h3>Existing rails as the unfair advantage</h3><p>Where the business already operates government-record APIs, they slot in as day-one connectors — already built, already sold. The platform makes them composable.</p></div>
+  </div>
+
+  <div class="meta">
+    <div class="mcard contract"><p class="k">The contract (platform — never changes)</p>In: entities (from Extract/Vision). Out: verification signals — match/mismatch with the figures behind each. Sync for single lookups, async inside cases. Sold per verification or lookup.</div>
+    <div class="mcard packs"><p class="k">What the pack supplies (per domain)</p>Which connectors count as truth · cross-check rules · freshness windows.</div>
+  </div>
+
+  <div class="engsec">
+    <h2>For engineers &amp; architects<span>implementation notes</span></h2>
+    <ul>
+      <li>Connector = a small adapter implementing one interface: <code>lookup(entity) → attested facts + freshness + source</code>. Circuit-breakered, cached (per-connector TTL), rate-limit aware.</li>
+      <li>Registry outage degrades to a <code>source_unavailable</code> signal with the cache age — the case proceeds and the report says exactly what could not be checked.</li>
+      <li>Match semantics are rule-config (exact / normalized / fuzzy-with-threshold) per field per pack — the matcher is generic, the policy is pack.</li>
+      <li>Failure modes: stale cache served past TTL is marked stale, never silent; conflicting sources (RC vs registry) emit a conflict signal rather than picking a winner in engine code.</li>
+    </ul>
+  </div>
+
+  <div class="open">
+    <h2>Open questions — for the room</h2>
+    <ol>
+      <li>Connector SLAs: what do we promise when Vahan is slow or down — degrade, retry, or hold?</li>
+      <li>What legally counts as a "match" — exact string, fuzzy, or registry-confirmed?</li>
+      <li>Which connectors are Phase 1 (RC/Vahan certain) vs Phase 2 (bank, bureau)?</li>
+      <li>Pricing: per lookup pass-through plus margin, or bundled into the case price?</li>
+    </ol>
+  </div>
+
+  <div class="chapnav">
+    <a href="module-vision.html"><span class="dir">← Previous</span>Vision</a>
+    <a class="next" href="module-detect.html"><span class="dir">Next →</span>Detect</a>
+  </div>
+
+  <p class="foot">Mimir · the Modules intelligence engine — module 04 of 07 · <a href="../index.html" style="color:var(--platform)">all docs</a></p>
+</div>
+<script>
+  document.getElementById('theme').addEventListener('click',()=>{
+    const d=document.documentElement,c=d.getAttribute('data-t');
+    d.setAttribute('data-t',c==='dark'?'light':c==='light'?'dark':(matchMedia('(prefers-color-scheme: dark)').matches?'light':'dark'));
+  });
+  const inFrame=window.self!==window.top;
+  if(inFrame){const tb=document.getElementById('theme');if(tb)tb.style.display='none';document.body.style.background='transparent';const dh=document.getElementById('docsHome');if(dh)dh.style.display='none';}
+  window.addEventListener('message',e=>{if(e.data&&e.data.type==='theme')document.documentElement.setAttribute('data-t',e.data.value);});
+  function postSize(){if(inFrame){try{parent.postMessage({type:'size',height:document.body.scrollHeight},'*');}catch(_){}}}
+  window.addEventListener('load',postSize);
+  if(window.ResizeObserver)new ResizeObserver(postSize).observe(document.body);
+</script>
+</body>
+</html>

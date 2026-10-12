@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Mimir — Decide</title>
+<style>
+  :root{
+    --bg:#f6f5f1; --panel:#fff; --ink:#191919; --muted:#70706a; --line:#e4e1d8;
+    --platform:#1f6feb; --platform-soft:#e9f0fe; --pack:#b4530a; --pack-soft:#fcefe2;
+    --cross:#5a4fcf; --cross-soft:#ecebfb; --shadow:0 1px 3px rgba(0,0,0,.07);
+  }
+  @media(prefers-color-scheme:dark){:root{
+    --bg:#0e1014; --panel:#161922; --ink:#e8eaef; --muted:#97a0ae; --line:#272c38;
+    --platform:#6aa2ff; --platform-soft:#182238; --pack:#f0a062; --pack-soft:#2c2013;
+    --cross:#a79cff; --cross-soft:#1f1c33; --shadow:0 1px 3px rgba(0,0,0,.4);}}
+  [data-t="light"]{--bg:#f6f5f1;--panel:#fff;--ink:#191919;--muted:#70706a;--line:#e4e1d8;--platform:#1f6feb;--platform-soft:#e9f0fe;--pack:#b4530a;--pack-soft:#fcefe2;--cross:#5a4fcf;--cross-soft:#ecebfb;--shadow:0 1px 3px rgba(0,0,0,.07)}
+  [data-t="dark"]{--bg:#0e1014;--panel:#161922;--ink:#e8eaef;--muted:#97a0ae;--line:#272c38;--platform:#6aa2ff;--platform-soft:#182238;--pack:#f0a062;--pack-soft:#2c2013;--cross:#a79cff;--cross-soft:#1f1c33;--shadow:0 1px 3px rgba(0,0,0,.4)}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font:15.5px/1.6 ui-sans-serif,-apple-system,"Segoe UI",Inter,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+  .page{max-width:880px;margin:0 auto;padding:40px 24px 80px}
+  .topnav{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;font-size:13px}
+  .topnav a{color:var(--muted);text-decoration:none}
+  .topnav a:hover{color:var(--platform)}
+  .theme{border:1px solid var(--line);background:var(--panel);color:var(--muted);border-radius:8px;padding:6px 11px;font-size:13px;cursor:pointer}
+  .tagline{font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--pack);font-weight:700;margin:14px 0 6px}
+  h1{font-size:34px;letter-spacing:-.02em;margin:0 0 4px}
+  h1 b{color:var(--platform)}
+  .promise{font-size:18px;color:var(--muted);margin:0 0 22px;line-height:1.45}
+  .story{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px 22px;box-shadow:var(--shadow);font-size:15.5px;line-height:1.65;margin-bottom:30px}
+  .story::before{content:"The story so far";display:block;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--platform);font-weight:700;margin-bottom:8px}
+  h2{font-size:19px;margin:30px 0 12px;letter-spacing:-.01em}
+  .build{display:flex;flex-direction:column;gap:10px}
+  .b{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:13px 17px;box-shadow:var(--shadow)}
+  .b h3{margin:0 0 4px;font-size:15px;color:var(--platform)}
+  .b p{margin:0;color:var(--ink);font-size:14px;line-height:1.55}
+  .meta{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:8px}
+  @media(max-width:700px){.meta{grid-template-columns:1fr}}
+  .mcard{border:1px solid var(--line);border-radius:12px;padding:13px 16px;font-size:13.5px;line-height:1.55}
+  .mcard.contract{background:var(--platform-soft)}
+  .mcard.packs{background:var(--pack-soft)}
+  .mcard .k{font-size:11px;letter-spacing:.07em;text-transform:uppercase;font-weight:700;margin:0 0 6px}
+  .mcard.contract .k{color:var(--platform)} .mcard.packs .k{color:var(--pack)}
+  .engsec{margin-top:30px;border:1px solid var(--line);border-radius:14px;padding:16px 20px;background:var(--panel);box-shadow:var(--shadow)}
+  .engsec h2{margin:0 0 10px;font-size:17px}
+  .engsec h2 span{font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);font-weight:600;margin-left:8px}
+  .engsec ul{margin:0;padding-left:20px}
+  .engsec li{margin:7px 0;font-size:14px;line-height:1.55}
+  .open{background:var(--cross-soft);border:1px solid var(--line);border-radius:14px;padding:16px 20px;margin-top:30px}
+  .open h2{margin:0 0 10px;color:var(--cross);font-size:17px}
+  .open ol{margin:0;padding-left:20px}
+  .open li{margin:7px 0;font-size:14.5px}
+  .chapnav{display:flex;justify-content:space-between;gap:12px;margin-top:36px}
+  .chapnav a{flex:1;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px 16px;text-decoration:none;color:var(--ink);box-shadow:var(--shadow);font-size:14px}
+  .chapnav a:hover{border-color:var(--platform)}
+  .chapnav .dir{display:block;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:3px}
+  .chapnav .next{text-align:right}
+  .foot{margin-top:26px;color:var(--muted);font-size:12.5px;text-align:center}
+  code{background:var(--platform-soft);padding:.1em .4em;border-radius:5px;font-size:.9em;font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="topnav">
+    <a id="docsHome" href="../index.html">← Mimir docs</a>
+    <button class="theme" id="theme">◐ Theme</button>
+  </div>
+  <p class="tagline">Module 07 · the human stays in charge</p>
+  <h1><b>Decide</b></h1>
+  <p class="promise">Clean cases clear automatically. Doubtful ones reach a human — with the reasons attached.</p>
+
+  <div class="story">Priya’s claim scored 78 — high. The policy lapsed before the loss, and the estimate doesn’t match the photos. Decide does not reject her claim. It routes the case to an investigator with every flag and figure attached, pauses durably — for hours or days — and records whatever the human decides. The engine informs; the human owns the call. That principle is engineered, not just stated.</div>
+
+  <h2>What we're going to build</h2>
+  <div class="build">
+    <div class="b"><h3>Threshold policy engine</h3><p>Pack-supplied thresholds over the risk and estimate signals: auto-clear below, route above, with per-client overrides. Clean claims settle without a human touch — that’s the speed promise.</p></div>
+    <div class="b"><h3>Hard caps, enforced</h3><p>Legal and client-set limits above which nothing auto-clears, ever — enforced in the engine, not left to configuration discipline. The IRDAI sub-₹50k context is a pack setting; the cap mechanism is platform.</p></div>
+    <div class="b"><h3>Durable human-in-the-loop</h3><p>A routed case parks, durably, until the Review Console returns a decision — days later if needed. Webhooks fire on every transition so the client’s systems always know where the case stands.</p></div>
+    <div class="b"><h3>Decisions as audit objects</h3><p>Every decision — automated or human — lands in the event log with its inputs, thresholds, and model versions. Regulator-grade replay is a query, not an archaeology project.</p></div>
+    <div class="b"><h3>Corrections close the loop</h3><p>When the investigator overturns a flag, that correction becomes a label. Decide is where the learning loop starts, not just where the case ends.</p></div>
+  </div>
+
+  <div class="meta">
+    <div class="mcard contract"><p class="k">The contract (platform — never changes)</p>In: risk/estimate signals + thresholds. Out: a decision (clear / route) + flags, terminal case events, webhooks. Sold per automated decision.</div>
+    <div class="mcard packs"><p class="k">What the pack supplies (per domain)</p>Thresholds · routing policy · hard caps · report template.</div>
+  </div>
+
+  <div class="engsec">
+    <h2>For engineers &amp; architects<span>implementation notes</span></h2>
+    <ul>
+      <li>Hard caps are enforced in the engine as invariants (a decision above cap without a human event is unrepresentable), not validated in pack config — config review is not a safety mechanism.</li>
+      <li>Routed cases park as durable workflow timers/waits; the Review Console resolution is just another case event, so crash-recovery and audit come free from event sourcing.</li>
+      <li>Every decision event embeds: threshold version, rule versions, model versions, input signal refs — regulator replay is <code>fold(events)</code>, no joins across mutable tables.</li>
+      <li>Failure modes: webhook endpoint down → signed retries with backoff + a replay API; reviewer SLA breach emits an escalation event the client can route on.</li>
+    </ul>
+  </div>
+
+  <div class="open">
+    <h2>Open questions — for the room</h2>
+    <ol>
+      <li>Who tunes thresholds in a pilot — us, the insurer’s claims head, or jointly with a dashboard?</li>
+      <li>Review Console v1: build minimal in-house, or is the insurer’s existing queue the UI?</li>
+      <li>What is the SLA story for a case parked on human review — ours or the client’s?</li>
+      <li>Appeal path: when a claimant disputes, what does the case replay owe them (DPDP)?</li>
+    </ol>
+  </div>
+
+  <div class="chapnav">
+    <a href="module-estimate.html"><span class="dir">← Previous</span>Estimate</a>
+    <a class="next" href="module-capture.html"><span class="dir">Next →</span>Capture</a>
+  </div>
+
+  <p class="foot">Mimir · the Modules intelligence engine — module 07 of 07 · <a href="../index.html" style="color:var(--platform)">all docs</a></p>
+</div>
+<script>
+  document.getElementById('theme').addEventListener('click',()=>{
+    const d=document.documentElement,c=d.getAttribute('data-t');
+    d.setAttribute('data-t',c==='dark'?'light':c==='light'?'dark':(matchMedia('(prefers-color-scheme: dark)').matches?'light':'dark'));
+  });
+  const inFrame=window.self!==window.top;
+  if(inFrame){const tb=document.getElementById('theme');if(tb)tb.style.display='none';document.body.style.background='transparent';const dh=document.getElementById('docsHome');if(dh)dh.style.display='none';}
+  window.addEventListener('message',e=>{if(e.data&&e.data.type==='theme')document.documentElement.setAttribute('data-t',e.data.value);});
+  function postSize(){if(inFrame){try{parent.postMessage({type:'size',height:document.body.scrollHeight},'*');}catch(_){}}}
+  window.addEventListener('load',postSize);
+  if(window.ResizeObserver)new ResizeObserver(postSize).observe(document.body);
+</script>
+</body>
+</html>

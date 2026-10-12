@@ -1,0 +1,179 @@
+/* ============================================================================
+   @modules/brand — shared design tokens for ALL services (light + dark).
+   Import AFTER `@import "tailwindcss";`:
+
+       @import "tailwindcss";
+       @import "@modules/brand/tokens.css";
+
+   Teal leads · amber signs · navy carries · violet for the AI story.
+   Provides BOTH our semantic brand utilities (bg-canvas, text-ink, text-muted,
+   border-hair, text-primary, bg-brand[amber]) AND the shadcn/ui token API
+   (bg-background, text-foreground, bg-card, bg-primary, text-muted-foreground,
+   border-border, ring-ring, …) mapped onto the same brand, so shadcn components
+   render on-brand and flip with light/dark. Toggle `.dark` on <html>.
+   See services/bragi/docs/brand.md. Raw values also in ./tokens.json.
+   ============================================================================ */
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  /* --- Raw palette (fixed hues) --- */
+  --color-teal-800: #0a4f4e;
+  --color-teal-700: #0b5e5d;
+  --color-teal-600: #0e7c7b;
+  --color-teal-500: #14b8a6;
+  --color-teal-400: #2dd4bf;
+  --color-teal-300: #5eead4;
+
+  --color-navy-950: #0a0f1a;
+  --color-navy-900: #0b1b2b;
+  --color-navy-800: #122235;
+  --color-navy-700: #1b3147;
+  --color-navy-600: #2b4a66;
+  --color-navy-500: #40617f;
+  --color-navy-200: #c2d0dc;
+  --color-navy-100: #e4ebf1;
+
+  --color-amber-700: #92400e;
+  --color-amber-600: #b45309;
+  --color-amber-500: #e08a00;
+  --color-amber-400: #fbbf24;
+
+  --color-violet-600: #6d4aff;
+  --color-violet-400: #a78bfa;
+
+  --color-risk-high: #b91c1c;
+  --color-risk-review: #b45309;
+  --color-risk-clear: #0e7c7b;
+
+  /* --- Our semantic brand tokens (mode-aware via --c-*) --- */
+  --color-canvas: var(--c-canvas);
+  --color-surface: var(--c-surface);
+  --color-surface-2: var(--c-surface-2);
+  --color-ink: var(--c-ink);
+  --color-muted: var(--c-muted);
+  --color-hair: var(--c-hair);
+  --color-primary: var(--c-primary); /* teal, mode-aware */
+  --color-brand: var(--c-brand); /* AMBER — CTA / signature, mode-aware */
+
+  /* Type */
+  --font-sans: "IBM Plex Sans", system-ui, -apple-system, sans-serif;
+  --font-display: "Space Grotesk", var(--font-sans);
+  --font-mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, monospace;
+}
+
+/* --- shadcn/ui token bridge (standard names → our brand) --- */
+@theme inline {
+  --color-background: var(--sh-background);
+  --color-foreground: var(--sh-foreground);
+  --color-card: var(--sh-card);
+  --color-card-foreground: var(--sh-card-foreground);
+  --color-popover: var(--sh-popover);
+  --color-popover-foreground: var(--sh-popover-foreground);
+  --color-primary-foreground: var(--sh-primary-foreground);
+  --color-secondary: var(--sh-secondary);
+  --color-secondary-foreground: var(--sh-secondary-foreground);
+  --color-muted-foreground: var(--sh-muted-foreground);
+  --color-accent: var(--sh-accent); /* shadcn hover surface — NOT amber */
+  --color-accent-foreground: var(--sh-accent-foreground);
+  --color-destructive: var(--sh-destructive);
+  --color-destructive-foreground: var(--sh-destructive-foreground);
+  --color-border: var(--sh-border);
+  --color-input: var(--sh-input);
+  --color-ring: var(--sh-ring);
+
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+}
+
+/* --- Theme values: light default, .dark overrides --- */
+:root {
+  color-scheme: light;
+  --radius: 0.6rem;
+
+  /* brand semantic */
+  --c-canvas: #ffffff;
+  --c-surface: #f6f8f9;
+  --c-surface-2: #ffffff;
+  --c-ink: #0b1b2b;
+  --c-muted: #40617f;
+  --c-hair: #e4ebf1;
+  --c-primary: #0e7c7b;
+  --c-brand: #e08a00; /* amber */
+
+  /* shadcn */
+  --sh-background: #ffffff;
+  --sh-foreground: #0b1b2b;
+  --sh-card: #ffffff;
+  --sh-card-foreground: #0b1b2b;
+  --sh-popover: #ffffff;
+  --sh-popover-foreground: #0b1b2b;
+  --sh-primary-foreground: #ffffff;
+  --sh-secondary: #f1f5f8;
+  --sh-secondary-foreground: #0b1b2b;
+  --sh-muted-foreground: #40617f;
+  --sh-accent: #eef4f3;
+  --sh-accent-foreground: #0b1b2b;
+  --sh-destructive: #b91c1c;
+  --sh-destructive-foreground: #ffffff;
+  --sh-border: #e4ebf1;
+  --sh-input: #e4ebf1;
+  --sh-ring: #0e7c7b;
+}
+:root.dark {
+  color-scheme: dark;
+
+  --c-canvas: #0a0f1a;
+  --c-surface: #0f1f31;
+  --c-surface-2: #142639;
+  --c-ink: #e8eef3;
+  --c-muted: #9fb2c2;
+  --c-hair: #1e3347;
+  --c-primary: #2dd4bf;
+  --c-brand: #fbbf24; /* amber */
+
+  --sh-background: #0a0f1a;
+  --sh-foreground: #e8eef3;
+  --sh-card: #0f1f31;
+  --sh-card-foreground: #e8eef3;
+  --sh-popover: #0f1f31;
+  --sh-popover-foreground: #e8eef3;
+  --sh-primary-foreground: #06201f;
+  --sh-secondary: #142639;
+  --sh-secondary-foreground: #e8eef3;
+  --sh-muted-foreground: #9fb2c2;
+  --sh-accent: #16293c;
+  --sh-accent-foreground: #e8eef3;
+  --sh-destructive: #ef4444;
+  --sh-destructive-foreground: #0a0f1a;
+  --sh-border: #1e3347;
+  --sh-input: #22384c;
+  --sh-ring: #2dd4bf;
+}
+
+/* --- Shared brand base + helpers --- */
+.font-display {
+  font-family: var(--font-display);
+  letter-spacing: -0.015em;
+}
+.font-data,
+.tabular {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums slashed-zero;
+}
+::selection {
+  background: var(--color-teal-400);
+  color: var(--color-navy-950);
+}
+.bg-grid {
+  background-image: radial-gradient(rgba(45, 212, 191, 0.14) 1px, transparent 1px);
+  background-size: 22px 22px;
+}
+.bg-aurora {
+  background:
+    radial-gradient(60% 50% at 15% 0%, rgba(20, 184, 166, 0.16), transparent 60%),
+    radial-gradient(50% 50% at 90% 10%, rgba(109, 74, 255, 0.14), transparent 60%),
+    linear-gradient(180deg, #0a0f1a 0%, #0b1b2b 100%);
+}

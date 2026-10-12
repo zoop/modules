@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Mimir — speaker crib</title>
+<style>
+  :root{
+    --bg:#f6f5f1; --panel:#fff; --ink:#191919; --muted:#70706a; --line:#e4e1d8;
+    --platform:#1f6feb; --platform-soft:#e9f0fe; --pack:#b4530a; --pack-soft:#fcefe2;
+    --cross:#5a4fcf; --cross-soft:#ecebfb; --shadow:0 1px 3px rgba(0,0,0,.07);
+  }
+  @media(prefers-color-scheme:dark){:root{
+    --bg:#0e1014; --panel:#161922; --ink:#e8eaef; --muted:#97a0ae; --line:#272c38;
+    --platform:#6aa2ff; --platform-soft:#182238; --pack:#f0a062; --pack-soft:#2c2013;
+    --cross:#a79cff; --cross-soft:#1f1c33; --shadow:0 1px 3px rgba(0,0,0,.4);}}
+  [data-t="light"]{--bg:#f6f5f1;--panel:#fff;--ink:#191919;--muted:#70706a;--line:#e4e1d8;--platform:#1f6feb;--platform-soft:#e9f0fe;--pack:#b4530a;--pack-soft:#fcefe2;--cross:#5a4fcf;--cross-soft:#ecebfb;--shadow:0 1px 3px rgba(0,0,0,.07)}
+  [data-t="dark"]{--bg:#0e1014;--panel:#161922;--ink:#e8eaef;--muted:#97a0ae;--line:#272c38;--platform:#6aa2ff;--platform-soft:#182238;--pack:#f0a062;--pack-soft:#2c2013;--cross:#a79cff;--cross-soft:#1f1c33;--shadow:0 1px 3px rgba(0,0,0,.4)}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.55 ui-sans-serif,-apple-system,"Segoe UI",Inter,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+  .page{max-width:900px;margin:0 auto;padding:40px 24px 80px}
+  header{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap;margin-bottom:4px}
+  h1{font-size:26px;letter-spacing:-.02em;margin:0}
+  h1 b{color:var(--platform)}
+  .sub{color:var(--muted);margin:6px 0 0;font-size:14.5px}
+  .theme{border:1px solid var(--line);background:var(--panel);color:var(--muted);border-radius:8px;padding:7px 12px;font-size:13px;cursor:pointer}
+  h2{font-size:17px;margin:28px 0 10px}
+  .say{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:11px 15px;margin-bottom:9px;box-shadow:var(--shadow)}
+  .say .where{font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--platform);font-weight:700;margin:0 0 3px}
+  .say .line{font-size:14.5px}
+  .say .line b{color:var(--platform)}
+  .say.hot{background:var(--platform-soft)}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  @media(max-width:700px){.grid{grid-template-columns:1fr}}
+  .qa{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:11px 15px;box-shadow:var(--shadow)}
+  .qa .q{font-weight:700;font-size:13.5px;margin:0 0 4px}
+  .qa .q .who{color:var(--muted);font-weight:400}
+  .qa .a{font-size:13px;color:var(--ink)}
+  .ice{background:var(--pack-soft);border:1px solid var(--line);border-radius:12px;padding:13px 16px;margin-top:8px}
+  .ice b{color:var(--pack)}
+  .ice ul{margin:6px 0 0;padding-left:18px}
+  .ice li{margin:4px 0;font-size:13.5px}
+  .defs{font-size:13.5px}
+  .defs div{padding:6px 0;border-bottom:1px solid var(--line)}
+  .defs b{color:var(--platform)}
+  .foot{margin-top:26px;color:var(--muted);font-size:12.5px;text-align:center}
+</style>
+</head>
+<body>
+<div class="page">
+  <a id="docsHome" href="../index.html" style="display:inline-block;margin-bottom:10px;color:var(--muted);text-decoration:none;font-size:13px">← Mimir docs</a>
+  <header>
+    <div>
+      <h1><b>Mimir</b> — speaker crib</h1>
+      <p class="sub">The lines to say aloud (tooltips don't reach a projector), the thin ice, and the one-breath answers.</p>
+    </div>
+    <button class="theme" id="theme">◐ Theme</button>
+  </header>
+
+  <h2>Say these out loud — at these moments</h2>
+  <div class="say hot"><p class="where">Slide 3 · the thesis — THE line of the meeting</p><p class="line">"To be clear: <b>nothing here is built yet</b>. This is the design we want you to greenlight — pressure-tested on paper against 13 products. The ask today is Phase 1 only."</p></div>
+  <div class="say"><p class="where">Slide 1 · title</p><p class="line">"Two names, one thing: <b>Mimir</b> is the engineering codename for the engine; <b>Modules</b> is the provisional product name. Today I'll say Mimir."</p></div>
+  <div class="say"><p class="where">Slide 4 · component map</p><p class="line">"The dashed boxes were <b>forced by a design exercise</b> I'll show you on slide 8 — running 13 products through this design on paper."</p></div>
+  <div class="say hot"><p class="where">Slide 5 · capability services</p><p class="line">"A <b>signal</b> is a typed fact a stage writes to the case — 'plate matched', 'bumper dented'. Every later stage reads the whole set. This one idea is what keeps the engine generic."</p></div>
+  <div class="say"><p class="where">Slide 5 · business model, one breath</p><p class="line">"Each of these ships as a <b>sellable API product</b> — priced per session, document, lookup or decision. Clients take one module or the whole stack."</p></div>
+  <div class="say"><p class="where">Slide 6 · Priya's case</p><p class="line">"<b>Vahan</b> is India's national vehicle registry; <b>RC</b> is the car's registration certificate. The magic beat: the bill lists a new bumper, the photo shows no bumper damage — <b>neither source alone catches it; the fused view does</b>. That fusion is the moat."</p></div>
+  <div class="say"><p class="where">Before slides 10–12 · signpost</p><p class="line">"Next three slides are for the <b>CTO, the architect, and ML</b> respectively — then we're back together for the plan and the ask."</p></div>
+  <div class="say"><p class="where">Slide 8 · back-test</p><p class="line">"These numbers are <b>illustrative</b> — a design exercise, not shipped software. The point isn't the 13; it's that the engine-plus-packs split never broke."</p></div>
+
+  <h2>The hardest likely questions — one-breath answers</h2>
+  <div class="grid">
+    <div class="qa"><p class="q">"Why build this when vendors exist?" <span class="who">· CTO</span></p><p class="a">We integrate the commodities — OCR, vision/LLM models, workflow engine, model gateway. We build what no vendor sells: the Signal model, the fused image×document checks, and the pack + compliance layer. That composition is the only IP.</p></div>
+    <div class="qa"><p class="q">"Isn't this a platform before product-market fit?" <span class="who">· CSO</span></p><p class="a">Phase 1 is a product, not a platform — one motor product, end to end. The platform-ness is just disciplined contracts and a CI check. If the product fails, we lost nothing to the platform; if it works, product #2 costs a pack.</p></div>
+    <div class="qa"><p class="q">"Domain-agnostic — proven?" <span class="who">· Architect</span></p><p class="a">No — design intent. It becomes real the day pack #2 ships with zero engine change (Phase 2). Until then we guard it with the Signal model and a CI check that fails on domain nouns in engine code.</p></div>
+    <div class="qa"><p class="q">"Is 'agentic' real or fashionable?" <span class="who">· VP Eng</span></p><p class="a">Phase 3, deliberately. The agent's tools are the capability services — they must exist first. Until then, the deterministic DAG does everything we're selling.</p></div>
+    <div class="qa"><p class="q">"Where do models plug in, and who owns accuracy?" <span class="who">· ML</span></p><p class="a">Everything goes through the Model Gateway (own + third-party, versioned). Review corrections become labels; the eval registry versions models per pack. Designed to publish accuracy — nothing measured in prod today.</p></div>
+    <div class="qa"><p class="q">"What can I sell first, to whom?" <span class="who">· PM</span></p><p class="a">Single modules self-serve — verification alone, extraction alone, inspection alone — and the composed motor product for insurers. Entitlements make every subset a sellable SKU.</p></div>
+  </div>
+
+  <h2>Thin ice — own it before they find it</h2>
+  <div class="ice">
+    <b>Do not overclaim tomorrow:</b>
+    <ul>
+      <li>No named customers; all data on screen is sample; no published accuracy.</li>
+      <li>Agent Runtime and the cross-tenant link graph are <b>roadmap</b> (Phase 3). The cross-tenant graph also needs legal review — don't promise it.</li>
+      <li>Compliance: ~80% is policy-as-config, but <b>model-region routing and novel obligations are real build work</b>, not a flag.</li>
+      <li>"Domain-agnostic" and "every correction trains the engine" are design intent until Phase 2 proves them.</li>
+    </ul>
+  </div>
+
+  <h2>Junior lifelines — define in passing, don't make it a lecture</h2>
+  <div class="defs">
+    <div><b>Pack</b> — a config bundle that teaches the generic engine one industry; product writes it, engineering doesn't touch the engine.</div>
+    <div><b>Signal</b> — a typed note each step leaves on the case; later steps read all the notes instead of calling each other.</div>
+    <div><b>DAG</b> — a fixed recipe of steps; deterministic = same input, same path. The Agent Runtime is the alternative where an AI picks the steps.</div>
+    <div><b>Fused check</b> — catching what no single source shows, by cross-checking documents against images.</div>
+    <div><b>Vahan / RC / IRDAI / DPDP</b> — vehicle registry · registration certificate · insurance regulator · India's data-protection law.</div>
+  </div>
+
+  <p class="foot">Mimir · speaker crib — pairs with <a href="presentation.html" style="color:var(--platform)">the deck</a>, <a href="agenda.html" style="color:var(--platform)">the agenda</a> and <a href="../meeting/meeting-qa.md" style="color:var(--platform)">the full Q&amp;A brief</a>.</p>
+</div>
+<script>
+  document.getElementById('theme').addEventListener('click',()=>{
+    const d=document.documentElement,c=d.getAttribute('data-t');
+    d.setAttribute('data-t',c==='dark'?'light':c==='light'?'dark':(matchMedia('(prefers-color-scheme: dark)').matches?'light':'dark'));
+  });
+</script>
+</body>
+</html>

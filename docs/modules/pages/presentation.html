@@ -1,0 +1,750 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Mimir — the Modules intelligence engine</title>
+<style>
+  :root{
+    --bg:#f6f5f1; --panel:#fff; --ink:#191919; --muted:#70706a; --line:#e4e1d8;
+    --platform:#1f6feb; --platform-soft:#e9f0fe;
+    --pack:#b4530a; --pack-soft:#fcefe2;
+    --cross:#5a4fcf; --cross-soft:#ecebfb;
+    --good:#1f9254; --bad:#c23b3b; --shadow:0 1px 3px rgba(0,0,0,.07);
+  }
+  @media(prefers-color-scheme:dark){:root{
+    --bg:#0e1014; --panel:#161922; --ink:#e8eaef; --muted:#97a0ae; --line:#272c38;
+    --platform:#6aa2ff; --platform-soft:#182238;
+    --pack:#f0a062; --pack-soft:#2c2013;
+    --cross:#a79cff; --cross-soft:#1f1c33;
+    --good:#4cc281; --bad:#e86a6a; --shadow:0 1px 3px rgba(0,0,0,.4);}}
+  [data-t="light"]{--bg:#f6f5f1;--panel:#fff;--ink:#191919;--muted:#70706a;--line:#e4e1d8;--platform:#1f6feb;--platform-soft:#e9f0fe;--pack:#b4530a;--pack-soft:#fcefe2;--cross:#5a4fcf;--cross-soft:#ecebfb;--good:#1f9254;--bad:#c23b3b;--shadow:0 1px 3px rgba(0,0,0,.07)}
+  [data-t="dark"]{--bg:#0e1014;--panel:#161922;--ink:#e8eaef;--muted:#97a0ae;--line:#272c38;--platform:#6aa2ff;--platform-soft:#182238;--pack:#f0a062;--pack-soft:#2c2013;--cross:#a79cff;--cross-soft:#1f1c33;--good:#4cc281;--bad:#e86a6a;--shadow:0 1px 3px rgba(0,0,0,.4)}
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{margin:0;background:var(--bg);color:var(--ink);overflow:hidden;
+    font:16px/1.55 ui-sans-serif,-apple-system,"Segoe UI",Inter,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+
+  /* ---- deck chrome ---- */
+  .deck{position:fixed;inset:0}
+  .slide{position:absolute;inset:0;display:none;flex-direction:column;
+    padding:5.5vh 6vw 8vh;overflow:auto}
+  .slide.on{display:flex;animation:fade .32s ease}
+  @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+  .kicker{font-size:12.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-weight:600;margin:0 0 14px}
+  .kicker b{color:var(--platform)}
+  h1{font-size:clamp(30px,5vw,58px);letter-spacing:-.025em;line-height:1.04;margin:0 0 20px;font-weight:700}
+  h1 b{color:var(--platform)}
+  h2{font-size:clamp(24px,3.4vw,38px);letter-spacing:-.02em;line-height:1.08;margin:0 0 6px;font-weight:700}
+  .lede{font-size:clamp(17px,2vw,23px);color:var(--muted);max-width:60ch;line-height:1.4;margin:0}
+  .slide-body{margin-top:clamp(18px,3vh,42px);flex:1;min-height:0}
+  p{margin:0 0 14px}
+
+  /* ---- controls ---- */
+  .bar{position:fixed;left:0;right:0;bottom:0;height:46px;display:flex;align-items:center;
+    justify-content:space-between;padding:0 18px;font-size:12.5px;color:var(--muted);
+    border-top:1px solid var(--line);background:var(--panel);z-index:20}
+  .bar .mid{display:flex;gap:14px;align-items:center}
+  .bar .title{color:var(--ink);font-weight:600}
+  .btn{border:1px solid var(--line);background:var(--bg);color:var(--muted);border-radius:7px;
+    padding:5px 11px;font-size:12.5px;cursor:pointer;font-family:inherit}
+  .btn:hover{color:var(--ink);border-color:var(--muted)}
+  .count{font-variant-numeric:tabular-nums}
+  .progress{position:fixed;top:0;left:0;right:0;height:3px;background:var(--platform);z-index:21;transform-origin:left;transform:scaleX(0);transition:transform .3s ease}
+
+  /* ---- hoverable term tooltip (CSS-only, keyboard-focusable) ---- */
+  .def{position:relative;border-bottom:1px dotted currentColor;cursor:help;outline:none}
+  .def::after{content:attr(data-def);position:absolute;left:0;bottom:100%;margin-bottom:9px;
+    width:max-content;max-width:300px;background:var(--panel);color:var(--ink);
+    border:1px solid var(--line);border-radius:10px;padding:9px 12px;font-size:13px;line-height:1.4;
+    font-weight:400;letter-spacing:normal;text-transform:none;box-shadow:0 4px 16px rgba(0,0,0,.18);
+    opacity:0;transform:translateY(4px);pointer-events:none;transition:opacity .15s ease,transform .15s ease;z-index:30}
+  .def:hover::after,.def:focus-visible::after{opacity:1;transform:translateY(0)}
+
+  /* ---- reusable blocks ---- */
+  .legend{display:flex;gap:20px;flex-wrap:wrap;margin:0 0 22px;font-size:13.5px;color:var(--muted)}
+  .legend span{display:inline-flex;align-items:center;gap:8px}
+  .sw{width:14px;height:14px;border-radius:4px;display:inline-block}
+  .sw.p{background:var(--platform)} .sw.k{background:var(--pack)} .sw.c{background:var(--cross)}
+
+  .grid{display:grid;gap:14px}
+  .g2{grid-template-columns:1fr 1fr}
+  .g3{grid-template-columns:repeat(3,1fr)}
+  .g4{grid-template-columns:repeat(4,1fr)}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px 20px;box-shadow:var(--shadow)}
+  .card h3{margin:0 0 8px;font-size:17px;letter-spacing:-.01em}
+  .card p{margin:0;color:var(--muted);font-size:14.5px;line-height:1.45}
+  .card .tiny{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:600;margin:0 0 6px}
+
+  .fill-p{background:var(--platform-soft)} .fill-p h3{color:var(--platform)}
+  .fill-k{background:var(--pack-soft)} .fill-k h3{color:var(--pack)}
+  .fill-c{background:var(--cross-soft)} .fill-c h3{color:var(--cross)}
+
+  .plane{border:1px solid var(--line);border-radius:14px;padding:14px 18px;margin:0 0 12px;background:var(--panel);box-shadow:var(--shadow)}
+  .plane .lbl{font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;font-weight:700;margin:0 0 9px;color:var(--muted)}
+  .plane.pl{background:var(--platform-soft)} .plane.pl .lbl{color:var(--platform)}
+  .plane.cr{background:var(--cross-soft)} .plane.cr .lbl{color:var(--cross)}
+  .units{display:flex;gap:9px;flex-wrap:wrap}
+  .unit{background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:7px 12px;font-size:13.5px;font-weight:500}
+  .unit.add{border-style:dashed}
+  .unit.add::after{content:" +";color:var(--pack);font-weight:700}
+
+  table{border-collapse:collapse;width:100%;font-size:14.5px}
+  th,td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:600}
+  td.comp{color:var(--platform);font-weight:600;white-space:nowrap}
+  td.pk{color:var(--pack)}
+  tbody tr:last-child td{border-bottom:0}
+  .add-tag{display:inline-block;font-size:10.5px;padding:1px 7px;border-radius:999px;border:1px dashed var(--pack);color:var(--pack);margin-left:6px;vertical-align:middle;letter-spacing:.03em}
+
+  .chips{display:flex;gap:9px;flex-wrap:wrap}
+  .chip{background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:6px 14px;font-size:13.5px}
+  .chip b{color:var(--platform)}
+
+  .two-plane{display:grid;gap:0;border:1px solid var(--line);border-radius:16px;overflow:hidden;box-shadow:var(--shadow)}
+  .two-plane .row{padding:22px 24px}
+  .two-plane .pk-row{background:var(--pack-soft)}
+  .two-plane .pl-row{background:var(--platform-soft);border-top:1px solid var(--line)}
+  .two-plane .cap{font-size:12px;letter-spacing:.09em;text-transform:uppercase;font-weight:700;margin:0 0 10px}
+  .pk-row .cap{color:var(--pack)} .pl-row .cap{color:var(--platform)}
+
+  .flowline{display:flex;align-items:center;gap:0;flex-wrap:wrap;font-size:15px}
+  .flowline .node{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:9px 15px;font-weight:600;box-shadow:var(--shadow)}
+  .flowline .arrow{color:var(--muted);padding:0 10px;font-size:18px}
+
+  .pill{display:inline-block;font-size:12px;padding:2px 9px;border-radius:999px;border:1px solid var(--line);color:var(--muted);margin:3px 4px 0 0}
+  .pill.async{color:var(--cross);border-color:var(--cross)}
+  .pill.sync{color:var(--platform);border-color:var(--platform)}
+  .pill.human{color:var(--pack);border-color:var(--pack)}
+  .pill.flag{color:var(--bad);border-color:var(--bad)}
+
+  .big-stat{font-size:clamp(40px,6vw,76px);font-weight:800;letter-spacing:-.03em;line-height:1;color:var(--platform)}
+  .big-stat.k{color:var(--pack)}
+  .stat-lbl{font-size:14px;color:var(--muted);margin-top:6px}
+
+  .phase-cols{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+  .phase{border:1px solid var(--line);border-radius:14px;padding:18px 20px;background:var(--panel);box-shadow:var(--shadow)}
+  .phase .ph-num{font-size:12px;letter-spacing:.09em;text-transform:uppercase;font-weight:700;color:var(--platform);margin:0 0 4px}
+  .phase h3{margin:0 0 12px;font-size:18px}
+  .phase ul{margin:0;padding-left:18px;color:var(--muted);font-size:14px;line-height:1.5}
+  .phase li{margin-bottom:5px}
+  .phase .exit{margin-top:12px;font-size:12.5px;color:var(--ink);font-weight:600}
+
+  ul.clean{list-style:none;margin:0;padding:0}
+  ul.clean li{padding:11px 0;border-bottom:1px solid var(--line);font-size:16px;display:flex;gap:12px;align-items:baseline}
+  ul.clean li:last-child{border-bottom:0}
+  ul.clean .n{color:var(--platform);font-weight:700;flex:none;width:1.6em}
+  ul.clean .mut{color:var(--muted)}
+
+  .defer{margin-top:14px;font-size:13.5px;color:var(--muted);border-top:1px dashed var(--line);padding-top:12px}
+  .defer b{color:var(--pack)}
+
+  .numflow{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+  .numstep{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px 14px;box-shadow:var(--shadow);position:relative}
+  .numstep .n{width:26px;height:26px;border-radius:50%;background:var(--platform);color:#fff;font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center;margin-bottom:8px}
+  .numstep .st{display:block;font-weight:700;font-size:14.5px;margin-bottom:3px}
+  .numstep .cmp{color:var(--platform);font-size:12.5px;font-weight:600}
+  .numstep .pak{color:var(--pack);font-size:12px;display:block;margin-top:4px}
+
+  .closing{display:flex;flex-direction:column;justify-content:center;height:100%}
+
+  /* ---- honest callout (slide 3) ---- */
+  .callout{display:flex;gap:12px;align-items:flex-start;background:var(--pack-soft);border:1px solid var(--line);
+    border-radius:12px;padding:14px 18px;margin:0 0 20px;font-size:15px;line-height:1.45;max-width:72ch}
+  .callout .dot{flex:none;width:9px;height:9px;border-radius:50%;background:var(--pack);margin-top:7px}
+  .callout b{color:var(--pack)}
+
+  /* ---- grouping the pack chips (slide 3) ---- */
+  .unit-group{display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+  .unit-div{align-self:stretch;width:1px;background:var(--line);margin:0 4px}
+  .unit-tag{font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--pack);font-weight:700;margin-right:2px}
+
+  /* ---- signpost line ---- */
+  .signpost{font-size:13px;color:var(--muted);letter-spacing:.02em;margin:0 0 14px}
+  .signpost b{color:var(--ink)}
+
+  /* ====== DIAGRAMS (inline SVG + CSS). All animation transform/opacity only. ====== */
+  svg{display:block;max-width:100%}
+  .dg-cap{font:600 12px ui-sans-serif,system-ui,sans-serif;fill:var(--muted);letter-spacing:.04em;text-transform:uppercase}
+  .dg-lab{font:600 13px ui-sans-serif,system-ui,sans-serif;fill:var(--ink)}
+  .dg-sm{font:500 11px ui-sans-serif,system-ui,sans-serif;fill:var(--muted)}
+
+  /* flowing evidence dots (slide 2) — translate along the pipe */
+  .evi{fill:var(--platform);opacity:0}
+
+  /* thesis pack-drop (slide 3B) */
+  .packcard{transform:translateX(0);opacity:1}
+  .engine-glow{opacity:.0}
+  .product-pop{opacity:0;transform:translateY(6px)}
+
+  /* component architecture flow arrow (slide 4) */
+  .flowdot{fill:var(--platform);opacity:0}
+
+  /* swap-the-pack cycler (slide 7) */
+  .swap-stage .sframe{opacity:0}
+
+  @media(prefers-reduced-motion:no-preference){
+    .evi{animation:eviflow 7s linear infinite}
+    .evi.e2{animation-delay:1.4s} .evi.e3{animation-delay:2.8s} .evi.e4{animation-delay:4.2s} .evi.e5{animation-delay:5.6s}
+    @keyframes eviflow{
+      0%{opacity:0;transform:translateX(0)}
+      6%{opacity:1}
+      88%{opacity:1}
+      100%{opacity:0;transform:translateX(var(--evi-dx,560px))}
+    }
+    .packcard{animation:packdrop 9s ease-in-out infinite}
+    @keyframes packdrop{
+      0%,8%{transform:translateX(-120px);opacity:0}
+      20%,46%{transform:translateX(0);opacity:1}
+      58%,92%{transform:translateX(0);opacity:1}
+      100%{transform:translateX(-120px);opacity:0}
+    }
+    .engine-glow{animation:glow 9s ease-in-out infinite}
+    @keyframes glow{0%,20%{opacity:0}34%,92%{opacity:.5}100%{opacity:0}}
+    .product-pop{animation:pop 9s ease-in-out infinite}
+    @keyframes pop{0%,30%{opacity:0;transform:translateY(6px)}44%,92%{opacity:1;transform:translateY(0)}100%{opacity:0;transform:translateY(6px)}}
+    .flowdot{animation:flowdown 5.5s linear infinite}
+    .flowdot.f2{animation-delay:1.8s} .flowdot.f3{animation-delay:3.6s}
+    @keyframes flowdown{0%{opacity:0;transform:translateY(0)}8%{opacity:1}90%{opacity:1}100%{opacity:0;transform:translateY(var(--flow-dy,300px))}}
+    /* swap cycler: 4 frames over 14s, crossfade */
+    .swap-stage .sframe{animation:sframe 14s ease-in-out infinite}
+    .swap-stage .sframe.s2{animation-delay:3.5s}
+    .swap-stage .sframe.s3{animation-delay:7s}
+    .swap-stage .sframe.s4{animation-delay:10.5s}
+    @keyframes sframe{0%,2%{opacity:0}4%,22%{opacity:1}25%{opacity:0}100%{opacity:0}}
+  }
+  @media(prefers-reduced-motion:reduce){
+    /* static end-state: show pack landed + product + first swap frame */
+    .packcard{transform:translateX(0);opacity:1}
+    .engine-glow{opacity:.45}
+    .product-pop{opacity:1;transform:none}
+    .swap-stage .sframe.s1{opacity:1}
+  }
+
+  @media(max-width:900px){
+    .g4,.g3,.phase-cols,.numflow{grid-template-columns:1fr 1fr}
+    .g2{grid-template-columns:1fr}
+  }
+  @media(max-width:620px){
+    .g4,.g3,.g2,.phase-cols,.numflow{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+<a href="../index.html" title="Back to Mimir docs" style="position:fixed;top:12px;left:14px;z-index:9999;font:13px/1 ui-sans-serif,-apple-system,system-ui,sans-serif;color:#8a8a8a;text-decoration:none;opacity:.55">← docs</a>
+<div class="progress" id="progress"></div>
+<div class="deck" id="deck">
+
+  <!-- 1 — TITLE -->
+  <section class="slide">
+    <div class="closing">
+      <p class="kicker"><b>Mimir</b> · the Modules intelligence engine · internal review</p>
+      <h1><b>Mimir</b> — one engine that turns raw evidence into a verified, costed, auditable decision.</h1>
+      <p class="lede">Domain-agnostic by design. Industry knowledge is injected as a <b>pack</b>, never built in — so a new product is a configuration, not a platform.</p>
+      <div style="margin-top:34px" class="legend">
+        <span><i class="sw p"></i> Platform — built once</span>
+        <span><i class="sw k"></i> <span class="def" tabindex="0" data-def="The per-domain configuration that lights up the engine for one category.">Pack</span> — per domain</span>
+        <span><i class="sw c"></i> Cross-cutting — always on</span>
+      </div>
+      <p class="lede" style="font-size:15px;margin-top:26px">To: Engineers &amp; Architects — review meeting tomorrow.</p>
+    </div>
+  </section>
+
+  <!-- 2 — PROBLEM SHAPE -->
+  <section class="slide">
+    <p class="kicker">The problem shape</p>
+    <h2>Many adjacent problems are the <b>same pipeline</b>.</h2>
+    <p class="lede">Collect evidence → understand it → check it against truth → cost it → decide (auto or human).</p>
+    <div class="slide-body">
+      <svg viewBox="0 0 600 90" style="margin:8px 0 26px;width:100%;max-width:760px" role="img" aria-label="Pipeline: Collect, Understand, Check, Cost, Decide — evidence flows left to right.">
+        <line x1="40" y1="45" x2="560" y2="45" stroke="var(--line)" stroke-width="2"/>
+        <g>
+          <circle cx="40" cy="45" r="6" fill="var(--platform)"/><text x="40" y="76" text-anchor="middle" class="dg-lab">Collect</text>
+          <circle cx="170" cy="45" r="6" fill="var(--platform)"/><text x="170" y="76" text-anchor="middle" class="dg-lab">Understand</text>
+          <circle cx="300" cy="45" r="6" fill="var(--platform)"/><text x="300" y="76" text-anchor="middle" class="dg-lab">Check</text>
+          <circle cx="430" cy="45" r="6" fill="var(--platform)"/><text x="430" y="76" text-anchor="middle" class="dg-lab">Cost</text>
+          <circle cx="560" cy="45" r="6" fill="var(--pack)"/><text x="560" y="76" text-anchor="middle" class="dg-lab">Decide</text>
+        </g>
+        <circle class="evi"    cx="40" cy="45" r="4" style="--evi-dx:520px"/>
+        <circle class="evi e2" cx="40" cy="45" r="4" style="--evi-dx:520px"/>
+        <circle class="evi e3" cx="40" cy="45" r="4" style="--evi-dx:520px"/>
+        <circle class="evi e4" cx="40" cy="45" r="4" style="--evi-dx:520px"/>
+        <circle class="evi e5" cx="40" cy="45" r="4" style="--evi-dx:520px"/>
+      </svg>
+      <div class="grid g3">
+        <div class="card fill-k"><h3>Motor claim</h3><p>Photos + <span class="def" tabindex="0" data-def="Registration Certificate — a vehicle's official registration document.">RC</span> + estimate → damage, verify plate, cost repair, approve or investigate.</p></div>
+        <div class="card fill-k"><h3>KYC onboarding</h3><p>ID docs → read fields, match registries, flag forgery, pass or review.</p></div>
+        <div class="card fill-k"><h3>Lending collateral</h3><p>Asset photos → grade condition, check loan-on-asset, value it, lend or decline.</p></div>
+      </div>
+      <p class="lede" style="margin-top:28px;font-size:19px">Build each one bespoke, and you rebuild the shape every time. <b style="color:var(--pack)">That is the waste.</b></p>
+    </div>
+  </section>
+
+  <!-- 3 — THESIS -->
+  <section class="slide">
+    <p class="kicker">The thesis</p>
+    <h2>Build the shape <b>once</b>. Inject the domain as a pack.</h2>
+    <div class="callout"><span class="dot"></span><span><b>Nothing here is built yet.</b> This is the design we want to greenlight — pressure-tested on paper against 13 products. Everything on screen is the intended architecture, not a shipped system.</span></div>
+    <div class="slide-body">
+      <div class="grid g2" style="align-items:stretch">
+        <!-- left: the two planes -->
+        <div class="two-plane">
+          <div class="row pk-row">
+            <p class="cap">Pack (product layer) — per category · assembled by PMs · no engine change</p>
+            <div class="unit-group">
+              <span class="unit-tag">six core bindings</span>
+              <span class="unit">schemas</span><span class="unit">model bindings</span><span class="unit">source connectors</span>
+              <span class="unit">reference data</span><span class="unit">rules + weights</span><span class="unit">policy / thresholds</span>
+              <span class="unit-div"></span>
+              <span class="unit-tag">+</span>
+              <span class="unit">entitlements</span><span class="unit">branding</span><span class="unit">surface</span>
+            </div>
+          </div>
+          <div class="row pl-row">
+            <p class="cap">Platform (engine) — built once · domain-agnostic (design intent)</p>
+            <div class="units">
+              <span class="unit">Edge / Delivery</span><span class="unit">Case</span>
+              <span class="unit">Intelligence Engine</span><span class="unit">Orchestration</span>
+              <span class="unit">Cross-cutting</span>
+            </div>
+          </div>
+        </div>
+        <!-- right: the money animation — same engine, pack drops in, product lights up -->
+        <div class="card" style="display:flex;flex-direction:column;justify-content:center;gap:6px">
+          <p class="tiny">Same engine · drop a pack · a product appears</p>
+          <svg viewBox="0 0 300 180" role="img" aria-label="A pack card slides into the fixed engine; the engine lights up and a product appears.">
+            <!-- fixed engine block -->
+            <rect x="95" y="55" width="150" height="70" rx="10" fill="var(--platform-soft)" stroke="var(--platform)" stroke-width="1.5"/>
+            <rect class="engine-glow" x="95" y="55" width="150" height="70" rx="10" fill="var(--platform)"/>
+            <text x="170" y="94" text-anchor="middle" class="dg-lab" style="fill:var(--platform)">ENGINE</text>
+            <text x="170" y="110" text-anchor="middle" class="dg-sm">built once</text>
+            <!-- pack card that slides in -->
+            <g class="packcard">
+              <rect x="20" y="70" width="64" height="40" rx="8" fill="var(--pack-soft)" stroke="var(--pack)" stroke-width="1.5"/>
+              <text x="52" y="94" text-anchor="middle" class="dg-sm" style="fill:var(--pack);font-weight:700">Motor pack</text>
+            </g>
+            <!-- product appears -->
+            <g class="product-pop">
+              <rect x="110" y="140" width="120" height="30" rx="8" fill="var(--pack)"/>
+              <text x="170" y="160" text-anchor="middle" class="dg-sm" style="fill:#fff;font-weight:700">→ Motor product</text>
+            </g>
+          </svg>
+        </div>
+      </div>
+      <p class="lede" style="margin-top:22px;font-size:19px">The marginal cost of the next product is a <b style="color:var(--pack)">pack</b>, not a platform.</p>
+    </div>
+  </section>
+
+  <!-- 4 — COMPONENT ARCHITECTURE -->
+  <section class="slide">
+    <p class="kicker">Component architecture</p>
+    <h2>Evidence flows <b>down</b> through five planes.</h2>
+    <div class="legend" style="margin-top:8px">
+      <span><i class="sw p"></i> platform plane</span>
+      <span><i class="sw c"></i> cross-cutting</span>
+      <span style="color:var(--pack)">⎯ ⎯ dashed = forced by the design exercise (slide 8)</span>
+    </div>
+    <div class="slide-body" style="display:flex;gap:18px;align-items:stretch">
+      <!-- animated evidence-path rail -->
+      <svg viewBox="0 0 24 300" preserveAspectRatio="none" style="flex:none;width:24px;height:auto" aria-hidden="true">
+        <line x1="12" y1="6" x2="12" y2="294" stroke="var(--line)" stroke-width="2"/>
+        <polygon points="6,286 18,286 12,296" fill="var(--muted)"/>
+        <circle class="flowdot"    cx="12" cy="6" r="4" style="--flow-dy:280px"/>
+        <circle class="flowdot f2" cx="12" cy="6" r="4" style="--flow-dy:280px"/>
+        <circle class="flowdot f3" cx="12" cy="6" r="4" style="--flow-dy:280px"/>
+      </svg>
+      <div style="flex:1;min-width:0">
+        <div class="plane pl" style="margin-bottom:9px;padding:11px 16px"><p class="lbl" style="margin-bottom:6px"><span class="def" tabindex="0" data-def="How any product reaches the world — capture links, API gateway, webhooks, dashboard, file ingest, capture-quality.">Edge / Delivery</span></p><div class="units">
+          <span class="unit">Capture-Link</span><span class="unit">API Gateway</span><span class="unit">Webhook</span><span class="unit"><span class="def" tabindex="0" data-def="Backend-for-Frontend — a backend tailored to one UI.">Dashboard BFF</span></span><span class="unit">File Ingest</span><span class="unit add"><span class="def" tabindex="0" data-def="Real-time checks that reject blurry/dark shots and guide re-takes.">Capture-Quality</span></span>
+        </div></div>
+        <div class="plane pl" style="margin-bottom:9px;padding:11px 16px"><p class="lbl" style="margin-bottom:6px"><span class="def" tabindex="0" data-def="The system of record — the event-sourced case, evidence store, the typed Signal model, entity/link graph.">Case — system of record</span></p><div class="units">
+          <span class="unit"><span class="def" tabindex="0" data-def="Event-sourced — the case is stored as an append-only log of everything that happened; the log is the audit trail.">Case Svc</span></span><span class="unit">Evidence Store</span><span class="unit">Signal Model</span><span class="unit add"><span class="def" tabindex="0" data-def="A cross-case graph linking the same people/vehicles/invoices to spot rings & duplicates.">Entity / Link Graph</span></span>
+        </div></div>
+        <div class="plane pl" style="margin-bottom:9px;padding:11px 16px"><p class="lbl" style="margin-bottom:6px"><span class="def" tabindex="0" data-def="The capability services (Extract, Vision, Verify, Detect, Estimate, Decide) that turn evidence into typed Signals and a decision.">Intelligence engine — capability services</span></p><div class="units">
+          <span class="unit">Extract</span><span class="unit">Vision</span><span class="unit">Verify</span><span class="unit">Detect</span><span class="unit add">Estimate</span><span class="unit">Decide</span>
+        </div></div>
+        <div class="plane pl" style="margin-bottom:9px;padding:11px 16px"><p class="lbl" style="margin-bottom:6px"><span class="def" tabindex="0" data-def="Runs the steps over a case — a deterministic pack-defined DAG, or an AI Agent Runtime.">Orchestration + shared engine</span></p><div class="units">
+          <span class="unit"><span class="def" tabindex="0" data-def="DAG = a fixed recipe of steps with no loops; deterministic = same input, same path.">Workflow (DAG)</span></span><span class="unit add"><span class="def" tabindex="0" data-def="An orchestration mode where an AI picks the steps, vs a fixed DAG.">Agent Runtime</span></span><span class="unit add"><span class="def" tabindex="0" data-def="Provider-agnostic access to AI models with routing, fallback, versioning — compliance-aware.">Model Gateway</span></span><span class="unit add"><span class="def" tabindex="0" data-def="Versioned catalogs / price-lists / rate-cards used to compute estimates.">Reference Data</span></span><span class="unit">Pack Registry</span>
+        </div></div>
+        <div class="plane cr" style="padding:11px 16px"><p class="lbl" style="margin-bottom:6px"><span class="def" tabindex="0" data-def="Always-on concerns — identity/tenancy, entitlements, audit, metering, review+feedback, eval/model registry, compliance.">Cross-cutting — wraps every plane</span></p><div class="units">
+          <span class="unit">Identity</span><span class="unit">Entitlements</span><span class="unit">Audit</span><span class="unit">Metering</span><span class="unit">Review + Feedback</span><span class="unit">Eval Registry</span><span class="unit add">Compliance</span>
+        </div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5 — CAPABILITY SERVICES -->
+  <section class="slide">
+    <p class="kicker">The capability services</p>
+    <h2>Seven capabilities. Each usable <b>alone</b> — and <b>composed</b>.</h2>
+    <p class="lede">A stable domain-neutral contract. The pack supplies the schema, model, rules and reference data it runs with.</p>
+    <div class="callout" style="background:var(--platform-soft);margin-top:14px"><span class="dot" style="background:var(--platform)"></span><span>A <b style="color:var(--platform)">signal</b> = a typed fact a stage writes to the case ("plate matched", "bumper dented"); every later stage reads the whole set. <b style="color:var(--platform)">Each capability ships as a sellable API product</b> — priced per session, document, lookup or decision.</span></div>
+    <div class="slide-body">
+      <table>
+        <thead><tr><th>Service</th><th>Does</th><th>In → out</th><th>Sold as</th></tr></thead>
+        <tbody>
+          <tr><td class="comp">Capture</td><td>Collect evidence, no install; gate quality</td><td>request → validated artifacts + consent</td><td>per session</td></tr>
+          <tr><td class="comp">Extract</td><td>Documents → structured fields</td><td>docs → typed field signals + confidence</td><td>per document</td></tr>
+          <tr><td class="comp">Vision</td><td>Images/video → features; or diff two sessions</td><td>media → feature signals</td><td>per inspection</td></tr>
+          <tr><td class="comp">Verify</td><td>Prove authenticity vs sources of truth</td><td>entities → match / mismatch signals</td><td>per lookup</td></tr>
+          <tr><td class="comp">Detect</td><td>Risk score over the whole signal set, with reasons</td><td>any signals → checks + score</td><td>per case</td></tr>
+          <tr><td class="comp">Estimate</td><td>Features → itemised cost / repair-vs-replace</td><td>features + ref data → line items</td><td>per estimate</td></tr>
+          <tr><td class="comp">Decide</td><td>Thresholds: auto-clear vs route to human</td><td>signals + thresholds → decision</td><td>per decision</td></tr>
+        </tbody>
+      </table>
+      <p class="lede" style="margin-top:22px;font-size:17px">Every service outputs the same three things: structured JSON + branded PDF + an immutable audit entry. The report is the <b>union</b> of whatever stages ran.</p>
+    </div>
+  </section>
+
+  <!-- 6 — ONE CASE END TO END -->
+  <section class="slide">
+    <p class="kicker">One case, end to end · <span style="color:var(--pack)">pack = Motor</span></p>
+    <h2>Priya dents her car and files a claim.</h2>
+    <p class="lede">The middle (component) never changes between products. Only the pack does.</p>
+    <div class="slide-body">
+      <div class="numflow">
+        <div class="numstep"><div class="n">1</div><span class="st">Collect</span>Link to her phone, guided shots, blurry ones rejected on the spot.<span class="cmp">Capture-Link + Capture-Quality</span><span class="pak">pack: angles, consent, language</span><span class="pill sync">quality: sync</span></div>
+        <div class="numstep"><div class="n">2</div><span class="st">Open the case</span>Consent stored, data pinned to India, everything logged from here.<span class="cmp">Case Service</span><span class="pak">pack: residency, retention</span><span class="pill async">async from here</span></div>
+        <div class="numstep"><div class="n">3</div><span class="st">Understand</span>Docs become fields; photos become findings (bumper · dented · moderate).<span class="cmp">Extract + Vision</span><span class="pak">pack: schemas, feature set</span></div>
+        <div class="numstep"><div class="n">4</div><span class="st">Check it's real</span>Plate &amp; chassis matched to <span class="def" tabindex="0" data-def="India's national vehicle registry — government vehicle records.">Vahan</span>; owner to the <span class="def" tabindex="0" data-def="Registration Certificate — a vehicle's official registration document.">RC</span> / <span class="def" tabindex="0" data-def="Permanent Account Number — India's tax ID.">PAN</span>.<span class="cmp">Verify</span><span class="pak">pack: which registries</span></div>
+        <div class="numstep"><div class="n">5</div><span class="st">Cost it</span>Dented bumper → parts + labour → itemised repair estimate.<span class="cmp">Estimate + Reference Data</span><span class="pak">pack: parts catalog, rates</span></div>
+        <div class="numstep"><div class="n">6</div><span class="st">Score the risk</span>Estimate lists a <b>new bumper</b> (document) + photo shows <b>no bumper damage</b> (image) → fused flag. Risk = 78, high.<span class="cmp">Detect</span><span class="pak">pack: risk rules, weights</span><span class="pill flag"><span class="def" tabindex="0" data-def="Catching what no single source shows — e.g. the bill lists a new bumper but the photo shows no damage — by cross-checking documents against images. The hard, defensible part.">fused check</span> = the moat</span></div>
+        <div class="numstep"><div class="n">7</div><span class="st">Decide</span>Clean claims <span class="def" tabindex="0" data-def="Straight-through — a case auto-cleared with no human touch.">auto-clear</span>; this routes to an investigator, reasons attached. Never above the legal cap.<span class="cmp">Decide</span><span class="pak">pack: thresholds, legal cap</span><span class="pill human">human owns the call</span></div>
+        <div class="numstep"><div class="n">8</div><span class="st">Deliver &amp; learn</span>JSON + PDF + webhook out. The verdict is recorded — and trains the engine.<span class="cmp">Webhook/Reports + Feedback</span><span class="pak">pack: report template, branding</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 7 — SWAP THE PACK -->
+  <section class="slide">
+    <p class="kicker">The leverage</p>
+    <h2>Same engine — <b style="color:var(--pack)">swap the pack</b>, get a different product.</h2>
+    <p class="lede">Steps 1–8 and the whole component column stay identical. Point it at a new domain by changing only the pack.</p>
+    <div class="slide-body">
+      <!-- the engine rail — STATIC, never changes -->
+      <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:0 0 6px">
+        <span class="unit-tag" style="color:var(--platform)">engine — unchanged</span>
+      </div>
+      <div class="flowline" style="margin:0 0 22px">
+        <span class="node">Capture</span><span class="arrow">→</span>
+        <span class="node">Extract/Vision</span><span class="arrow">→</span>
+        <span class="node">Verify</span><span class="arrow">→</span>
+        <span class="node">Estimate</span><span class="arrow">→</span>
+        <span class="node">Detect</span><span class="arrow">→</span>
+        <span class="node">Decide</span>
+      </div>
+      <!-- the pack slot — CYCLES. One frame visible at a time; crossfade ~14s loop -->
+      <div class="swap-stage" style="position:relative;min-height:150px">
+        <div class="sframe s1 card fill-k" style="position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center">
+          <p class="tiny">pack = Motor</p><h3 style="margin:2px 0 8px">Inspection + fraud</h3>
+          <div class="units"><span class="unit">damage features</span><span class="unit"><span class="def" tabindex="0" data-def="India's national vehicle registry — government vehicle records.">Vahan</span>/RC sources</span><span class="unit">parts catalog</span><span class="unit">IRDAI rules</span></div>
+        </div>
+        <div class="sframe s2 card fill-k" style="position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center">
+          <p class="tiny">pack = Lending</p><h3 style="margin:2px 0 8px">Collateral valuation</h3>
+          <div class="units"><span class="unit">condition grade</span><span class="unit">bureau sources</span><span class="unit">valuation tables</span><span class="unit">duplicate-financing rules</span></div>
+        </div>
+        <div class="sframe s3 card fill-k" style="position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center">
+          <p class="tiny">pack = KYC</p><h3 style="margin:2px 0 8px">Identity onboarding</h3>
+          <div class="units"><span class="unit">ID schemas</span><span class="unit">registry sources</span><span class="unit">forgery rules</span><span class="unit">no Vision · no Estimate</span></div>
+        </div>
+        <div class="sframe s4 card fill-k" style="position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center">
+          <p class="tiny">pack = Health</p><h3 style="margin:2px 0 8px">Claim checks</h3>
+          <div class="units"><span class="unit">bill line-items</span><span class="unit">procedure price lists</span><span class="unit">up-coding rules</span><span class="unit">DPDP regime</span></div>
+        </div>
+      </div>
+      <p class="lede" style="margin-top:18px;font-size:17px">The engine rail above never moves. Only the <b style="color:var(--pack)">pack</b> below it changes — and the product changes with it.</p>
+    </div>
+  </section>
+
+  <!-- 8 — HOW WE PRESSURE-TESTED IT -->
+  <section class="slide">
+    <p class="kicker">How we pressure-tested it · the back-test</p>
+    <h2>Ran <b>13 products on paper</b> through the architecture. It forced <b>18 requirements</b>.</h2>
+    <p class="lede">Method: take a product we want to build, push it through the architecture on paper, find what it lacks — then add that component. The architecture is the <i>result</i> of this exercise. The thesis held for every product.</p>
+    <div class="slide-body">
+      <div class="grid g3" style="margin-bottom:12px">
+        <div class="card fill-p"><div class="big-stat">13</div><div class="stat-lbl">sample products — motor, KYC, lending, health, media, invoice, agentic, fleet</div></div>
+        <div class="card fill-p"><div class="big-stat">18</div><div class="stat-lbl">requirements the back-test forced (R1–R18)</div></div>
+        <div class="card fill-p"><div class="big-stat">0</div><div class="stat-lbl">engine forks — every product is the same spine + a different pack</div></div>
+      </div>
+      <p class="stat-lbl" style="margin:0 0 20px;font-style:italic">Illustrative — a design exercise; nothing shipped yet.</p>
+      <p class="tiny" style="letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:600;margin:0 0 10px">Notable additions the back-test surfaced</p>
+      <div class="grid g3">
+        <div class="card"><h3 style="color:var(--pack)">Agent Runtime <span class="add-tag">R9</span></h3><p>The agentic product needed an LLM to pick steps — not just a fixed DAG.</p></div>
+        <div class="card"><h3 style="color:var(--pack)">Estimate + Reference Data <span class="add-tag">R11/12</span></h3><p>Estimate-from-images needed priced catalogs and a calc capability.</p></div>
+        <div class="card"><h3 style="color:var(--pack)">Entity / Link Graph <span class="add-tag">R13</span></h3><p>Fraud rings and duplicate financing aren't single-case problems.</p></div>
+        <div class="card"><h3 style="color:var(--pack)">Capture-Quality <span class="add-tag">R14</span></h3><p>"Best capture" is itself a product — and a shared enhancer.</p></div>
+        <div class="card"><h3 style="color:var(--pack)">Model Gateway <span class="add-tag">R10</span></h3><p>Every model-using service needs provider-agnostic, compliance-aware routing.</p></div>
+        <div class="card"><h3 style="color:var(--pack)">Compliance plane <span class="add-tag">R18</span></h3><p>Per-domain regimes must not fork the engine — declared by pack, enforced by platform.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 9 — BUY VS BUILD -->
+  <section class="slide">
+    <p class="kicker">Buy vs build · for the CTO</p>
+    <p class="signpost">Next three slides go role by role: <b>CTO</b> → <b>architect</b> → <b>ML</b>. Then we're back together.</p>
+    <h2>Integrate the commodities. <b style="color:var(--pack)">Own the composition</b> — that's the moat.</h2>
+    <p class="lede">We are not writing a vision model or a workflow engine from scratch. The IP is how the pieces compose, and the packs that run on them.</p>
+    <div class="slide-body">
+      <div class="grid g2">
+        <div class="card fill-p"><p class="tiny">Integrate — commodities</p>
+          <ul class="clean" style="margin-top:6px">
+            <li><span class="mut">OCR / document extraction models</span></li>
+            <li><span class="mut">Foundation <span class="def" tabindex="0" data-def="Large Language Model — an AI that reads and writes text.">LLM</span>s / <span class="def" tabindex="0" data-def="Vision-Language Model — an AI that reads images plus text.">VLM</span>s</span></li>
+            <li><span class="mut">A durable <span class="def" tabindex="0" data-def="Runs the steps over a case — a deterministic pack-defined DAG, or an AI Agent Runtime.">workflow engine</span> (Temporal-class)</span></li>
+            <li><span class="mut"><span class="def" tabindex="0" data-def="Provider-agnostic access to AI models with routing, fallback, versioning — compliance-aware.">Model Gateway</span> library</span></li>
+            <li><span class="mut">Object storage, queues</span></li>
+            <li><span class="mut">Reference / pricing data (licensed)</span></li>
+          </ul>
+        </div>
+        <div class="card fill-k"><p class="tiny">Build / own — the moat</p>
+          <ul class="clean" style="margin-top:6px">
+            <li><span class="n" style="color:var(--pack)">1</span><span>The typed <span class="def" tabindex="0" data-def="A typed output every stage writes to the case; downstream stages read the whole set.">Signal</span> model — the keystone (R2)</span></li>
+            <li><span class="n" style="color:var(--pack)">2</span><span>Fused, cross-modal <span class="def" tabindex="0" data-def="Catching what no single source shows — e.g. the bill lists a new bumper but the photo shows no damage — by cross-checking documents against images. The hard, defensible part.">Detect</span></span></li>
+            <li><span class="n" style="color:var(--pack)">3</span><span>The pack + compliance layer (policy-as-config enforcement)</span></li>
+            <li><span class="n" style="color:var(--pack)">4</span><span><span class="def" tabindex="0" data-def="Real-time checks that reject blurry/dark shots and guide re-takes.">Capture-Quality</span> + capture flow</span></li>
+            <li><span class="n" style="color:var(--pack)">5</span><span>The domain packs</span></li>
+          </ul>
+        </div>
+      </div>
+      <p class="lede" style="margin-top:20px;font-size:17px">Damage detection is commoditising. We don't win on one model's accuracy — we win by reading the <b>whole case</b> and deciding with compliance.</p>
+    </div>
+  </section>
+
+  <!-- 10 — EXECUTION MODEL -->
+  <section class="slide">
+    <p class="kicker">Execution model · for VP Eng + Architect</p>
+    <h2>Two ways to call · two ways to orchestrate.</h2>
+    <div class="slide-body">
+      <div class="grid g2">
+        <div>
+          <p class="tiny" style="letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:600;margin:0 0 10px">Every capability is reachable both ways <span class="add-tag" style="border-color:var(--platform);color:var(--platform)">R17</span></p>
+          <div class="card" style="margin-bottom:12px"><h3 style="color:var(--platform)">Sync — request / response</h3><p>Low-latency, single-shot, bounded: "verify this <span class="def" tabindex="0" data-def="Permanent Account Number — India's tax ID.">PAN</span>", "is this image tampered". Returns inline.</p></div>
+          <div class="card fill-c"><h3>Async — case-based</h3><p>Long-running, multi-stage, <span class="def" tabindex="0" data-def="A person reviews or decides before the outcome is final.">human-in-the-loop</span>. <code>202</code> + case id → webhook on completion. Default for full products.</p>
+            <div style="margin-top:12px">
+              <span class="pill async">interactive</span><span class="arrow" style="color:var(--muted)">&gt;</span>
+              <span class="pill">standard</span><span class="arrow" style="color:var(--muted)">&gt;</span>
+              <span class="pill">batch</span>
+            </div>
+            <p style="margin-top:10px;font-size:13px">Priority classes + per-capability queues + per-tenant fairness. A Vision backlog never blocks Verify.</p>
+          </div>
+        </div>
+        <div>
+          <p class="tiny" style="letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:600;margin:0 0 10px">Two orchestration modes — same services underneath</p>
+          <div class="card" style="margin-bottom:12px"><h3 style="color:var(--platform)">Workflow Engine — deterministic <span class="def" tabindex="0" data-def="DAG = a fixed recipe of steps with no loops; deterministic = same input, same path.">DAG</span> <span class="add-tag" style="border-color:var(--platform);color:var(--platform)">R1/R7</span></h3><p>Pack-defined DAG over the case. Stages optional, partial-input tolerant, durable; pauses for human review for days; emits an event per transition. Default for structured products.</p></div>
+          <div class="card fill-c"><h3><span class="def" tabindex="0" data-def="An orchestration mode where an AI picks the steps, vs a fixed DAG.">Agent Runtime</span> — LLM drives <span class="add-tag">R9</span></h3><p>An LLM reasons over the case and calls capability services as <b>tools</b>. Guardrailed (incl. compliance), case-scoped memory, and a full reasoning trace that is itself an audit artifact. Powers agentic products.</p></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 11 — MODELS & LEARNING -->
+  <section class="slide">
+    <p class="kicker">Models &amp; learning · for ML</p>
+    <h2>Where models plug in, and how they improve.</h2>
+    <p class="lede">We integrate and route models — own and third-party. We are not a model lab.</p>
+    <div class="slide-body">
+      <div class="grid g3">
+        <div class="card fill-c"><h3>Model Gateway <span class="add-tag">R10</span></h3><p>Provider-agnostic access to LLM + vision models. Routing, fallback, versioning, cost/latency control.</p><p style="margin-top:10px"><b style="color:var(--cross)">Compliance-aware:</b> never routes restricted <span class="def" tabindex="0" data-def="Personally Identifiable Information.">PII</span> to a non-compliant model or region; redacts before egress.</p><p style="margin-top:10px;font-size:13px">Used by Extract · Vision · Detect · Estimate · Agent Runtime.</p></div>
+        <div class="card fill-c"><h3>Review + Feedback loop <span class="add-tag">R6</span></h3><p>The Review Console captures human decisions; <b style="color:var(--cross)">corrections become labels</b>. Designed so every correction improves the engine — the training loop is built in, not bolted on.</p></div>
+        <div class="card fill-c"><h3>Eval / Model Registry <span class="add-tag">R6</span></h3><p>Versioned models + eval sets per pack. <b style="color:var(--cross)">Designed to let us publish accuracy</b> per capability, per pack (Phase 2+) — a differentiator in a market of vendor-claimed numbers. Not measured in prod today.</p></div>
+      </div>
+      <div style="margin-top:22px">
+        <div class="flowline">
+          <span class="node">Vision / Extract / Detect</span><span class="arrow">→</span>
+          <span class="node">Signals + provenance</span><span class="arrow">→</span>
+          <span class="node">Human review</span><span class="arrow">→</span>
+          <span class="node" style="border-color:var(--cross)">Corrections → labels</span><span class="arrow">→</span>
+          <span class="node" style="border-color:var(--cross)">Eval + retrain</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 12 — COMPLIANCE AS USP -->
+  <section class="slide">
+    <p class="kicker">Compliance · a product USP</p>
+    <h2>Compliant <b style="color:var(--cross)">by construction</b>.</h2>
+    <p class="lede">A pack <i>declares</i> its regime (health/<span class="def" tabindex="0" data-def="India's Digital Personal Data Protection Act — its data-protection law.">DPDP</span>, insurance/<span class="def" tabindex="0" data-def="India's insurance regulator.">IRDAI</span>, lending/<span class="def" tabindex="0" data-def="Reserve Bank of India — the lending/banking regulator.">RBI</span>, residency everywhere). The platform <i>enforces</i> it at runtime. Compliance is never re-implemented per product — so it's a selling point, not a per-product cost.</p>
+    <div class="slide-body">
+      <div class="grid g2">
+        <table>
+          <thead><tr><th>Control</th><th>Enforced as</th></tr></thead>
+          <tbody>
+            <tr><td class="comp" style="color:var(--cross)">Data residency</td><td>Where evidence + PII are stored and processed, incl. model routing</td></tr>
+            <tr><td class="comp" style="color:var(--cross)">Consent lifecycle</td><td>Versioned, checked before processing; withdrawal honoured</td></tr>
+            <tr><td class="comp" style="color:var(--cross)">Retention &amp; erasure</td><td>Per data class; right-to-erasure; auto-expiry</td></tr>
+            <tr><td class="comp" style="color:var(--cross)"><span class="def" tabindex="0" data-def="Personally Identifiable Information.">PII</span> handling</td><td>Field-level encryption, tokenisation, redaction, minimisation</td></tr>
+          </tbody>
+        </table>
+        <table>
+          <thead><tr><th>Control</th><th>Enforced as</th></tr></thead>
+          <tbody>
+            <tr><td class="comp" style="color:var(--cross)">Purpose-limited access</td><td>Who/what may read which signals, for what declared purpose</td></tr>
+            <tr><td class="comp" style="color:var(--cross)">Regulator-grade audit</td><td>Immutable, exportable case history — the event log</td></tr>
+            <tr><td class="comp" style="color:var(--cross)">Decision guardrails</td><td>Never auto-clear above a legal cap; AI-decision provenance recorded</td></tr>
+            <tr><td class="comp" style="color:var(--cross)">Posture</td><td><span class="def" tabindex="0" data-def="Security / compliance certifications.">SOC 2 / ISO 27001</span> / DPDP + model &amp; eval provenance</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="lede" style="margin-top:20px;font-size:18px">Built once, inherited by every pack. Every product on Modules is compliant for its domain <b>the day it ships</b>.</p>
+      <p class="stat-lbl" style="margin-top:12px;font-style:italic">Caveat: residency, consent, retention and audit are platform mechanisms; model-region routing and novel regulatory obligations are real build work, not a config flag.</p>
+    </div>
+  </section>
+
+  <!-- 13 — BUILD PHASES -->
+  <section class="slide">
+    <p class="kicker">Build phases</p>
+    <h2>Build the <b>contracts</b> early. Build the <b>tooling</b> only when a second product proves the shape.</h2>
+    <div class="slide-body">
+      <div class="phase-cols">
+        <div class="phase">
+          <p class="ph-num">Phase 1</p>
+          <h3>One product, end to end</h3>
+          <ul>
+            <li>Capture-Link, Gateway, Webhooks, File Ingest, Capture-Quality</li>
+            <li>Case Svc, Evidence Store, Signal model</li>
+            <li>Extract, Vision, basic Decide — behind the Model Gateway from day one</li>
+            <li>Workflow Engine (DAG) · sync + async with priority</li>
+            <li>Compliance plane v1 — foundational, not deferred</li>
+          </ul>
+          <p class="exit">Exit: one product live; every decision explainable + auditable.</p>
+        </div>
+        <div class="phase">
+          <p class="ph-num">Phase 2</p>
+          <h3>Depth + a second domain</h3>
+          <ul>
+            <li>Verify (+ connector interface), Detect (fused signals), Estimate + Reference Data</li>
+            <li>Multi-session + Vision compare mode</li>
+            <li>Review Console + Feedback, Eval/Model Registry</li>
+            <li>Compliance plane v2 — per-domain regimes (e.g. health)</li>
+            <li>A second pack — the real test of R4</li>
+          </ul>
+          <p class="exit">Exit: two products, two domains, one engine, no forks.</p>
+        </div>
+        <div class="phase">
+          <p class="ph-num">Phase 3</p>
+          <h3>Leverage across products</h3>
+          <ul>
+            <li>Agent Runtime — services as its toolset</li>
+            <li>Entity / Link Graph — cross-case, privacy-preserving</li>
+            <li>Pack-authoring tooling — built now, against ≥2 real packs</li>
+            <li>Compliance plane v3 — certification posture</li>
+            <li>More domains — each a pack, zero engine change</li>
+          </ul>
+          <p class="exit">Exit: generalised only once the shape is proven.</p>
+        </div>
+      </div>
+      <p class="defer"><b>Deliberately deferred (YAGNI):</b> pack-authoring SDK / marketplace, Agent Runtime, cross-tenant link graph, audio modality — none until a <i>second</i> real product forces them. One example can't design a good extension API.</p>
+    </div>
+  </section>
+
+  <!-- 14 — THE ONE RISK -->
+  <section class="slide">
+    <p class="kicker">The one existential risk · and the discipline</p>
+    <h2>Domain vocabulary leaking into the engine. <span style="color:var(--bad)">(R4)</span></h2>
+    <p class="lede">If "bumper", "fracture" or "room" ever appears in engine code, the thesis is dead — the engine has quietly become a vertical product. This is a discipline problem, and we guard it with two mechanisms.</p>
+    <div class="slide-body">
+      <div class="grid g2">
+        <div class="card fill-p"><h3>The generic <span class="def" tabindex="0" data-def="A typed output every stage writes to the case; downstream stages read the whole set.">Signal</span> model <span class="add-tag" style="border-color:var(--platform);color:var(--platform)">R2</span></h3><p>Every stage writes <b>typed signals</b> to the case; downstream stages read the whole set, not each other's APIs. Detect's fused checks ("parts billed with no visible damage") are rules over a <b>generic signal set</b> — not code that knows about vehicles. Load-bearing: it's what makes a fused check domain-neutral.</p></div>
+        <div class="card fill-k"><h3>The pack boundary</h3><p>Feature vocabulary, sources of truth, price basis, risk rules and thresholds live <b>only</b> in a pack. If a new domain needs something the six pack slots can't express, that's a signal to extend the engine <i>contract</i> deliberately — never to special-case a domain in engine code.</p></div>
+      </div>
+      <svg viewBox="0 0 600 150" style="margin-top:20px;width:100%;max-width:720px" role="img" aria-label="Left: domain words wrong, leaking into the engine. Right: domain words contained in the pack, engine clean.">
+        <!-- WRONG: leak -->
+        <text x="150" y="18" text-anchor="middle" class="dg-cap" style="fill:var(--bad)">✕ Wrong — leaks in</text>
+        <rect x="40" y="30" width="220" height="100" rx="12" fill="none" stroke="var(--bad)" stroke-width="1.5"/>
+        <text x="150" y="58" text-anchor="middle" class="dg-lab">ENGINE</text>
+        <text x="150" y="86" text-anchor="middle" class="dg-sm" style="fill:var(--bad);font-weight:700">if (bumper) …</text>
+        <text x="150" y="106" text-anchor="middle" class="dg-sm" style="fill:var(--bad);font-weight:700">fracture, room, IRDAI</text>
+        <!-- RIGHT: contained -->
+        <text x="450" y="18" text-anchor="middle" class="dg-cap" style="fill:var(--good)">✓ Right — contained</text>
+        <rect x="340" y="30" width="220" height="100" rx="12" fill="none" stroke="var(--good)" stroke-width="1.5"/>
+        <text x="450" y="58" text-anchor="middle" class="dg-lab">ENGINE</text>
+        <text x="450" y="82" text-anchor="middle" class="dg-sm">reads generic signals only</text>
+        <rect x="378" y="96" width="144" height="26" rx="7" fill="var(--pack-soft)" stroke="var(--pack)" stroke-width="1.2"/>
+        <text x="450" y="113" text-anchor="middle" class="dg-sm" style="fill:var(--pack);font-weight:700">pack: bumper, IRDAI</text>
+      </svg>
+      <p class="lede" style="margin-top:18px;font-size:18px">The guardrail is architectural, not just a code-review rule: the engine speaks signals, the pack speaks domain.</p>
+    </div>
+  </section>
+
+  <!-- 15 — WHAT WE NEED FROM YOU -->
+  <section class="slide">
+    <p class="kicker">The ask</p>
+    <h2>What we need from you.</h2>
+    <p class="lede">One decision: <b style="color:var(--platform)">greenlight Phase 1</b> — build one motor product end-to-end (inspect + fraud), with a design partner, on bought infra. Success = evidence in → an explainable, auditable decision out, live.</p>
+    <div class="slide-body">
+      <div class="grid g3">
+        <div class="card"><h3 style="color:var(--platform)">CTO</h3><p>Approve the buy-vs-build split and the Phase 1 scope. Confirm the pack contract + Signal model are the two interfaces we design most carefully.</p></div>
+        <div class="card"><h3 style="color:var(--platform)">VP Engineering</h3><p>Staff Phase 1 as a normal product build on bought infra. If we can't staff it, that's the gate — nothing downstream matters.</p></div>
+        <div class="card"><h3 style="color:var(--cross)">ML</h3><p>Own the pack feature schemas, fused-signal rules, and the eval/feedback loop. Confirm the Model Gateway + VLM integration path.</p></div>
+        <div class="card"><h3 style="color:var(--pack)">Chief Strategy Officer</h3><p>Greenlight a design partner and the "one product first, platform story after pack #2" framing. Pick the first vertical: motor.</p></div>
+        <div class="card"><h3 style="color:var(--pack)">PM</h3><p>Define the motor product's surface and entitlements; line up the design partner. Hand-author the first pack with engineering.</p></div>
+        <div class="card fill-p"><h3>Not asking for</h3><p>A platform commitment, a second vertical date, agentic, or cross-tenant anything. Those gate on Phase 1 shipping and the pack contract holding.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 16 — CLOSING -->
+  <section class="slide">
+    <div class="closing">
+      <p class="kicker">What this unlocks</p>
+      <h1>Build the engine once. <b style="color:var(--pack)">Ship products as packs.</b></h1>
+      <div class="grid g2" style="margin:10px 0 28px">
+        <div class="card fill-p"><p class="tiny">Platform — engineering</p><p style="color:var(--ink);font-size:16px">One engine: Capture → Extract → Vision → Verify → Estimate → Detect → Decide. Built once, deepened over three phases, compliant by construction.</p></div>
+        <div class="card fill-k"><p class="tiny">Packs — product</p><p style="color:var(--ink);font-size:16px">Six bindings per domain + entitlements + surface. A PM chases a new market by writing configuration — engineering keeps building depth in the common engine.</p></div>
+      </div>
+      <p class="lede" style="font-size:22px">The marginal cost of the next product is a <b style="color:var(--pack)">pack</b>, not a platform.</p>
+    </div>
+  </section>
+
+</div>
+
+<div class="bar">
+  <div><button class="btn" id="prev">← Prev</button></div>
+  <div class="mid">
+    <span class="title" id="slide-title"></span>
+    <span class="count"><span id="cur">1</span> / <span id="total">16</span></span>
+  </div>
+  <div style="display:flex;gap:8px">
+    <button class="btn" id="theme">◐ Theme</button>
+    <button class="btn" id="next">Next →</button>
+  </div>
+</div>
+
+<script>
+  const slides = Array.from(document.querySelectorAll('.slide'));
+  const titles = ["Title","The problem shape","The thesis","Component architecture",
+    "Capability services","One case, end to end","Swap the pack","How we pressure-tested it",
+    "Buy vs build","Execution model","Models & learning","Compliance as a USP","Build phases",
+    "The one risk","What we need from you","What this unlocks"];
+  let i = 0;
+  const cur = document.getElementById('cur');
+  const titleEl = document.getElementById('slide-title');
+  const prog = document.getElementById('progress');
+  document.getElementById('total').textContent = slides.length;
+
+  function show(n){
+    i = Math.max(0, Math.min(slides.length-1, n));
+    slides.forEach((s,k)=>s.classList.toggle('on', k===i));
+    cur.textContent = i+1;
+    titleEl.textContent = titles[i] || '';
+    prog.style.transform = 'scaleX('+((i+1)/slides.length)+')';
+  }
+  document.getElementById('next').onclick = ()=>show(i+1);
+  document.getElementById('prev').onclick = ()=>show(i-1);
+  document.addEventListener('keydown', e=>{
+    if(e.key==='ArrowRight'||e.key===' '||e.key==='PageDown'){e.preventDefault();show(i+1);}
+    else if(e.key==='ArrowLeft'||e.key==='PageUp'){e.preventDefault();show(i-1);}
+    else if(e.key==='Home'){show(0);} else if(e.key==='End'){show(slides.length-1);}
+  });
+  document.getElementById('theme').onclick = ()=>{
+    const d=document.documentElement, c=d.getAttribute('data-t');
+    d.setAttribute('data-t', c==='dark'?'light':c==='light'?'dark':(matchMedia('(prefers-color-scheme: dark)').matches?'light':'dark'));
+  };
+  show(0);
+</script>
+</body>
+</html>

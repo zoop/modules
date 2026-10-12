@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Modules — Claims Intelligence</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <!-- ============================= APP SHELL ============================= -->
+  <div class="app" id="app">
+    <!-- ---------- SIDEBAR ---------- -->
+    <aside class="sidebar">
+      <div class="brand" data-nav="cases" role="button" tabindex="0" title="Modules">
+        <svg class="ascend" viewBox="0 0 104 104" aria-hidden="true">
+          <path class="asc-teal" d="M28 64 L52 52 L76 64" />
+          <path class="asc-teal" d="M34 54 L52 42 L70 54" />
+          <path class="asc-amber" d="M40 44 L52 32 L64 44" />
+        </svg>
+        <span class="wordmark">Modules</span>
+      </div>
+
+      <nav class="nav">
+        <button class="nav-item" data-nav="cases">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="4" rx="1"/><rect x="3" y="10" width="18" height="4" rx="1"/><rect x="3" y="16" width="18" height="4" rx="1"/></svg>
+          <span>Cases</span>
+        </button>
+        <button class="nav-item" data-nav="capture">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8a2 2 0 0 1 2-2h2l1.2-1.6a1 1 0 0 1 .8-.4h4a1 1 0 0 1 .8.4L18 6h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2z"/><circle cx="12" cy="12.5" r="3.2"/></svg>
+          <span>Capture</span>
+        </button>
+        <button class="nav-item" data-nav="developers">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 7l-5 5 5 5M15 7l5 5-5 5"/></svg>
+          <span>Developers</span>
+        </button>
+      </nav>
+
+      <div class="sidebar-foot">
+        <div class="env-pill"><span class="dot"></span>Sandbox</div>
+        <p class="tagline">The engine never approves or rejects a claim. It tells your team where to look.</p>
+      </div>
+    </aside>
+
+    <!-- ---------- MAIN ---------- -->
+    <main class="main">
+      <!-- TOP BAR -->
+      <header class="topbar">
+        <div class="crumbs" id="crumbs">Cases</div>
+        <div class="topbar-right">
+          <div class="search" id="searchWrap">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+            <input type="text" id="searchInput" placeholder="Search claim id or vehicle reg" autocomplete="off" />
+          </div>
+          <div class="user-chip">
+            <div class="avatar">RK</div>
+            <div class="user-meta">
+              <span class="user-name">Reviewer</span>
+              <span class="user-role">Claims team</span>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <!-- VIEW MOUNT -->
+      <div class="view" id="view"></div>
+    </main>
+  </div>
+
+  <!-- ============================= OVERLAYS ============================= -->
+  <!-- Report (print-style) -->
+  <div class="overlay" id="reportOverlay" hidden>
+    <div class="overlay-bar">
+      <div class="overlay-title">Case report · CLM-2026-90377</div>
+      <div class="overlay-actions">
+        <button class="btn btn-ghost" onclick="window.print()">Print</button>
+        <button class="btn btn-ghost" data-close-overlay>Close</button>
+      </div>
+    </div>
+    <div class="overlay-scroll" id="reportMount"></div>
+  </div>
+
+  <!-- JSON -->
+  <div class="overlay" id="jsonOverlay" hidden>
+    <div class="overlay-bar">
+      <div class="overlay-title">case.json · CLM-2026-90377</div>
+      <div class="overlay-actions">
+        <button class="btn btn-ghost" data-close-overlay>Close</button>
+      </div>
+    </div>
+    <div class="overlay-scroll"><pre class="code-block json" id="jsonMount"></pre></div>
+  </div>
+
+  <!-- Capture phone flow -->
+  <div class="overlay capture-overlay" id="captureOverlay" hidden>
+    <div class="overlay-bar">
+      <div class="overlay-title">Guided capture · policyholder link</div>
+      <div class="overlay-actions">
+        <div class="lang-toggle" id="langToggle">
+          <button class="lang on" data-lang="en">EN</button>
+          <button class="lang" data-lang="hi">हिं</button>
+        </div>
+        <button class="btn btn-ghost" data-close-overlay>Close</button>
+      </div>
+    </div>
+    <div class="overlay-scroll capture-stage" id="captureMount"></div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

@@ -1,51 +1,662 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
+import Nav from "../components/Nav.astro";
+import { buttonVariants } from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Separator } from "@/components/ui/separator";
+import SendTabs from "@/components/SendTabs.tsx";
+import DeveloperTabs from "@/components/DeveloperTabs.tsx";
+import MotionFooter from "@/components/ui/motion-footer.tsx";
+import { Check, ArrowRight, X } from "lucide-react";
+import en from "@/content/en-US.json";
+
+const { hero, credibility, outcomes, benefits, compare, platform, how, send, capture, developers, audience, principle, pricing, cta } = en;
+
+// Forensic flag-tag palette (dark panels, fixed hues — intentional).
+const flTag: Record<string, string> = {
+  HIGH: "bg-[rgba(185,28,28,0.18)] text-[#fb7185]",
+  DAMAGE: "bg-[rgba(109,74,255,0.18)] text-[#b9a6ff]",
+  PASS: "bg-[rgba(20,184,166,0.16)] text-[#2dd4bf]",
+  VAHAN: "bg-[rgba(20,184,166,0.16)] text-[#2dd4bf]",
+  MED: "bg-[rgba(180,83,9,0.22)] text-[#fbbf24]",
+};
 ---
 
 <BaseLayout>
-  <header class="border-b border-navy-100">
-    <nav class="mx-auto flex max-w-6xl items-center justify-between px-6 py-5">
-      <a href="/" class="flex items-center gap-3">
-        <img src="/logo/iar_full_logo_blue.svg" alt="IAR Modules" class="h-8 w-auto" />
-      </a>
-      <a
-        href="https://github.com/iar-motor-claims/modules"
-        class="text-sm font-medium text-navy-600 hover:text-navy-900"
-      >
-        GitHub
-      </a>
-    </nav>
-  </header>
+  <Nav />
 
-  <main class="mx-auto max-w-6xl px-6">
-    <section class="py-24 text-center">
-      <h1 class="text-5xl font-bold tracking-tight text-navy-950 sm:text-6xl">
-        Composable modules for AI &amp; business
-      </h1>
-      <p class="mx-auto mt-6 max-w-2xl text-lg text-navy-600">
-        Buy what you need. Each capability ships as an independent, deployable
-        module you can license on its own or bundle together.
-      </p>
-      <div class="mt-10 flex items-center justify-center gap-4">
-        <a
-          href="#modules"
-          class="rounded-lg bg-amber-500 px-6 py-3 font-semibold text-navy-950 transition hover:bg-amber-600"
-        >
-          Explore modules
-        </a>
-        <a
-          href="https://github.com/iar-motor-claims/modules"
-          class="rounded-lg border border-navy-200 px-6 py-3 font-semibold text-navy-700 transition hover:border-navy-400"
-        >
-          View on GitHub
-        </a>
+  <main>
+    <!-- ======================================================================
+         1 · HERO — DARK, FORENSIC · benefit-led for insurer execs
+         ====================================================================== -->
+    <section class="forensic blueprint teal-pool relative overflow-hidden">
+      <div class="relative mx-auto grid max-w-[90rem] items-center gap-14 px-6 py-24 lg:grid-cols-[1.05fr_0.95fr] lg:py-32">
+        <div data-converge>
+          <p class="font-data text-[11px] uppercase tracking-[0.22em] text-[#5f8f8c] reveal">{hero.eyebrow}</p>
+          <h1 class="mt-6 font-display font-bold leading-[1.02] tracking-[-0.025em] text-white reveal" style="--d:60ms;font-size:clamp(2.6rem,6vw,3.7rem)">
+            Know what to check —<br />
+            <span style="color:var(--color-amber-400)">before you pay.</span>
+          </h1>
+          <p class="mt-6 max-w-[32rem] text-lg leading-relaxed text-[#9fb2c2] reveal" style="--d:120ms">
+            Your team sends vehicle photos, video and claim documents. Modules returns a damage report, a fraud score and the red flags behind it — each with its reason — so good claims settle sooner and the rest arrive investigation-ready.
+          </p>
+
+          <!-- convergence signature: two streams → amber verdict -->
+          <div class="mt-9 flex items-center gap-0 font-data text-[11px] tracking-[0.08em] reveal" style="--d:180ms">
+            <div class="flex flex-col gap-3">
+              <span class="rounded-lg border border-[#1e3347] bg-[#0e1b2b] px-3 py-2 text-[#9fb2c2]">
+                <span class="mr-2 inline-block h-1.5 w-1.5 rounded-full align-middle" style="background:var(--color-teal-400)"></span>PHOTOS · 8 angles
+              </span>
+              <span class="rounded-lg border border-[#1e3347] bg-[#0e1b2b] px-3 py-2 text-[#9fb2c2]">
+                <span class="mr-2 inline-block h-1.5 w-1.5 rounded-full align-middle" style="background:var(--color-teal-400)"></span>PAPERWORK · 4 docs
+              </span>
+            </div>
+            <svg class="mx-[-2px] h-[70px] w-[60px]" viewBox="0 0 60 70" fill="none" aria-hidden="true">
+              <path class="wire" d="M2 16 C 34 16, 30 35, 56 35" />
+              <path class="wire wire-2" d="M2 54 C 34 54, 30 35, 56 35" />
+            </svg>
+            <div class="ml-6 rounded-[10px] border px-4 py-3 text-center font-semibold" style="border-color:rgba(251,191,36,0.5);background:rgba(251,191,36,0.08);color:var(--color-amber-400)">
+              VERDICT<b class="block text-[26px] leading-none tracking-normal">78 ▲</b>refer
+            </div>
+          </div>
+
+          <div class="mt-9 flex flex-wrap items-center gap-3 reveal" style="--d:220ms">
+            <a href={hero.ctaPrimary.href} class="group inline-flex items-center gap-2 rounded-[9px] px-6 py-3 text-sm font-semibold text-[#0a0f1a] transition-transform hover:-translate-y-px focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0a0f1a]" style="background:var(--color-amber-400);--tw-ring-color:var(--color-amber-400)">
+              {hero.ctaPrimary.label}
+              <ArrowRight className="size-4 transition-transform duration-300 group-hover:translate-x-1" />
+            </a>
+            <a href="#why" class="rounded-[9px] border border-[#2a3f54] px-6 py-3 text-sm font-medium text-[#cfe0ea] transition-colors hover:border-[#3a5068] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2dd4bf]">See how it pays off →</a>
+          </div>
+        </div>
+
+        <!-- live case file artifact -->
+        <div class="report-panel relative rounded-[14px] reveal" style="--d:140ms">
+          <div class="flex items-center justify-between border-b border-[#1b2b3d] px-[18px] py-[14px] font-data text-[11px] text-[#6e8aa0]">
+            <span>CASE · {hero.card.claim.replace(" · sample", "")}</span>
+            <span>{hero.card.reg} · Swift ’19</span>
+          </div>
+          <div class="flex items-end justify-between px-[18px] py-[18px]">
+            <div>
+              <div class="font-data text-[10px] uppercase tracking-[0.16em] text-[#6e8aa0]">{hero.card.scoreLabel}</div>
+              <div class="mt-1 font-data text-[13px] font-semibold text-[#fb5a5a]">HIGH · refer</div>
+            </div>
+            <div class="font-data text-[60px] font-semibold leading-[0.8] text-[#fb5a5a]">{hero.card.score}</div>
+          </div>
+          <div class="px-[18px] pb-4">
+            {hero.card.rows.map((r) => (
+              <div class="grid grid-cols-[auto_1fr] items-start gap-3 border-t border-[#15273a] py-[11px]">
+                <span class={`whitespace-nowrap rounded px-1.5 py-[3px] font-data text-[9px] font-semibold tracking-[0.06em] ${flTag[r.tag] ?? flTag.PASS}`}>{r.tag}</span>
+                <span class="text-[13px] text-[#dbe6ee]">{r.text}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <!-- credibility band — honest, no fake logos -->
+      <div class="relative border-t border-[#15273a]">
+        <div class="mx-auto flex max-w-[90rem] flex-wrap items-center gap-x-8 gap-y-3 px-6 py-5 font-data text-[11px] uppercase tracking-[0.14em] text-[#6e8aa0]">
+          <span class="text-[#9fb2c2] reveal">{credibility.line}</span>
+          {credibility.points.map((p, i) => (
+            <span class="flex items-center gap-2 reveal" style={`--d:${60 + i * 50}ms`}>
+              <span class="h-1 w-1 rounded-full" style="background:var(--color-teal-400)"></span>{p}
+            </span>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================================
+         2 · PRODUCT-LED — "See it on a real claim" (LIGHT), browser window
+         ====================================================================== -->
+    <section class="relative overflow-hidden bg-canvas">
+      <div class="pointer-events-none absolute -right-32 -top-36 h-[460px] w-[460px] rounded-full" style="background:radial-gradient(circle,color-mix(in oklab,var(--color-primary) 10%,transparent),transparent 65%)"></div>
+      <div class="relative mx-auto grid max-w-[90rem] items-center gap-16 px-6 py-28 lg:grid-cols-[0.88fr_1.12fr]">
+        <div>
+          <p class="font-data text-[11px] uppercase tracking-[0.14em] text-primary reveal">See it on a real claim</p>
+          <h2 class="mt-4 font-display text-4xl font-bold leading-[1.02] tracking-[-0.03em] text-ink reveal sm:text-[3rem]" style="--d:60ms">Not a dashboard tour.<br />A claim, read.</h2>
+          <p class="mt-6 max-w-sm text-lg leading-relaxed text-muted reveal" style="--d:120ms">Your adjuster opens the case and the work is already done: parts and severity listed, documents cross-checked, the vehicle matched against Vahan — and a score with the reasons behind it.</p>
+          <div class="mt-8 flex flex-wrap items-center gap-3 reveal" style="--d:160ms">
+            <a href="#demo" class={buttonVariants({ variant: "accent", size: "lg" })}>Request a demo</a>
+            <a href="#how" class="px-2 py-3 text-sm font-semibold text-ink transition-colors hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">How it works →</a>
+          </div>
+          <div class="mt-8 flex flex-wrap gap-x-6 gap-y-2 text-sm text-muted reveal" style="--d:200ms">
+            {hero.chips.map((c) => (
+              <span class="flex items-center gap-2"><span class="h-1.5 w-1.5 rounded-full bg-primary"></span>{c}</span>
+            ))}
+          </div>
+        </div>
+
+        <!-- realistic product window -->
+        <div class="reveal overflow-hidden rounded-[16px] border border-hair bg-canvas shadow-[0_50px_90px_-35px_rgba(11,27,43,0.4),0_10px_24px_-10px_rgba(11,27,43,0.12)]" style="--d:100ms">
+          <div class="flex items-center gap-2 border-b border-hair bg-surface px-3.5 py-3">
+            <span class="h-2.5 w-2.5 rounded-full" style="background:#ff5f57"></span>
+            <span class="h-2.5 w-2.5 rounded-full" style="background:#febc2e"></span>
+            <span class="h-2.5 w-2.5 rounded-full" style="background:#28c840"></span>
+            <span class="ml-3 flex-1 rounded-md border border-hair bg-canvas px-3 py-1 font-data text-[11px] text-muted">app.modules — cases / CLM-2026-90377</span>
+          </div>
+          <div class="grid grid-cols-[1fr] sm:grid-cols-[168px_1fr]">
+            <div class="hidden bg-navy-900 p-4 text-[13px] text-navy-200 sm:block">
+              <div class="mb-6 flex items-center gap-2 font-display font-semibold text-white">
+                <svg width="20" height="20" viewBox="0 0 104 104" aria-hidden="true"><path d="M28 64 L52 52 L76 64" fill="none" stroke="#2dd4bf" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/><path d="M40 44 L52 32 L64 44" fill="none" stroke="#fbbf24" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                Modules
+              </div>
+              <div class="flex flex-col gap-1">
+                <span class="rounded-md bg-navy-800 px-2.5 py-2 text-white">Cases</span>
+                <span class="rounded-md px-2.5 py-2">Capture</span>
+                <span class="rounded-md px-2.5 py-2">Reports</span>
+              </div>
+            </div>
+            <div class="min-w-0 p-5 sm:p-6">
+              <div class="flex items-center justify-between gap-3">
+                <span class="font-display text-base font-semibold text-ink sm:text-[17px]">Maruti Suzuki Swift · 2019</span>
+                <span class="font-data text-xs text-muted">MH 12 AB 1234</span>
+              </div>
+              <div class="my-4 grid grid-cols-2 gap-2.5 sm:grid-cols-4">
+                <div class="rounded-[10px] border border-hair p-2.5">
+                  <div class="text-[10px] uppercase tracking-[0.08em] text-muted">Fraud score</div>
+                  <div class="mt-1 font-data text-[22px] font-semibold text-risk-high">78</div>
+                </div>
+                <div class="rounded-[10px] border border-hair p-2.5">
+                  <div class="text-[10px] uppercase tracking-[0.08em] text-muted">Red flags</div>
+                  <div class="mt-1 font-data text-[22px] font-semibold text-ink">4+1</div>
+                </div>
+                <div class="rounded-[10px] border border-hair p-2.5">
+                  <div class="text-[10px] uppercase tracking-[0.08em] text-muted">Parts</div>
+                  <div class="mt-1 font-data text-[22px] font-semibold text-ink">3</div>
+                </div>
+                <div class="rounded-[10px] border border-hair p-2.5">
+                  <div class="text-[10px] uppercase tracking-[0.08em] text-muted">Vahan</div>
+                  <div class="mt-2 font-data text-[15px] font-semibold text-primary">Match</div>
+                </div>
+              </div>
+              <div class="-mx-1 overflow-x-auto">
+              <table class="w-full min-w-[320px] border-collapse text-[12px] sm:text-[12.5px]">
+                <thead>
+                  <tr>
+                    <th class="border-b border-hair px-2 py-2 text-left font-data text-[9.5px] uppercase tracking-[0.08em] text-muted">Sev</th>
+                    <th class="border-b border-hair px-2 py-2 text-left font-data text-[9.5px] uppercase tracking-[0.08em] text-muted">Check</th>
+                    <th class="border-b border-hair px-2 py-2 text-left font-data text-[9.5px] uppercase tracking-[0.08em] text-muted">Why it was flagged</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td class="border-b border-hair px-2 py-2.5"><span class="rounded-[5px] bg-[#fde7e7] px-1.5 py-[3px] font-data text-[9px] font-semibold text-[#b91c1c]">HIGH</span></td><td class="border-b border-hair px-2 py-2.5 text-muted">Policy on date of loss</td><td class="border-b border-hair px-2 py-2.5 font-data text-[11px] text-muted">Ended 9 Sep · loss 11 Sep</td></tr>
+                  <tr><td class="border-b border-hair px-2 py-2.5"><span class="rounded-[5px] bg-[#fde7e7] px-1.5 py-[3px] font-data text-[9px] font-semibold text-[#b91c1c]">HIGH</span></td><td class="border-b border-hair px-2 py-2.5 text-muted">Chassis across docs</td><td class="border-b border-hair px-2 py-2.5 font-data text-[11px] text-muted">Estimate 4471 · RC 4417</td></tr>
+                  <tr><td class="border-b border-hair px-2 py-2.5"><span class="rounded-[5px] bg-[#fde7e7] px-1.5 py-[3px] font-data text-[9px] font-semibold text-[#b91c1c]">HIGH</span></td><td class="border-b border-hair px-2 py-2.5 text-muted">Estimate vs line items</td><td class="border-b border-hair px-2 py-2.5 font-data text-[11px] text-muted">₹62,400 vs ₹58,900</td></tr>
+                  <tr><td class="px-2 py-2.5"><span class="rounded-[5px] bg-[#fdf0dc] px-1.5 py-[3px] font-data text-[9px] font-semibold text-[#b45309]">MED</span></td><td class="px-2 py-2.5 text-muted">File edited after creation</td><td class="px-2 py-2.5 font-data text-[11px] text-muted">Saved 2 days after garage date</td></tr>
+                </tbody>
+              </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================================
+         3 · OUTCOMES / ROI — market numbers framed as value (LIGHT)
+         ====================================================================== -->
+    <section id="why" class="scroll-mt-20 border-y border-hair bg-surface">
+      <div class="mx-auto max-w-[90rem] px-6 py-28">
+        <div class="max-w-2xl">
+          <p class="font-data text-[11px] uppercase tracking-[0.14em] text-primary reveal">{outcomes.eyebrow}</p>
+          <h2 class="mt-4 font-display text-3xl font-bold leading-[1.08] tracking-[-0.02em] text-ink reveal sm:text-[2.6rem]" style="--d:60ms">{outcomes.heading}</h2>
+          <p class="mt-5 text-lg leading-relaxed text-muted reveal" style="--d:120ms">{outcomes.lead}</p>
+        </div>
+        <div class="mt-14 grid gap-px overflow-hidden rounded-2xl border border-hair bg-hair sm:grid-cols-2 lg:grid-cols-4">
+          {outcomes.cards.map((c, i) => (
+            <div class="reveal flex flex-col bg-surface-2 p-6" style={`--d:${i * 70}ms`}>
+              <div class="font-data text-[clamp(1.5rem,2.6vw,2rem)] font-medium leading-none text-primary">{c.stat}</div>
+              <div class="mt-3 text-xs uppercase tracking-wide text-muted">{c.label}</div>
+              <div class="mt-4 h-px w-8 bg-brand"></div>
+              <p class="mt-4 text-sm leading-relaxed text-ink">{c.benefit}</p>
+            </div>
+          ))}
+        </div>
+        <p class="mt-8 max-w-3xl text-xs leading-relaxed text-muted/80 reveal">{outcomes.note}</p>
+      </div>
+    </section>
+
+    <!-- ======================================================================
+         4 · BENEFITS — four outcomes, editorial (LIGHT)
+         ====================================================================== -->
+    <section class="bg-canvas">
+      <div class="mx-auto max-w-[90rem] px-6 py-28">
+        <div class="grid gap-12 lg:grid-cols-[0.85fr_1.15fr]">
+          <div class="lg:sticky lg:top-28 lg:self-start">
+            <p class="font-data text-[11px] uppercase tracking-[0.14em] text-primary reveal">{benefits.eyebrow}</p>
+            <h2 class="mt-4 font-display text-3xl font-bold leading-[1.08] tracking-[-0.02em] text-ink reveal sm:text-4xl" style="--d:60ms">{benefits.heading}</h2>
+            <p class="mt-5 max-w-sm text-lg leading-relaxed text-muted reveal" style="--d:120ms">{benefits.lead}</p>
+          </div>
+          <div class="grid gap-x-10 gap-y-12 sm:grid-cols-2">
+            {benefits.items.map((b, i) => (
+              <div class="reveal" style={`--d:${i * 70}ms`}>
+                <div class="flex items-center gap-3">
+                  <span class="font-data text-sm text-primary">{String(i + 1).padStart(2, "0")}</span>
+                  <span class="h-px flex-1 bg-hair"></span>
+                </div>
+                <h3 class="mt-4 font-display text-xl font-semibold text-ink">{b.title}</h3>
+                <p class="mt-2.5 text-[15px] leading-relaxed text-muted">{b.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================================
+         5 · PLATFORM — ascending stack of 6 modules (NOT cards)
+         ====================================================================== -->
+    <section id="platform" class="scroll-mt-20 border-y border-hair bg-surface">
+      <div class="mx-auto max-w-[90rem] px-6 py-28">
+        <div class="grid gap-12 lg:grid-cols-[0.8fr_1.2fr]">
+          <div class="lg:sticky lg:top-28 lg:self-start">
+            <p class="font-data text-[11px] uppercase tracking-[0.14em] text-primary reveal">{platform.eyebrow}</p>
+            <h2 class="mt-4 font-display text-3xl font-bold leading-[1.05] tracking-[-0.02em] text-ink reveal sm:text-4xl" style="--d:60ms">{platform.heading}</h2>
+            <p class="mt-5 max-w-sm text-lg leading-relaxed text-muted reveal" style="--d:120ms">{platform.lead}</p>
+            <p class="mt-6 max-w-sm text-sm text-muted reveal" style="--d:160ms">{platform.footnote}</p>
+          </div>
+
+          <ol class="relative">
+            <span class="absolute bottom-6 left-[1.1rem] top-6 w-px bg-gradient-to-b from-hair via-primary/40 to-brand" aria-hidden="true"></span>
+            {platform.modules.map((m, i) => {
+              const peak = i === platform.modules.length - 1;
+              return (
+                <li class="reveal relative flex items-start gap-5 py-4" style={`--d:${i * 60}ms`}>
+                  <span class={`relative z-10 grid h-9 w-9 shrink-0 place-items-center rounded-full border font-data text-[13px] font-semibold ${peak ? "border-brand bg-brand text-[#0a0f1a]" : "border-hair bg-surface text-primary"}`}>
+                    {String(i + 1).padStart(2, "0")}
+                  </span>
+                  <div class={`flex-1 rounded-xl border px-5 py-4 transition-colors ${peak ? "border-brand/50 bg-brand/[0.06]" : "border-hair bg-surface-2 hover:border-primary/40"}`} style={peak ? "" : `margin-left:${i * 6}px`}>
+                    <div class="flex items-center gap-3">
+                      <h3 class="font-display text-lg font-semibold text-ink">{m.name}</h3>
+                      {peak && <Badge variant="accent" className="rounded-full text-[10px] font-bold">Peak · roadmap</Badge>}
+                    </div>
+                    <p class="mt-1.5 text-sm leading-relaxed text-muted">{m.desc}</p>
+                  </div>
+                </li>
+              );
+            })}
+          </ol>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================================
+         6 · HOW IT WORKS — horizontal pipeline with convergence motif
+         ====================================================================== -->
+    <section id="how" class="scroll-mt-20 bg-canvas">
+      <div class="mx-auto max-w-[90rem] px-6 py-28">
+        <div class="max-w-2xl">
+          <p class="font-data text-[11px] uppercase tracking-[0.14em] text-primary reveal">{how.eyebrow}</p>
+          <h2 class="mt-4 font-display text-3xl font-bold tracking-[-0.02em] text-ink reveal sm:text-4xl" style="--d:60ms">{how.heading}</h2>
+        </div>
+        <div class="relative mt-16">
+          <span class="absolute left-0 right-0 top-6 hidden h-px bg-gradient-to-r from-primary/40 via-primary/40 to-brand md:block" aria-hidden="true"></span>
+          <div class="grid gap-12 md:grid-cols-3 md:gap-6">
+            {how.steps.map((s, i) => {
+              const last = i === how.steps.length - 1;
+              return (
+                <div class="reveal relative" style={`--d:${i * 90}ms`}>
+                  <div class="flex items-center gap-3">
+                    <span class={`relative z-10 grid h-12 w-12 place-items-center rounded-full border-2 bg-canvas font-data text-sm font-semibold ${last ? "border-brand text-brand" : "border-primary text-primary"}`}>{s.step}</span>
+                    <span class="font-data text-[11px] uppercase tracking-[0.14em] text-muted">
+                      {i === 0 ? "Capture" : i === 1 ? "Check" : "Decide"}
+                    </span>
+                  </div>
+                  <h3 class="mt-5 font-display text-xl font-semibold text-ink">{s.title}</h3>
+                  <p class="mt-2.5 text-[15px] leading-relaxed text-muted">{s.desc}</p>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================================
+         7 · ANATOMY OF A REPORT — DARK forensic moment, annotated
+         ====================================================================== -->
+    <section class="forensic blueprint relative overflow-hidden">
+      <div class="relative mx-auto max-w-[90rem] px-6 py-28">
+        <div class="mx-auto max-w-2xl text-center">
+          <p class="font-data text-[11px] uppercase tracking-[0.22em] text-[#5f8f8c] reveal">Anatomy of a report</p>
+          <h2 class="mt-4 font-display text-3xl font-bold tracking-[-0.025em] text-white reveal sm:text-[2.6rem]" style="--d:60ms">Every flag carries its reason.</h2>
+          <p class="mx-auto mt-4 max-w-md text-[#9fb2c2] reveal" style="--d:120ms">{principle.sub}</p>
+        </div>
+
+        <div class="relative mx-auto mt-16 grid max-w-7xl gap-10 lg:grid-cols-[1.15fr_0.85fr] lg:items-center">
+          <div class="report-panel relative rounded-[16px] reveal">
+            <div class="flex items-center justify-between border-b border-[#1b2b3d] px-5 py-4 font-data text-[11px] text-[#6e8aa0]">
+              <span>CASE · CLM-2026-90377</span>
+              <span>MH 12 AB 1234 · Swift ’19</span>
+            </div>
+            <div class="flex items-end justify-between px-5 py-5">
+              <div>
+                <div class="font-data text-[10px] uppercase tracking-[0.16em] text-[#6e8aa0]">Fraud score</div>
+                <div class="mt-1 font-data text-[13px] font-semibold text-[#fb5a5a]">HIGH · refer</div>
+              </div>
+              <div class="font-data text-[64px] font-semibold leading-[0.8] text-[#fb5a5a]">78</div>
+            </div>
+            <div class="px-5 pb-5">
+              <div class="grid grid-cols-[auto_1fr] items-start gap-3 border-t border-[#15273a] py-3">
+                <span class="whitespace-nowrap rounded px-1.5 py-[3px] font-data text-[9px] font-semibold tracking-[0.06em] bg-[rgba(185,28,28,0.18)] text-[#fb7185]">HIGH</span>
+                <span class="text-[13px] text-[#dbe6ee]">Policy lapsed before date of loss<small class="mt-0.5 block font-data text-[11px] text-[#7f97a9]">ended 09 Sep · loss 11 Sep</small></span>
+              </div>
+              <div class="grid grid-cols-[auto_1fr] items-start gap-3 border-t border-[#15273a] py-3">
+                <span class="whitespace-nowrap rounded px-1.5 py-[3px] font-data text-[9px] font-semibold tracking-[0.06em] bg-[rgba(185,28,28,0.18)] text-[#fb7185]">HIGH</span>
+                <span class="text-[13px] text-[#dbe6ee]">Estimate total ≠ line items<small class="mt-0.5 block font-data text-[11px] text-[#7f97a9]">₹62,400 printed · ₹58,900 sums</small></span>
+              </div>
+              <div class="grid grid-cols-[auto_1fr] items-start gap-3 border-t border-[#15273a] py-3">
+                <span class="whitespace-nowrap rounded px-1.5 py-[3px] font-data text-[9px] font-semibold tracking-[0.06em] bg-[rgba(109,74,255,0.18)] text-[#b9a6ff]">DAMAGE</span>
+                <span class="text-[13px] text-[#dbe6ee]">Front bumper — scratch, moderate</span>
+              </div>
+              <div class="grid grid-cols-[auto_1fr] items-start gap-3 border-t border-[#15273a] py-3">
+                <span class="whitespace-nowrap rounded px-1.5 py-[3px] font-data text-[9px] font-semibold tracking-[0.06em] bg-[rgba(20,184,166,0.16)] text-[#2dd4bf]">VAHAN</span>
+                <span class="text-[13px] text-[#dbe6ee]">Plate &amp; chassis match<small class="mt-0.5 block font-data text-[11px] text-[#7f97a9]">verified against source</small></span>
+              </div>
+            </div>
+          </div>
+
+          <ul class="space-y-6">
+            <li class="reveal flex gap-4" style="--d:80ms">
+              <span class="mt-1 font-data text-xs text-[#5f8f8c]">01</span>
+              <div>
+                <p class="font-data text-[11px] uppercase tracking-[0.14em]" style="color:var(--color-amber-400)">The score</p>
+                <p class="mt-1.5 text-sm leading-relaxed text-[#9fb2c2]">One number over documents and images — never a verdict, only where to look first.</p>
+              </div>
+            </li>
+            <li class="reveal flex gap-4" style="--d:160ms">
+              <span class="mt-1 font-data text-xs text-[#5f8f8c]">02</span>
+              <div>
+                <p class="font-data text-[11px] uppercase tracking-[0.14em]" style="color:var(--color-amber-400)">A flag, with its reason</p>
+                <p class="mt-1.5 text-sm leading-relaxed text-[#9fb2c2]">Each flag shows what was compared and the exact figures behind it — evidence, not a hunch.</p>
+              </div>
+            </li>
+            <li class="reveal flex gap-4" style="--d:240ms">
+              <span class="mt-1 font-data text-xs text-[#5f8f8c]">03</span>
+              <div>
+                <p class="font-data text-[11px] uppercase tracking-[0.14em]" style="color:var(--color-amber-400)">The Vahan check</p>
+                <p class="mt-1.5 text-sm leading-relaxed text-[#9fb2c2]">Plate and chassis matched against the source registry, so the vehicle on paper is the one in the photos.</p>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================================
+         8 · COMPARISON — versus the status quo (LIGHT)
+         ====================================================================== -->
+    <section class="bg-canvas">
+      <div class="mx-auto max-w-7xl px-6 py-28">
+        <div class="max-w-2xl">
+          <p class="font-data text-[11px] uppercase tracking-[0.14em] text-primary reveal">{compare.eyebrow}</p>
+          <h2 class="mt-4 font-display text-3xl font-bold tracking-[-0.02em] text-ink reveal sm:text-4xl" style="--d:60ms">{compare.heading}</h2>
+        </div>
+        <div class="reveal mt-12 overflow-hidden rounded-2xl border border-hair">
+          <div class="grid grid-cols-[1fr_1fr] bg-surface font-data text-[11px] uppercase tracking-[0.12em] text-muted sm:grid-cols-[0.8fr_1.1fr_1.1fr]">
+            <div class="hidden px-5 py-4 sm:block">Aspect</div>
+            <div class="px-5 py-4">The old way</div>
+            <div class="px-5 py-4 text-primary">With Modules</div>
+          </div>
+          {compare.rows.map((r, i) => (
+            <div class={`reveal grid grid-cols-[1fr_1fr] border-t border-hair sm:grid-cols-[0.8fr_1.1fr_1.1fr] ${i % 2 ? "bg-surface-2" : "bg-canvas"}`} style={`--d:${i * 50}ms`}>
+              <div class="col-span-2 px-5 pt-4 font-display text-sm font-semibold text-ink sm:col-span-1 sm:py-5 sm:font-medium">{r.aspect}</div>
+              <div class="flex items-start gap-2.5 px-5 py-4 text-sm text-muted sm:py-5">
+                <X className="mt-0.5 h-4 w-4 shrink-0 text-muted/50" />
+                <span>{r.old}</span>
+              </div>
+              <div class="flex items-start gap-2.5 px-5 py-4 text-sm text-ink sm:py-5">
+                <Check className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+                <span>{r.new}</span>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================================
+         9 · WHAT YOU SEND — shadcn Tabs, restyled
+         ====================================================================== -->
+    <section class="border-y border-hair bg-surface">
+      <div class="mx-auto max-w-[90rem] px-6 py-28">
+        <div class="grid gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-end">
+          <div>
+            <p class="font-data text-[11px] uppercase tracking-[0.14em] text-primary reveal">{send.eyebrow}</p>
+            <h2 class="mt-4 font-display text-3xl font-bold tracking-[-0.02em] text-ink reveal sm:text-4xl" style="--d:60ms">{send.heading}</h2>
+          </div>
+          <p class="max-w-md text-lg leading-relaxed text-muted reveal lg:pb-1" style="--d:120ms">{send.lead}</p>
+        </div>
+        <div class="reveal">
+          <SendTabs client:visible modes={send.modes} />
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================================
+         10 · GUIDED CAPTURE — phone mock, split
+         ====================================================================== -->
+    <section class="bg-canvas">
+      <div class="mx-auto grid max-w-[90rem] items-center gap-16 px-6 py-28 lg:grid-cols-[1.1fr_0.9fr]">
+        <div>
+          <p class="font-data text-[11px] uppercase tracking-[0.14em] text-primary reveal">{capture.eyebrow}</p>
+          <h2 class="mt-4 font-display text-3xl font-bold tracking-[-0.02em] text-ink reveal sm:text-4xl" style="--d:60ms">{capture.heading}</h2>
+          <p class="mt-5 max-w-lg text-lg leading-relaxed text-muted reveal" style="--d:120ms">{capture.lead}</p>
+          <ul class="mt-8 space-y-3">
+            {capture.points.map((p, i) => (
+              <li class="reveal flex gap-3 text-[15px] text-ink" style={`--d:${140 + i * 50}ms`}>
+                <Check className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+                <span>{p}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+        <div class="flex justify-center reveal" style="--d:100ms">
+          <div class="w-64 rounded-[2rem] border border-hair bg-navy-950 p-3 shadow-2xl">
+            <div class="overflow-hidden rounded-[1.5rem] bg-aurora bg-grid">
+              <div class="flex items-center justify-between px-4 pt-4 font-data text-[11px] text-teal-300">
+                <span>{capture.demoAngle.label}</span>
+                <span class="rounded-full border border-teal-400/40 px-2 py-0.5 text-teal-300">EN · हिं</span>
+              </div>
+              <div class="flex h-56 items-center justify-center px-4">
+                <div class="flex h-36 w-full items-center justify-center rounded-xl border-2 border-dashed border-teal-400/50">
+                  <span class="font-display text-lg font-semibold text-white/90">{capture.demoAngle.name}</span>
+                </div>
+              </div>
+              <div class="px-4 pb-5">
+                <p class="text-center font-data text-xs text-teal-300">{capture.demoAngle.hint}</p>
+                <div class="mt-3 flex justify-center">
+                  <span class="h-12 w-12 rounded-full border-4 border-white/90"></span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================================
+         11 · BUILT FOR YOUR TEAMS — editorial stacked list (NOT cards)
+         ====================================================================== -->
+    <section class="border-y border-hair bg-surface">
+      <div class="mx-auto max-w-[90rem] px-6 py-28">
+        <div class="max-w-2xl">
+          <p class="font-data text-[11px] uppercase tracking-[0.14em] text-primary reveal">{audience.eyebrow}</p>
+          <h2 class="mt-4 font-display text-3xl font-bold tracking-[-0.02em] text-ink reveal sm:text-4xl" style="--d:60ms">{audience.heading}</h2>
+        </div>
+        <div class="mt-12 divide-y divide-hair border-t border-hair">
+          {audience.roles.map((r, i) => (
+            <div class="reveal grid gap-4 py-8 md:grid-cols-[0.3fr_0.25fr_0.45fr] md:items-baseline md:gap-8" style={`--d:${i * 80}ms`}>
+              <p class="font-data text-xs font-semibold uppercase tracking-[0.14em] text-primary">{r.role}</p>
+              <h3 class="font-display text-xl font-semibold text-ink">{r.title}</h3>
+              <p class="text-[15px] leading-relaxed text-muted">{r.desc}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================================
+         12 · PRINCIPLE — large quiet statement
+         ====================================================================== -->
+    <section class="bg-canvas">
+      <div class="mx-auto max-w-4xl px-6 py-32 text-center">
+        <p class="font-data text-[11px] uppercase tracking-[0.22em] text-primary reveal">The principle</p>
+        <blockquote class="reveal mt-6 font-display text-[clamp(1.75rem,4vw,2.75rem)] font-semibold leading-[1.15] tracking-[-0.02em] text-ink" style="--d:80ms">
+          The engine never approves or rejects a claim. <span class="text-primary">It tells your team where to look.</span>
+        </blockquote>
+        <p class="reveal mx-auto mt-6 max-w-lg text-muted" style="--d:140ms">{principle.sub}</p>
+      </div>
+    </section>
+
+    <!-- ======================================================================
+         13 · PRICING — two tiers, featured treatment
+         ====================================================================== -->
+    <section id="pricing" class="scroll-mt-20 border-y border-hair bg-surface">
+      <div class="mx-auto max-w-[90rem] px-6 py-28">
+        <div class="max-w-2xl">
+          <p class="font-data text-[11px] uppercase tracking-[0.14em] text-primary reveal">{pricing.eyebrow}</p>
+          <h2 class="mt-4 font-display text-3xl font-bold tracking-[-0.02em] text-ink reveal sm:text-4xl" style="--d:60ms">{pricing.heading}</h2>
+          <p class="mt-5 max-w-xl text-lg leading-relaxed text-muted reveal" style="--d:120ms">{pricing.lead}</p>
+        </div>
+        <div class="mt-14 grid gap-6 md:grid-cols-2">
+          {pricing.tiers.map((t, i) => (
+            <Card className={`reveal relative bg-surface-2 py-8 ${t.featured ? "border-brand/50 shadow-lg ring-1 ring-brand/20" : ""}`} style={{ "--d": `${i * 90}ms` }}>
+              {t.featured && (
+                <Badge variant="accent" className="absolute -top-3 right-6 rounded-full px-3 py-1 text-[11px] font-bold">Most complete</Badge>
+              )}
+              <CardHeader>
+                <div class="flex items-baseline justify-between">
+                  <CardTitle className="text-xl font-bold">{t.name}</CardTitle>
+                  <Badge variant="outline" className="rounded-full font-data text-muted">{t.tag}</Badge>
+                </div>
+                <CardDescription className="mt-2">{t.for}</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <ul class="space-y-3">
+                  {t.points.map((p) => (
+                    <li class="flex gap-2.5 text-sm text-ink">
+                      <Check className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+                      <span>{p}</span>
+                    </li>
+                  ))}
+                </ul>
+                <a href={t.cta.href} class={buttonVariants({ variant: t.featured ? "accent" : "outline", size: "lg", className: "mt-8 w-full" })}>{t.cta.label}</a>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================================
+         14 · CTA / DEMO
+         ====================================================================== -->
+    <section id="demo" class="scroll-mt-20 hero-bg">
+      <div class="mx-auto max-w-7xl px-6 py-28">
+        <div class="grid items-center gap-12 lg:grid-cols-2">
+          <div>
+            <p class="font-data text-[11px] uppercase tracking-[0.14em] text-primary reveal">{cta.eyebrow}</p>
+            <h2 class="mt-4 font-display text-3xl font-bold tracking-[-0.02em] text-ink reveal sm:text-4xl" style="--d:60ms">{cta.heading}</h2>
+            <p class="mt-5 max-w-md text-lg leading-relaxed text-muted reveal" style="--d:120ms">{cta.lead}</p>
+          </div>
+          <Card className="reveal bg-surface-2 py-7 shadow-xl shadow-navy-900/5" style={{ "--d": "100ms" }}>
+            <CardContent>
+              <form class="space-y-4" onsubmit="return false">
+                {cta.fields.map((f) => (
+                  <div class="space-y-1.5">
+                    <Label htmlFor={f.name}>{f.label}</Label>
+                    <Input type={f.type} name={f.name} id={f.name} />
+                  </div>
+                ))}
+                <div class="space-y-1.5">
+                  <Label htmlFor="team">{cta.select.label}</Label>
+                  <select id="team" class="border-input bg-background flex h-9 w-full rounded-md border px-3 py-1 text-sm text-ink outline-none transition-[color,box-shadow] focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]">
+                    {cta.select.options.map((o) => <option>{o}</option>)}
+                  </select>
+                </div>
+                <Separator className="my-2" />
+                <Button type="submit" variant="accent" size="lg" className="w-full">{cta.button}</Button>
+                <p class="text-center text-xs text-muted">{cta.note}</p>
+              </form>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================================
+         15 · FOR DEVELOPERS — small secondary strip (de-emphasized)
+         ====================================================================== -->
+    <section id="developers" class="scroll-mt-20 border-t border-hair bg-canvas">
+      <div class="mx-auto max-w-[90rem] px-6 py-16">
+        <div class="grid items-center gap-10 rounded-2xl border border-hair bg-surface px-6 py-10 sm:px-8 lg:grid-cols-[1fr_1.1fr]">
+          <div class="reveal min-w-0">
+            <p class="font-data text-[11px] uppercase tracking-[0.14em] text-primary">{developers.eyebrow}</p>
+            <h2 class="mt-3 font-display text-2xl font-bold tracking-[-0.02em] text-ink">{developers.heading}</h2>
+            <p class="mt-3 max-w-md text-[15px] leading-relaxed text-muted">{developers.lead}</p>
+            <div class="mt-6 flex flex-wrap items-center gap-x-5 gap-y-2 font-data text-xs text-muted">
+              {developers.endpoints.slice(0, 4).map((e) => (
+                <span class="flex items-center gap-1.5"><span class="font-semibold text-primary">{e.method}</span>{e.path}</span>
+              ))}
+            </div>
+            <a href="#demo" class="mt-7 inline-flex items-center gap-2 text-sm font-semibold text-primary transition-colors hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+              Get sandbox keys
+              <ArrowRight className="size-4" />
+            </a>
+          </div>
+          <div class="reveal min-w-0" style="--d:80ms">
+            <DeveloperTabs client:visible request={developers.request} response={developers.response} />
+          </div>
+        </div>
       </div>
     </section>
   </main>
 
-  <footer class="border-t border-navy-100">
-    <div class="mx-auto max-w-6xl px-6 py-8 text-sm text-navy-500">
-      © 2025 IAR Services. All rights reserved.
-    </div>
-  </footer>
+  <MotionFooter client:visible />
+
+  <!-- Scroll-reveal + hero wire draw-in. Respects prefers-reduced-motion. -->
+  <script is:inline>
+    (() => {
+      const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+      const els = document.querySelectorAll(".reveal");
+      if (reduce || !("IntersectionObserver" in window)) {
+        els.forEach((e) => e.classList.add("is-in"));
+        document.querySelectorAll("[data-converge]").forEach((e) => e.classList.add("is-in"));
+        return;
+      }
+      const io = new IntersectionObserver(
+        (entries) => {
+          for (const e of entries) {
+            if (e.isIntersecting) {
+              e.target.classList.add("is-in");
+              io.unobserve(e.target);
+            }
+          }
+        },
+        { rootMargin: "0px 0px -8% 0px", threshold: 0.1 },
+      );
+      els.forEach((e) => io.observe(e));
+      const converge = document.querySelector("[data-converge]");
+      if (converge) {
+        const cio = new IntersectionObserver(
+          (entries) => {
+            for (const e of entries) {
+              if (e.isIntersecting) {
+                e.target.classList.add("is-in");
+                cio.unobserve(e.target);
+              }
+            }
+          },
+          { threshold: 0.2 },
+        );
+        cio.observe(converge);
+      }
+    })();
+  </script>
 </BaseLayout>

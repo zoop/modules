@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Modules — Pitch Deck</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --teal:#0E7C7B; --teal-bright:#2DD4BF; --teal-deep:#0b5e5d;
+    --navy:#0B1B2B; --ink:#0A0F1A; --ink-2:#0f1d2e; --surface:#12243a;
+    --amber:#E08A00; --amber-bright:#FBBF24; --amber-text:#F0A830;
+    --violet:#6D4AFF; --violet-bright:#A78BFA;
+    --text:#E6EDF3; --muted:#9FB2C2; --faint:#64798a; --line:#213244;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{font-family:"IBM Plex Sans",system-ui,sans-serif;background:var(--ink);color:var(--text);
+    -webkit-font-smoothing:antialiased;line-height:1.5}
+  .deck{scroll-snap-type:y mandatory;overflow-y:scroll;height:100vh}
+  .slide{scroll-snap-align:start;min-height:100vh;padding:72px 7vw 88px;display:flex;flex-direction:column;
+    justify-content:center;position:relative;border-bottom:1px solid var(--line)}
+  .slide::after{content:attr(data-n) " / 16";position:absolute;bottom:26px;right:7vw;font-family:"IBM Plex Mono";
+    font-size:12px;color:var(--faint);letter-spacing:.05em}
+  .brandbar{position:absolute;top:26px;left:7vw;display:flex;align-items:center;gap:10px;font-family:"Space Grotesk";
+    font-weight:600;font-size:15px;letter-spacing:-.01em;color:#fff}
+  .kicker{font-family:"IBM Plex Mono";font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--teal-bright);margin-bottom:20px}
+  h1{font-family:"Space Grotesk";font-weight:700;font-size:clamp(34px,5.4vw,66px);line-height:1.04;letter-spacing:-.02em;color:#fff}
+  h2{font-family:"Space Grotesk";font-weight:600;font-size:clamp(26px,3.6vw,40px);line-height:1.1;letter-spacing:-.015em;color:#fff;max-width:20ch}
+  .lead{font-size:clamp(17px,1.9vw,21px);color:var(--muted);max-width:60ch;margin-top:18px}
+  .amber{color:var(--amber-bright)} .teal{color:var(--teal-bright)} .vio{color:var(--violet-bright)}
+  .src{position:absolute;bottom:26px;left:7vw;font-size:11.5px;color:var(--faint);max-width:70vw;line-height:1.5}
+  .mono{font-family:"IBM Plex Mono",monospace}
+  .pill{display:inline-block;font-size:11px;font-weight:600;color:var(--amber-text);border:1px solid #4a3518;
+    background:rgba(224,138,0,.1);border-radius:999px;padding:4px 11px;letter-spacing:.02em}
+  .grid2{display:grid;grid-template-columns:1.05fr .95fr;gap:52px;align-items:center}
+  .grid2.rev{grid-template-columns:.95fr 1.05fr}
+  @media(max-width:860px){.grid2,.grid2.rev{grid-template-columns:1fr;gap:30px}}
+
+  /* big stats */
+  .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;margin-top:38px}
+  .stat{border:1px solid var(--line);border-left:3px solid var(--teal);border-radius:12px;padding:22px 20px;background:var(--ink-2)}
+  .stat .n{font-family:"Space Grotesk";font-weight:700;font-size:clamp(28px,3.4vw,42px);color:#fff;letter-spacing:-.01em}
+  .stat .n.a{color:var(--amber-bright)} .stat.al{border-left-color:var(--amber)}
+  .stat .l{font-size:13.5px;color:var(--muted);margin-top:8px}
+
+  /* cards row */
+  .cards{display:grid;gap:16px;margin-top:30px}
+  .cards.c3{grid-template-columns:repeat(3,1fr)} .cards.c4{grid-template-columns:repeat(4,1fr)} .cards.c2{grid-template-columns:repeat(2,1fr)}
+  @media(max-width:860px){.cards.c3,.cards.c4,.cards.c2{grid-template-columns:1fr}}
+  .card{border:1px solid var(--line);border-radius:13px;padding:20px;background:var(--ink-2)}
+  .card h3{font-family:"Space Grotesk";font-weight:600;font-size:16px;color:#fff;margin-bottom:7px;display:flex;gap:9px;align-items:baseline}
+  .card p{font-size:13.5px;color:var(--muted)}
+  .card .step{font-family:"IBM Plex Mono";font-size:12px;color:var(--teal-bright)}
+
+  /* table */
+  table{width:100%;border-collapse:separate;border-spacing:0;margin-top:26px;font-size:13.5px}
+  th,td{text-align:left;padding:12px 14px;border-bottom:1px solid var(--line);vertical-align:top}
+  thead th{font-family:"IBM Plex Mono";font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);border-bottom:2px solid var(--line)}
+  td.k{color:#fff;font-weight:600} tbody tr:last-child td{border-bottom:none}
+  .hi{color:var(--teal-bright);font-weight:600}
+  .col-live{background:rgba(45,212,191,.06)} th.col-live{color:var(--teal-bright)}
+  .mut{color:var(--faint);font-style:italic}
+
+  /* pipeline */
+  .pipe{display:flex;align-items:stretch;gap:0;margin-top:40px;flex-wrap:wrap}
+  .pstep{flex:1;min-width:120px;padding:4px}
+  .pbox{border:1px solid var(--line);border-radius:12px;padding:18px 14px;height:100%;background:var(--ink-2)}
+  .pbox .pn{font-family:"IBM Plex Mono";font-size:11px;color:var(--teal-bright)}
+  .pbox h3{font-family:"Space Grotesk";font-size:15px;color:#fff;margin:7px 0 5px}
+  .pbox p{font-size:12px;color:var(--muted)}
+  .pbox.end{background:linear-gradient(135deg,var(--teal-deep),var(--navy));border-color:var(--teal)}
+  .parrow{align-self:center;color:var(--faint);font-weight:700;font-size:18px;padding:0 2px}
+
+  /* venn */
+  .venn{display:flex;justify-content:center;align-items:center;min-height:300px}
+  .ladder{display:grid;gap:14px;margin-top:30px}
+  .rung{display:grid;grid-template-columns:auto 1fr;gap:18px;align-items:center;border:1px solid var(--line);border-radius:13px;padding:18px 20px;background:var(--ink-2)}
+  .rung .lv{font-family:"Space Grotesk";font-weight:700;font-size:13px;color:#fff;background:var(--teal);border-radius:8px;padding:8px 12px;white-space:nowrap}
+  .rung.r2 .lv{background:var(--teal-deep)} .rung.r3 .lv{background:var(--amber);color:var(--navy)}
+  .rung h3{font-family:"Space Grotesk";font-size:16px;color:#fff} .rung p{font-size:13px;color:var(--muted);margin-top:3px}
+
+  /* bars */
+  .bars{margin-top:34px;display:flex;flex-direction:column;gap:16px;max-width:620px}
+  .bar{display:grid;grid-template-columns:160px 1fr;gap:16px;align-items:center}
+  .bar .bl{font-size:13px;color:var(--muted);text-align:right}
+  .bar .track{height:34px;border-radius:7px;background:var(--ink-2);border:1px solid var(--line);position:relative;overflow:hidden}
+  .bar .fill{height:100%;display:flex;align-items:center;padding:0 12px;font-family:"IBM Plex Mono";font-size:12.5px;color:#031018;font-weight:600}
+
+  /* roadmap */
+  .road{display:flex;gap:0;margin-top:40px;flex-wrap:wrap}
+  .ph{flex:1;min-width:140px;padding-right:16px;border-top:3px solid var(--line);padding-top:16px;position:relative}
+  .ph::before{content:"";position:absolute;top:-8px;left:0;width:13px;height:13px;border-radius:50%;background:var(--line)}
+  .ph.live{border-top-color:var(--teal)} .ph.live::before{background:var(--teal-bright)}
+  .ph.next{border-top-color:var(--amber)} .ph.next::before{background:var(--amber-bright)}
+  .ph .pt{font-family:"IBM Plex Mono";font-size:11px;color:var(--teal-bright);letter-spacing:.06em}
+  .ph h3{font-family:"Space Grotesk";font-size:15px;color:#fff;margin:7px 0 5px} .ph p{font-size:12.5px;color:var(--muted)}
+
+  ul.clean{list-style:none;margin-top:22px;display:grid;gap:12px;max-width:62ch}
+  ul.clean li{position:relative;padding-left:26px;font-size:15.5px;color:var(--muted)}
+  ul.clean li::before{content:"";position:absolute;left:0;top:9px;width:9px;height:9px;border-radius:2px;background:var(--teal);transform:rotate(45deg)}
+  ul.clean li b{color:#fff;font-weight:600}
+  .nav-hint{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);font-family:"IBM Plex Mono";font-size:11px;
+    color:var(--faint);background:rgba(10,15,26,.8);border:1px solid var(--line);border-radius:999px;padding:6px 14px;z-index:9}
+  .cover-bg{position:absolute;inset:0;background:
+    radial-gradient(ellipse 60% 50% at 70% 30%, rgba(14,124,123,.22), transparent 70%),
+    radial-gradient(ellipse 50% 40% at 25% 80%, rgba(109,74,255,.14), transparent 70%)}
+  .mk{flex:none}
+</style>
+</head>
+<body>
+<div class="deck" id="deck">
+
+  <!-- 1 · COVER -->
+  <section class="slide" data-n="01" style="justify-content:center">
+    <div class="cover-bg"></div>
+    <div style="position:relative">
+      <div style="display:flex;align-items:center;gap:16px;margin-bottom:34px">
+        <svg class="mk" width="60" height="60" viewBox="0 0 104 104"><path d="M28 64 L52 52 L76 64" fill="none" stroke="#2DD4BF" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M34 54 L52 42 L70 54" fill="none" stroke="#2DD4BF" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M40 44 L52 32 L64 44" fill="none" stroke="#FBBF24" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span style="font-family:'Space Grotesk';font-weight:600;font-size:30px;color:#fff;letter-spacing:-.015em">Modules</span>
+        <span class="pill" style="margin-left:6px">working name · brand TBD</span>
+      </div>
+      <h1>The claims-intelligence<br>layer for insurers.</h1>
+      <p class="lead" style="font-size:22px;max-width:56ch">Read the photos. Read the paperwork. Score the fraud — and show the reason behind every flag. Vendor-neutral. India-native. Built once as modules, reused across every insurance line.</p>
+      <div style="margin-top:40px;display:flex;gap:14px;align-items:center;color:var(--faint);font-family:'IBM Plex Mono';font-size:12.5px">
+        <span>Investor &amp; partner overview</span><span>·</span><span>Motor first · Health next</span><span>·</span><span>Draft</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2 · PROBLEM -->
+  <section class="slide" data-n="02">
+    <div class="kicker">The problem</div>
+    <h2>Insurers bleed to claims fraud — and it's concentrated in documents.</h2>
+    <div class="stats">
+      <div class="stat"><div class="n">₹2.26<span style="font-size:.5em"> lakh cr</span></div><div class="l">Combined motor + health gross premium, India FY25 (motor ₹99,093 cr · health ₹1,27,417 cr)</div></div>
+      <div class="stat al"><div class="n a">~₹45,000 cr</div><div class="l">Lost to fraud every year — about <b style="color:#fff">10% of premium</b></div></div>
+      <div class="stat"><div class="n teal" style="color:var(--teal-bright)">~70%</div><div class="l">Of that fraud rides on <b style="color:#fff">document falsification</b> — forged estimates, tampered invoices, mismatched dates</div></div>
+    </div>
+    <ul class="clean" style="margin-top:28px">
+      <li><b>60% of insurers</b> report a significant rise in fraud, driven by digitisation and weaker remote controls.</li>
+      <li>Manual review can't scale — <b>3.26 crore health claims</b> settled in FY25, now under sub-hour cashless SLAs.</li>
+    </ul>
+    <div class="src">Sources: IRDAI Annual Report 2024-25; IBEF (health FY25); Insurance Institute of India; Deloitte India Insurance Fraud Survey 2023. Fraud % are industry estimates/press, not IRDAI-audited — shown as ranges.</div>
+  </section>
+
+  <!-- 3 · WHY NOW -->
+  <section class="slide" data-n="03">
+    <div class="kicker">Why now</div>
+    <h2>The regulator just made automation both necessary <span class="amber">and</span> allowed.</h2>
+    <div class="cards c4">
+      <div class="card"><h3>No surveyor</h3><p>IRDAI removed the surveyor requirement for motor losses <b style="color:#fff">under ₹50,000</b> — explicitly enabling app/AI assessment.</p></div>
+      <div class="card"><h3>Hard clocks</h3><p>Cashless health SLAs: pre-auth <b style="color:#fff">≤ 1 hour</b>, final <b style="color:#fff">≤ 3 hours</b>. Manual review is untenable at scale.</p></div>
+      <div class="card"><h3>AI blessed</h3><p>IRDAI named claims + fraud its <b style="color:#fff">#1 AI-governance priority</b>, pushing explainable, auditable AI — our exact posture.</p></div>
+      <div class="card"><h3>Adoption</h3><p>Insurer AI adoption jumped <b style="color:#fff">8% → 34%</b> (2024→2025) — past pilots, into core operations.</p></div>
+    </div>
+    <p class="lead" style="margin-top:30px">The manual gate is gone, the clocks force automation, explainable AI is sanctioned — on a ₹2.26L-cr base losing ~10% to document-heavy fraud.</p>
+    <div class="src">Sources: IRDAI / Finance Ministry (surveyor waiver < ₹50k); IRDAI Master Circular on health 2024 (cashless SLAs); IRDAI AI Working Group 2026 (date to re-verify); industry press (AI adoption).</div>
+  </section>
+
+  <!-- 4 · INSIGHT -->
+  <section class="slide" data-n="04">
+    <div class="grid2">
+      <div>
+        <div class="kicker">The insight</div>
+        <h2>Fraud lives in the <span class="amber">mismatch</span> between the photos and the paperwork.</h2>
+        <p class="lead">A staged accident has clean photos. A doctored estimate has clean photos too. The lie shows up <b style="color:#fff">across</b> the inputs — a policy that lapsed before the loss, a chassis number that doesn't match Vahan, an estimate total that doesn't add up.</p>
+        <p class="lead" style="margin-top:14px">Every vendor reads one side. <span class="teal">We read both.</span></p>
+      </div>
+      <div class="venn">
+        <svg width="360" height="300" viewBox="0 0 360 300">
+          <circle cx="145" cy="150" r="98" fill="rgba(45,212,191,.14)" stroke="#2DD4BF" stroke-width="2"/>
+          <circle cx="215" cy="150" r="98" fill="rgba(224,138,0,.14)" stroke="#E08A00" stroke-width="2"/>
+          <text x="92" y="150" fill="#2DD4BF" font-family="Space Grotesk" font-weight="600" font-size="16" text-anchor="middle">Photos</text>
+          <text x="92" y="172" fill="#9FB2C2" font-family="IBM Plex Sans" font-size="12" text-anchor="middle">&amp; video</text>
+          <text x="268" y="150" fill="#E08A00" font-family="Space Grotesk" font-weight="600" font-size="16" text-anchor="middle">Documents</text>
+          <text x="180" y="142" fill="#fff" font-family="Space Grotesk" font-weight="700" font-size="15" text-anchor="middle">the</text>
+          <text x="180" y="163" fill="#FBBF24" font-family="Space Grotesk" font-weight="700" font-size="16" text-anchor="middle">mismatch</text>
+        </svg>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5 · PRODUCT -->
+  <section class="slide" data-n="05">
+    <div class="kicker">The product</div>
+    <h2>One request in. One report out.</h2>
+    <div class="grid2" style="margin-top:34px">
+      <div>
+        <ul class="clean" style="margin-top:0">
+          <li><b>In:</b> vehicle photos &amp; video + claim documents, any mix — by capture link, dashboard upload, or API.</li>
+          <li><b>Out:</b> a damage report, a <b>fraud score</b>, and the red flags behind it — <b>each with a reason</b>.</li>
+          <li>Delivered as a <b>PDF</b> and as <b>JSON</b>, into your dashboard and your systems.</li>
+          <li class="teal">The engine never approves or rejects. It tells your team where to look.</li>
+        </ul>
+      </div>
+      <div class="card" style="border-left:3px solid var(--amber);padding:24px">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <span class="mono" style="color:var(--muted);font-size:12px">CLM-2026-90377</span>
+          <span class="pill">sample</span>
+        </div>
+        <div style="margin:16px 0;display:flex;align-items:baseline;gap:12px">
+          <span style="font-family:'Space Grotesk';font-weight:700;font-size:52px;color:var(--amber-bright)">78</span>
+          <span style="color:var(--muted)">Fraud score · <b style="color:#fff">High · refer</b></span>
+        </div>
+        <div style="display:grid;gap:9px;font-size:13px">
+          <div style="display:flex;justify-content:space-between;border-top:1px solid var(--line);padding-top:9px"><span style="color:var(--muted)">Policy lapsed before date of loss</span><span class="mono" style="color:#F0A830">HIGH</span></div>
+          <div style="display:flex;justify-content:space-between;border-top:1px solid var(--line);padding-top:9px"><span style="color:var(--muted)">Estimate total ≠ line items</span><span class="mono" style="color:#F0A830">HIGH</span></div>
+          <div style="display:flex;justify-content:space-between;border-top:1px solid var(--line);padding-top:9px"><span style="color:var(--muted)">Front bumper: scratch, moderate</span><span class="mono" style="color:var(--teal-bright)">DAMAGE</span></div>
+          <div style="display:flex;justify-content:space-between;border-top:1px solid var(--line);padding-top:9px"><span style="color:var(--muted)">Plate &amp; chassis match Vahan</span><span class="mono" style="color:var(--teal-bright)">PASS</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6 · HOW IT WORKS -->
+  <section class="slide" data-n="06">
+    <div class="kicker">How it works</div>
+    <h2>The same pipeline for every line.</h2>
+    <div class="pipe">
+      <div class="pstep"><div class="pbox"><div class="pn">01 · CAPTURE</div><h3>Collect</h3><p>Docs &amp; images from the customer — link, SMS, WhatsApp, email, API.</p></div></div>
+      <div class="parrow">→</div>
+      <div class="pstep"><div class="pbox"><div class="pn">02 · UNDERSTAND</div><h3>Read it</h3><p>Document Intelligence + Image Intelligence read what came in.</p></div></div>
+      <div class="parrow">→</div>
+      <div class="pstep"><div class="pbox"><div class="pn">03 · VERIFY</div><h3>Check it</h3><p>Real &amp; consistent vs trusted sources (Vahan, registries).</p></div></div>
+      <div class="parrow">→</div>
+      <div class="pstep"><div class="pbox"><div class="pn">04 · SCORE</div><h3>Risk</h3><p>One fraud score, with the reasons behind it.</p></div></div>
+      <div class="parrow">→</div>
+      <div class="pstep"><div class="pbox end"><div class="pn" style="color:var(--amber-bright)">05 · SETTLE</div><h3>Agent acts</h3><p>Orchestrates it into a recommendation. Human decides.</p></div></div>
+    </div>
+    <p class="lead" style="margin-top:34px">Only the models and rules in the middle change per line. The agent at the end is the moat.</p>
+  </section>
+
+  <!-- 7 · PLATFORM -->
+  <section class="slide" data-n="07">
+    <div class="kicker">The platform</div>
+    <h2>Build a capability once. Reuse it down every line.</h2>
+    <table>
+      <thead><tr><th>Module (reused)</th><th class="col-live">Motor · live</th><th>Health · next</th><th>More lines</th></tr></thead>
+      <tbody>
+        <tr><td class="k">Capture</td><td class="col-live">Guided photo &amp; video tour</td><td>Bills, discharge, scans</td><td class="mut">new doc set</td></tr>
+        <tr><td class="k">Document Intelligence</td><td class="col-live">RC, policy, FIR, estimate</td><td>Hospital bills, labs, Rx</td><td class="mut">line docs</td></tr>
+        <tr><td class="k">Verification</td><td class="col-live">Plate &amp; chassis vs Vahan</td><td>Hospital / doctor registry</td><td class="mut">source checks</td></tr>
+        <tr><td class="k">Image Intelligence</td><td class="col-live">Damage &amp; severity</td><td>Scans, bill images</td><td class="mut">domain vision</td></tr>
+        <tr><td class="k">Fraud</td><td class="col-live">Staged loss, inflated bill</td><td>Upcoding, phantom billing</td><td class="mut">line rules</td></tr>
+        <tr><td class="k teal">Agentic Settlement</td><td class="col-live">Orchestrates → recommends</td><td>Same agent, health rules</td><td class="mut">new rulebook</td></tr>
+      </tbody>
+    </table>
+    <p class="lead" style="margin-top:24px"><b style="color:#fff">Build once, sell many times.</b> "Motor Fraud Engine" = a few of these rows, one column.</p>
+  </section>
+
+  <!-- 8 · DIFFERENTIATION -->
+  <section class="slide" data-n="08">
+    <div class="kicker">Why we're different</div>
+    <h2>Everyone reads one side of the claim. We read both — for India.</h2>
+    <table>
+      <thead><tr><th>Approach</th><th>Photos / video</th><th>Documents</th><th>India-native</th></tr></thead>
+      <tbody>
+        <tr><td class="k">Inspection vendors <span class="mut">(Inspektlabs, Roadzen, Tractable)</span></td><td class="hi">Yes</td><td class="mut">—</td><td>Some</td></tr>
+        <tr><td class="k">Document / fraud vendors <span class="mut">(Resistant AI, Shift, Signzy)</span></td><td class="mut">—</td><td class="hi">Yes</td><td>KYC only</td></tr>
+        <tr style="background:rgba(45,212,191,.07)"><td class="k teal">Modules</td><td class="hi">Yes</td><td class="hi">Yes</td><td class="hi">Vahan · Indian docs · Hindi + English</td></tr>
+      </tbody>
+    </table>
+    <div class="cards c3" style="margin-top:28px">
+      <div class="card"><h3>Both sides, one report</h3><p>Combined photo + document, and (Phase 2) the cross-check between them.</p></div>
+      <div class="card"><h3>Explainable</h3><p>Every flag carries its reason; the human decides. Aligned with IRDAI.</p></div>
+      <div class="card"><h3>Doesn't look like insurtech</h3><p>A category of navy wordmarks. We lead teal + amber, with a real mark.</p></div>
+    </div>
+    <div class="src">Competitive positioning from vendor sites &amp; press; treat competitor claims as reported, not verified.</div>
+  </section>
+
+  <!-- 9 · BUSINESS MODEL -->
+  <section class="slide" data-n="09">
+    <div class="kicker">Business model</div>
+    <h2>Same stack. Two ways to buy.</h2>
+    <table>
+      <thead><tr><th></th><th class="col-live">Modules · self-serve SaaS</th><th>Modules Enterprise</th></tr></thead>
+      <tbody>
+        <tr><td class="k">Who</td><td class="col-live">Digital/claims teams, TPAs, surveyors, developers</td><td>Large insurers / carriers</td></tr>
+        <tr><td class="k">What</td><td class="col-live">Sign up, sandbox keys, module APIs + dashboard</td><td>+ integration, SSO, white-label, data residency, custom rules, SLAs</td></tr>
+        <tr><td class="k">Pricing</td><td class="col-live">Usage-based, transparent, free trial</td><td>Annual platform + usage + integration</td></tr>
+        <tr><td class="k">Buyer</td><td class="col-live">Practitioner / developer (bottoms-up)</td><td>Claims leadership / COO (top-down)</td></tr>
+      </tbody>
+    </table>
+    <p class="lead" style="margin-top:24px">Publishing a self-serve tier is itself a differentiator — <b style="color:#fff">~15 of 18</b> competitors are enterprise-only, demo-gated, no public pricing.</p>
+  </section>
+
+  <!-- 10 · GTM -->
+  <section class="slide" data-n="10">
+    <div class="kicker">Go to market</div>
+    <h2>Land → Expand → Own the claim.</h2>
+    <div class="ladder">
+      <div class="rung r1"><div class="lv">Land</div><div><h3>Module API / self-serve SaaS</h3><p>One capability, usage-priced — Document Intelligence or Capture. Low friction, fast proof. Buyer: developers / digital teams.</p></div></div>
+      <div class="rung r2"><div class="lv">Expand</div><div><h3>Motor Fraud Engine</h3><p>The vertical bundle — report + dashboard — sold as an outcome. Buyer: claims &amp; investigation teams.</p></div></div>
+      <div class="rung r3"><div class="lv">Own</div><div><h3>Agentic Settlement</h3><p>Straight-through for clean claims, investigator-ready for the rest. Buyer: claims leadership / COO.</p></div></div>
+    </div>
+    <p class="lead" style="margin-top:26px"><b style="color:#fff">Beachhead:</b> the investigation team on small motor own-damage claims — the newly-deregulated &lt;₹50k zone — with a design-partner insurer for real files first.</p>
+  </section>
+
+  <!-- 11 · MARKET / TAM -->
+  <section class="slide" data-n="11">
+    <div class="kicker">Market</div>
+    <h2>A large, addressable leakage pool.</h2>
+    <div class="bars">
+      <div class="bar"><div class="bl">Motor + health GWP</div><div class="track"><div class="fill" style="width:100%;background:linear-gradient(90deg,#163a55,#1d4e6e)">₹2.26 lakh cr / yr</div></div></div>
+      <div class="bar"><div class="bl">Fraud leakage (~10%)</div><div class="track"><div class="fill" style="width:45%;background:linear-gradient(90deg,#b06f00,#E08A00)">~₹20,000–45,000 cr / yr</div></div></div>
+      <div class="bar"><div class="bl">Document-based (~70%)</div><div class="track"><div class="fill" style="width:30%;background:linear-gradient(90deg,#0b5e5d,#13a79d)">in direct scope</div></div></div>
+      <div class="bar"><div class="bl">Even 1–2% recovered</div><div class="track"><div class="fill" style="width:9%;background:linear-gradient(90deg,#5134c9,#6D4AFF);color:#fff">large TAM</div></div></div>
+    </div>
+    <p class="lead" style="margin-top:30px">We don't need to catch all of it. Recovering even <b style="color:#fff">1–2%</b> of a ₹20,000–45,000 cr leak is a large, priceable market — before Health doubles the base.</p>
+    <div class="src">Derived from IRDAI FY25 premium + industry fraud estimates (§ Problem). Illustrative; bar widths indicative, not to scale.</div>
+  </section>
+
+  <!-- 12 · ROADMAP -->
+  <section class="slide" data-n="12">
+    <div class="kicker">Roadmap</div>
+    <h2>Motor now. Then the differentiator. Then more lines.</h2>
+    <div class="road">
+      <div class="ph live"><div class="pt">PHASE 1 · NOW</div><h3>Motor engine</h3><p>Capture + doc/image + fraud score + report. SaaS &amp; Enterprise live.</p></div>
+      <div class="ph"><div class="pt">PHASE 2</div><h3>Cross-check</h3><p>Photo-vs-document — the headline differentiator turns on.</p></div>
+      <div class="ph"><div class="pt">PHASE 3</div><h3>Call recordings</h3><p>A third input, compared with the claim story.</p></div>
+      <div class="ph"><div class="pt">PHASE 4</div><h3>Cross-insurer</h3><p>Repeat claimants &amp; blacklists, with an industry bureau.</p></div>
+      <div class="ph next"><div class="pt">LINE 2</div><h3>Health</h3><p>Same stack, ~80% reused — new doc set, vision, rules.</p></div>
+    </div>
+    <p class="lead" style="margin-top:34px">Honest note: the cross-check moat is <b style="color:#fff">Phase 2</b>. Phase 1 wins on "one vendor, one report, India-native."</p>
+  </section>
+
+  <!-- 13 · MOAT -->
+  <section class="slide" data-n="13">
+    <div class="grid2 rev">
+      <div class="stats" style="grid-template-columns:1fr;margin-top:0">
+        <div class="stat"><div class="n teal" style="color:var(--teal-bright)">~80%</div><div class="l">Of the stack reused per new line — a new line is mostly configuration</div></div>
+        <div class="stat al"><div class="n a">1 → N</div><div class="l">Every module improved once lifts motor, health and every future line at once</div></div>
+        <div class="stat" style="border-left-color:var(--violet)"><div class="n vio">Agent</div><div class="l">More lines &amp; more claims make the settlement agent smarter — the hard thing to copy</div></div>
+      </div>
+      <div>
+        <div class="kicker">Why we win</div>
+        <h2>It compounds.</h2>
+        <p class="lead">Each new line reuses the stack, so we ship faster than a single-line vendor. Each new module lifts every line. And the agent — trained on more claims across more lines — becomes the moat no point-tool can match.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 14 · VISION -->
+  <section class="slide" data-n="14" style="justify-content:center">
+    <div class="cover-bg"></div>
+    <div style="position:relative;max-width:22ch">
+      <div class="kicker">The vision</div>
+      <h1 style="font-size:clamp(32px,4.6vw,56px)">The claims-intelligence layer for <span class="teal">every</span> insurance line.</h1>
+      <p class="lead" style="font-size:21px">Start by telling teams where to look. Earn trust. Then let the agent settle the clean claims end-to-end — line by line, as the trust is earned.</p>
+    </div>
+  </section>
+
+  <!-- 15 · TEAM & ASK -->
+  <section class="slide" data-n="15">
+    <div class="kicker">Team &amp; ask</div>
+    <h2>Who's building it, and what we're raising.</h2>
+    <div class="cards c2" style="margin-top:30px">
+      <div class="card" style="border-style:dashed"><h3>Team <span class="pill">placeholder</span></h3><p>Founders &amp; key hires — to fill. Highlight insurance-domain + ML + product. Design-partner insurer relationship (existing) is a credibility anchor.</p></div>
+      <div class="card" style="border-style:dashed"><h3>The ask <span class="pill">placeholder</span></h3><p>Raise amount, use of funds (ML, design-partner pilots, GTM), and milestones — to fill. Traction / pilot metrics once live.</p></div>
+    </div>
+    <ul class="clean" style="margin-top:28px">
+      <li><b>To validate first:</b> fraud-score credibility with a skeptical investigator — it's the headline number.</li>
+      <li><b>To confirm:</b> do insurers want combined vs best-of-breed? Validate with design partners.</li>
+    </ul>
+    <div class="src">Team, raise, and traction are placeholders to complete before external use.</div>
+  </section>
+
+  <!-- 16 · CLOSING -->
+  <section class="slide" data-n="16" style="justify-content:center;align-items:flex-start">
+    <div class="cover-bg"></div>
+    <div style="position:relative">
+      <div style="display:flex;align-items:center;gap:14px;margin-bottom:28px">
+        <svg width="48" height="48" viewBox="0 0 104 104"><path d="M28 64 L52 52 L76 64" fill="none" stroke="#2DD4BF" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/><path d="M34 54 L52 42 L70 54" fill="none" stroke="#2DD4BF" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/><path d="M40 44 L52 32 L64 44" fill="none" stroke="#FBBF24" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span style="font-family:'Space Grotesk';font-weight:600;font-size:26px;color:#fff">Modules</span>
+      </div>
+      <h1 style="font-size:clamp(30px,4.4vw,52px)">Read the photos.<br>Read the paperwork.<br><span class="amber">Know what to check.</span></h1>
+      <p class="lead" style="margin-top:24px">Let's set up a sandbox and walk through a report on your own claim files.</p>
+      <p class="mono" style="margin-top:22px;color:var(--faint);font-size:13px">contact@ · [to fill] &nbsp;·&nbsp; Modules is a working name; final brand TBD.</p>
+    </div>
+  </section>
+
+</div>
+<div class="nav-hint">↑ ↓ / scroll to navigate</div>
+<script>
+  const deck = document.getElementById('deck');
+  const slides = [...document.querySelectorAll('.slide')];
+  let i = 0;
+  function go(n){ i = Math.max(0, Math.min(slides.length-1, n)); slides[i].scrollIntoView({behavior:'smooth'}); }
+  window.addEventListener('keydown', e => {
+    if(['ArrowDown','PageDown','ArrowRight',' '].includes(e.key)){ e.preventDefault(); go(i+1); }
+    if(['ArrowUp','PageUp','ArrowLeft'].includes(e.key)){ e.preventDefault(); go(i-1); }
+    if(e.key==='Home'){ e.preventDefault(); go(0);} if(e.key==='End'){ e.preventDefault(); go(slides.length-1);}
+  });
+  // keep index in sync when the user scrolls manually
+  const io = new IntersectionObserver(es=>es.forEach(en=>{ if(en.isIntersecting) i = slides.indexOf(en.target); }), {threshold:.6});
+  slides.forEach(s=>io.observe(s));
+</script>
+</body>
+</html>

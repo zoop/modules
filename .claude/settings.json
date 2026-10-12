@@ -1,16 +1,67 @@
 {
   "permissions": {
-    "allow": ["Write(./services/**)", "Edit(./services/**)", "Write(./docs/**)", "Edit(./docs/**)", "WebFetch", "WebSearch"],
-    "deny": ["Read(./.env)", "Read(./.env.*)", "Read(./**/.env)", "Read(./**/.env.*)", "Read(./secrets/**)"],
-    "ask": ["Bash(git push:*)", "Bash(docker:*)", "Edit(./infra/services/*/production/**)", "Write(./infra/services/*/production/**)"],
+    "allow": [
+      "Write(./services/**)",
+      "Edit(./services/**)",
+      "Write(./docs/**)",
+      "Edit(./docs/**)",
+      "WebFetch",
+      "WebSearch"
+    ],
+    "deny": [
+      "Read(./.env)",
+      "Read(./.env.*)",
+      "Read(./**/.env)",
+      "Read(./**/.env.*)",
+      "Read(./secrets/**)"
+    ],
+    "ask": [
+      "Bash(git push:*)",
+      "Bash(docker:*)",
+      "Edit(./infra/services/*/production/**)",
+      "Write(./infra/services/*/production/**)"
+    ],
     "defaultMode": "default"
   },
   "hooks": {
     "PostToolUse": [
       {
         "matcher": "Edit|Write",
-        "hooks": [{ "type": "command", "command": "mise run graph-update", "timeout": 5000 }]
+        "hooks": [
+          {
+            "type": "command",
+            "command": "mise run graph-update",
+            "timeout": 5000
+          }
+        ]
       }
     ]
+  },
+  "enabledPlugins": {
+    "ponytail@ponytail": true,
+    "superpowers@claude-plugins-official": true,
+    "mattpocock-skills@claude-plugins-official": true,
+    "i-have-adhd@i-have-adhd": true,
+    "impeccable@impeccable": true
+  },
+  "extraKnownMarketplaces": {
+    "ponytail": {
+      "source": {
+        "source": "github",
+        "repo": "DietrichGebert/ponytail"
+      }
+    },
+    "i-have-adhd": {
+      "source": {
+        "source": "github",
+        "repo": "ayghri/i-have-adhd"
+      }
+    },
+    "impeccable": {
+      "source": {
+        "source": "github",
+        "repo": "pbakaus/impeccable"
+      }
+    }
   }
 }

@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Mimir — Detect</title>
+<style>
+  :root{
+    --bg:#f6f5f1; --panel:#fff; --ink:#191919; --muted:#70706a; --line:#e4e1d8;
+    --platform:#1f6feb; --platform-soft:#e9f0fe; --pack:#b4530a; --pack-soft:#fcefe2;
+    --cross:#5a4fcf; --cross-soft:#ecebfb; --shadow:0 1px 3px rgba(0,0,0,.07);
+  }
+  @media(prefers-color-scheme:dark){:root{
+    --bg:#0e1014; --panel:#161922; --ink:#e8eaef; --muted:#97a0ae; --line:#272c38;
+    --platform:#6aa2ff; --platform-soft:#182238; --pack:#f0a062; --pack-soft:#2c2013;
+    --cross:#a79cff; --cross-soft:#1f1c33; --shadow:0 1px 3px rgba(0,0,0,.4);}}
+  [data-t="light"]{--bg:#f6f5f1;--panel:#fff;--ink:#191919;--muted:#70706a;--line:#e4e1d8;--platform:#1f6feb;--platform-soft:#e9f0fe;--pack:#b4530a;--pack-soft:#fcefe2;--cross:#5a4fcf;--cross-soft:#ecebfb;--shadow:0 1px 3px rgba(0,0,0,.07)}
+  [data-t="dark"]{--bg:#0e1014;--panel:#161922;--ink:#e8eaef;--muted:#97a0ae;--line:#272c38;--platform:#6aa2ff;--platform-soft:#182238;--pack:#f0a062;--pack-soft:#2c2013;--cross:#a79cff;--cross-soft:#1f1c33;--shadow:0 1px 3px rgba(0,0,0,.4)}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font:15.5px/1.6 ui-sans-serif,-apple-system,"Segoe UI",Inter,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+  .page{max-width:880px;margin:0 auto;padding:40px 24px 80px}
+  .topnav{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;font-size:13px}
+  .topnav a{color:var(--muted);text-decoration:none}
+  .topnav a:hover{color:var(--platform)}
+  .theme{border:1px solid var(--line);background:var(--panel);color:var(--muted);border-radius:8px;padding:6px 11px;font-size:13px;cursor:pointer}
+  .tagline{font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--pack);font-weight:700;margin:14px 0 6px}
+  h1{font-size:34px;letter-spacing:-.02em;margin:0 0 4px}
+  h1 b{color:var(--platform)}
+  .promise{font-size:18px;color:var(--muted);margin:0 0 22px;line-height:1.45}
+  .story{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px 22px;box-shadow:var(--shadow);font-size:15.5px;line-height:1.65;margin-bottom:30px}
+  .story::before{content:"The story so far";display:block;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--platform);font-weight:700;margin-bottom:8px}
+  h2{font-size:19px;margin:30px 0 12px;letter-spacing:-.01em}
+  .build{display:flex;flex-direction:column;gap:10px}
+  .b{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:13px 17px;box-shadow:var(--shadow)}
+  .b h3{margin:0 0 4px;font-size:15px;color:var(--platform)}
+  .b p{margin:0;color:var(--ink);font-size:14px;line-height:1.55}
+  .meta{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:8px}
+  @media(max-width:700px){.meta{grid-template-columns:1fr}}
+  .mcard{border:1px solid var(--line);border-radius:12px;padding:13px 16px;font-size:13.5px;line-height:1.55}
+  .mcard.contract{background:var(--platform-soft)}
+  .mcard.packs{background:var(--pack-soft)}
+  .mcard .k{font-size:11px;letter-spacing:.07em;text-transform:uppercase;font-weight:700;margin:0 0 6px}
+  .mcard.contract .k{color:var(--platform)} .mcard.packs .k{color:var(--pack)}
+  .engsec{margin-top:30px;border:1px solid var(--line);border-radius:14px;padding:16px 20px;background:var(--panel);box-shadow:var(--shadow)}
+  .engsec h2{margin:0 0 10px;font-size:17px}
+  .engsec h2 span{font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);font-weight:600;margin-left:8px}
+  .engsec ul{margin:0;padding-left:20px}
+  .engsec li{margin:7px 0;font-size:14px;line-height:1.55}
+  .open{background:var(--cross-soft);border:1px solid var(--line);border-radius:14px;padding:16px 20px;margin-top:30px}
+  .open h2{margin:0 0 10px;color:var(--cross);font-size:17px}
+  .open ol{margin:0;padding-left:20px}
+  .open li{margin:7px 0;font-size:14.5px}
+  .chapnav{display:flex;justify-content:space-between;gap:12px;margin-top:36px}
+  .chapnav a{flex:1;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px 16px;text-decoration:none;color:var(--ink);box-shadow:var(--shadow);font-size:14px}
+  .chapnav a:hover{border-color:var(--platform)}
+  .chapnav .dir{display:block;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:3px}
+  .chapnav .next{text-align:right}
+  .foot{margin-top:26px;color:var(--muted);font-size:12.5px;text-align:center}
+  code{background:var(--platform-soft);padding:.1em .4em;border-radius:5px;font-size:.9em;font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="topnav">
+    <a id="docsHome" href="../index.html">← Mimir docs</a>
+    <button class="theme" id="theme">◐ Theme</button>
+  </div>
+  <p class="tagline">Module 05 · the fraud engine</p>
+  <h1><b>Detect</b></h1>
+  <p class="promise">One risk read over everything — images, documents, records — with a reason for every flag.</p>
+
+  <div class="story">Here is where Priya’s claim gets interesting. The garage estimate lists a brand-new bumper. Her photos show a dent — but no bumper damage at all. Neither the document reader nor the image model can catch that alone. Detect reads the whole signal set — what Extract read, what Vision saw, what Verify proved — and catches the story that doesn’t add up. That fused view is the moat.</div>
+
+  <h2>What we're going to build</h2>
+  <div class="build">
+    <div class="b"><h3>Rules over the signal set</h3><p>Risk rules are pack-supplied config, evaluated over typed signals — never hardcoded. The same engine scores motor claims, invoices, and KYC files, because it only ever speaks signals.</p></div>
+    <div class="b"><h3>Three modes, one module</h3><p>Images alone (manipulation, AI-generation, re-digitisation, reuse), documents alone (mismatches, tampering, inflation), or both fused. Clients buy the mode they need; the fused mode is what nobody else sells.</p></div>
+    <div class="b"><h3>Image forensics</h3><p>Tamper and AI-generation detection on photos — integrated models behind the gateway, with our calibration and our evidence format on top.</p></div>
+    <div class="b"><h3>A score that explains itself</h3><p>Out comes a score and a band — but every flag beneath it carries what was compared and the exact figures. "78, high" is useless in a dispute; "estimate lists front bumper replacement; photos show no front-bumper damage" is defensible.</p></div>
+    <div class="b"><h3>Cross-case signals (Phase 3)</h3><p>The same payee across twelve claims, the same photo in three. Ring detection needs the Entity/Link Graph — deliberately deferred until a product demands it and legal clears it.</p></div>
+  </div>
+
+  <div class="meta">
+    <div class="mcard contract"><p class="k">The contract (platform — never changes)</p>In: the case’s signals (any subset). Out: pass/fail checks + a scored, banded risk signal with reasons. Sold per case scored.</div>
+    <div class="mcard packs"><p class="k">What the pack supplies (per domain)</p>Rule set + weights · bands/thresholds vocabulary · which checks are enabled per mode.</div>
+  </div>
+
+  <div class="engsec">
+    <h2>For engineers &amp; architects<span>implementation notes</span></h2>
+    <ul>
+      <li>Rules are declarative expressions over the typed signal set (think: a constrained predicate language, versioned in the Pack Registry) — evaluated by a generic evaluator, never compiled into engine code.</li>
+      <li>A check’s output is itself a signal: <code>{check, verdict, inputs: [signal refs + figures], weight}</code> — the "reason" is the actual evidence chain, not a generated sentence.</li>
+      <li>Fused checks are just rules that reference signals from multiple producers (Vision + Extract + Verify) — no special fusion machinery; R2 makes the moat a one-liner.</li>
+      <li>Failure modes: missing inputs make a check <code>not_evaluable</code> (reported, never guessed); rule-version is pinned per case so disputed scores replay exactly.</li>
+    </ul>
+  </div>
+
+  <div class="open">
+    <h2>Open questions — for the room</h2>
+    <ol>
+      <li>Rules engine: adopt one (and which), or write a minimal evaluator over signals?</li>
+      <li>The rules/ML mix for v1: start rules-heavy and earn ML with labels, or seed with models?</li>
+      <li>Who authors and signs off pack rules — us, the insurer, or co-owned during pilots?</li>
+      <li>Flag format: is our evidence structure enough for an IRDAI-defensible audit trail?</li>
+    </ol>
+  </div>
+
+  <div class="chapnav">
+    <a href="module-verify.html"><span class="dir">← Previous</span>Verify</a>
+    <a class="next" href="module-estimate.html"><span class="dir">Next →</span>Estimate</a>
+  </div>
+
+  <p class="foot">Mimir · the Modules intelligence engine — module 05 of 07 · <a href="../index.html" style="color:var(--platform)">all docs</a></p>
+</div>
+<script>
+  document.getElementById('theme').addEventListener('click',()=>{
+    const d=document.documentElement,c=d.getAttribute('data-t');
+    d.setAttribute('data-t',c==='dark'?'light':c==='light'?'dark':(matchMedia('(prefers-color-scheme: dark)').matches?'light':'dark'));
+  });
+  const inFrame=window.self!==window.top;
+  if(inFrame){const tb=document.getElementById('theme');if(tb)tb.style.display='none';document.body.style.background='transparent';const dh=document.getElementById('docsHome');if(dh)dh.style.display='none';}
+  window.addEventListener('message',e=>{if(e.data&&e.data.type==='theme')document.documentElement.setAttribute('data-t',e.data.value);});
+  function postSize(){if(inFrame){try{parent.postMessage({type:'size',height:document.body.scrollHeight},'*');}catch(_){}}}
+  window.addEventListener('load',postSize);
+  if(window.ResizeObserver)new ResizeObserver(postSize).observe(document.body);
+</script>
+</body>
+</html>
